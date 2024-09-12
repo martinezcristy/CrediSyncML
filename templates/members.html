@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediSync Members</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">
+
+</head>
+<body>
+    <div class="sidebar">
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
+            <h2>Cebu People</h2>
+            <p class="admin-role">Admin</p>
+        </div>
+        
+        <nav>
+            <ul>
+                <li><a href="#" class="menu-item active">Dashboard</a></li>
+                <li><a href="#" class="menu-item">Members</a></li>
+                <li><a href="#" class="menu-item">Settings</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <h1>Members</h1>
+            <div class="header-right">
+                <input type="text" placeholder="Search..." class="search-bar">
+                <button class="notification-bell">
+                    <img src="{{ url_for('static', filename='icons/bell-icon.png') }}" alt="Notification Bell">
+                </button>
+                <button class="add-member-btn">ADD NEW MEMBER</button>
+            </div>
+        </div>
+        
+        <table class="members-table">
+            <thead>
+                <tr>
+                    <th>Membership ID</th>
+                    <th>Name</th>
+                    <th>Contact Number</th>
+                    <th>Address</th>
+                    <th>Date Applied</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>24182364</td>
+                    <td>Rae Collins</td>
+                    <td>095669871254</td>
+                    <td>Cebu City</td>
+                    <td>01-10-2023</td>
+                    <td class="actions">
+                        <button class="approve">Approve</button>
+                        <button class="decline">Decline</button>
+                        <button class="evaluate">Evaluate</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

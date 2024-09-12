@@ -1,0 +1,146 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Montserrat', sans-serif;
+}
+
+body {
+    display: flex;
+    height: 100vh;
+    background-color: #f5f5f5;
+    font-family: 'Montserrat', sans-serif;
+}
+
+.sidebar {
+    width: 250px;
+    background-color: #f5d96b;
+    padding: 20px;
+    font-family: 'Montserrat', sans-serif !important;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.profile-pic {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+}
+
+.admin-role {
+    color: #ff7a00;
+    font-weight: bold;
+}
+
+nav ul {
+    list-style-type: none;
+}
+
+.menu-item {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.menu-item.active, .menu-item:hover {
+    background-color: #ff7a00;
+    color: white;
+}
+
+.main-content {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: white;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-bar {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.notification-bell {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.notification-bell img {
+    width: 24px; /* Adjust size as needed */
+    height: 24px; /* Adjust size as needed */
+}
+
+.add-member-btn {
+    padding: 10px 20px;
+    background-color: #ff7a00;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add-member-btn:hover {
+    background-color: #ff9a33;
+}
+
+.members-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.members-table th, .members-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.members-table th {
+    background-color: #f5d96b;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+}
+
+.actions button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+}
+
+.actions .approve {
+    background-color: #4CAF50;
+}
+
+.actions .decline {
+    background-color: #f44336;
+}
+
+.actions .evaluate {
+    background-color: #ffa500;
+}

@@ -5,62 +5,70 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrediSync Dashboard</title>
-
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!--sidebar-->
+    <div class="sidebar">
 
-<div class="sidebar">
-    <div class="logo"><img src="logo.png">CrediSync</div>
-    <ul class="menu-item">
-        <div class="profile">
-            <img src="profile-icon.png">
-            <div>Admin</div>
-        </div>            
-        <li><a href="#" class="active"><img src="home-icon.png">Dashboard</a></li>
-        <li><a href="#"><img src="cooperative-icon.png">Cooperatives</a></li>
-        <li><a href="#"><img src="applicants-icon.png">Applicants</a></li>
-        <li><a href="#"><img src="payments-icon.png">Payments</a></li>
-        <li><a href="#"><img src="transaction-icon.png">Transactions</a></li>
-    </ul>
-</div>
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        </div>
 
-<div class="content">
-    <div class="header">
-        <input type="text" class="search-bar" placeholder="Search...">
-        <div class="notification">🔔</div>
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
+            <h2>Cebu People</h2>
+            <p class="admin-role">Admin</p>
+        </div>
+        <!--sidebar navs-->
+        <nav>
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item active">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item">Members</a></li>
+                <li><a href="#" class="menu-item">Settings</a></li>
+            </ul>
+        </nav>
     </div>
-    <h1>Dashboard</h1>
-    <div class="dashboard-cards">
-        <div class="card">
-            <div>
-                <h2>COOPERATIVES</h2>
-                <div class="value">4</div>
+
+    <!--add your code inside this div-->
+    <div class="main-content">
+
+        <h1>Dashboard</h1>
+
+        <div class="dashboard-cards">
+            <div class="card">
+                <div>
+                    <h2>DATA</h2>
+                    <div class="value">4</div>
+                </div>
+                <img src="{{ url_for('static', filename='icons/cooperative-icon.png') }}">
             </div>
-            <img src="cooperative-icon.png">
-        </div>
-        <div class="card">
-            <div>
-                <h2>APPLICANTS</h2>
-                <div class="value">20</div>
+            <div class="card">
+                <div>
+                    <h2>DATA</h2>
+                    <div class="value">20</div>
+                </div>
+                <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
             </div>
-            <img src="applicants-icon.png">
-        </div>
-        <div class="card">
-            <div>
-                <h2>PAYMENTS</h2>
-                <div class="value">20</div>
+            <div class="card">
+                <div>
+                    <h2>DATA</h2>
+                    <div class="value">20</div>
+                </div>
+                <img src="{{ url_for('static', filename='icons/payments-icon.png') }}">
             </div>
-            <img src="payments-icon.png">
-        </div>
-        <div class="card">
-            <div>
-                <h2>TRANSACTIONS</h2>
-                <div class="value">20</div>
+            <div class="card">
+                <div>
+                    <h2>DATA</h2>
+                    <div class="value">20</div>
+                </div>
+                <img src="{{ url_for('static', filename='icons/transaction-icon.png') }}">
             </div>
-            <img src="transaction-icon.png">
         </div>
+
+        <br><br><br><p>add Subscription boxes below</p>
+
     </div>
-</div>
 
 </body>
 </html>

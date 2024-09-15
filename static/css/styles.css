@@ -31,6 +31,18 @@ body {
     height: auto;  
 }
 
+.sidebar .menu ul li a img {
+    margin-right: 10px;
+    width: 20px; 
+    height: 20px; 
+    vertical-align: middle;
+}
+
+.sidebar .menu ul li a span {
+    vertical-align: middle; 
+    text-align: center;
+}
+
 .profile-section {
     text-align: center;
     margin-bottom: 50px;

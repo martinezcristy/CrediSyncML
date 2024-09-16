@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
 /* General Reset */
 * {
     margin: 0;
@@ -10,15 +11,13 @@
 body {
     display: flex;
     height: 100vh;
-    background-color: #f5f5f5;
-    font-family: 'Montserrat', Arial, sans-serif;
+    background-color: rgb(251, 224, 158);
 }
 
 .sidebar {
     width: 250px;
-    background-color: #f4f4f4;
+    background-color: #efe0ce;
     padding: 18px;
-    font-family: 'Montserrat', sans-serif !important;
 }
 
 .sidebar .logo {
@@ -31,24 +30,37 @@ body {
     height: auto;  
 }
 
+.sidebar .menu ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.sidebar .menu ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar .menu ul li a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: black;
+    font-weight: bold;
+}
+
 .sidebar .menu ul li a img {
     margin-right: 10px;
     width: 20px; 
     height: 20px; 
-    vertical-align: middle;
 }
 
 .sidebar .menu ul li a span {
     vertical-align: middle; 
-    text-align: center;
 }
 
 .profile-section {
     text-align: center;
     margin-bottom: 50px;
-    padding-top: 20px;
-    padding-top: 30px; 
-
+    padding-top: 30px; /* Removed duplicate padding-top */
 }
 
 .profile-pic {
@@ -64,17 +76,12 @@ body {
     font-weight: bold;
 }
 
-nav ul {
-    list-style-type: none;
-}
-
 .menu-item {
     display: block;
     padding: 10px;
     text-decoration: none;
     color: black;
     font-weight: bold;
-    margin-bottom: 10px;
     border-radius: 5px;
 }
 
@@ -86,7 +93,7 @@ nav ul {
 .main-content {
     flex-grow: 1;
     padding: 40px;
-    background-color: white;
+    background-color: rgb(255, 234, 189);
 }
 
 .header {
@@ -173,27 +180,144 @@ nav ul {
     background-color: #ffa500;
 }
 
-/*dashboar styles*/
-
+/* Dashboard Styles */
 .dashboard-cards {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
+    gap: 10px;
     margin-top: 20px;
+    justify-content: center; /* Center cards within the grid */
 }
+
 .card {
-    background-color: #f5d96b;
+    background-color: #ffeb9a;
+    width: 500px; 
+    height: 290px; 
     padding: 20px;
     border-radius: 8px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
 .card h2 {
     margin: 0;
     font-size: 18px;
 }
+
 .card .value {
     font-size: 28px;
     font-weight: bold;
+}
+
+/* Dashboard Styles */
+.dashboard-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+    justify-content: center; /* Center cards within the grid */
+}
+
+.card {
+    background-color: #ffeb9a;
+    width: 490px; /* Fixed width */
+    height: 280px; /* Fixed height */
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.card h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.card .value {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+/* Subscription Plan Styles */
+.subscription-plan {
+    margin-top: 40px; /* Space above the subscription section */
+}
+
+.subscription-plan h2 {
+    text-align: center; /* Center the header text */
+    margin-bottom: 20px;
+}
+
+.subscription-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    gap: 10px;
+    justify-content: center; /* Center the grid items horizontally */
+}
+
+/* Specific styles for Subscription Plan cards */
+.subscription-cards .card {
+    width: 350px; 
+    height: 250px; 
+    padding: 10px;
+    display: flex;
+    flex-direction: column; /* Stack content vertically */
+    align-items: center; /* Center content horizontally */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
+}
+
+.card-content {
+    text-align: center;
+    margin-top: 15px; /* Adjust this value to move content down */
+}
+
+.price {
+    font-size: 32px;
+    font-weight: bold;
+    color: #333;
+}
+
+.duration {
+    font-size: 16px;
+    color: #070707;
+    margin-bottom: 10px;
+}
+
+hr {
+    border: 0;
+    border-top: 2px solid #050505;
+    margin: 10px 0;
+}
+
+.features {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    font-size: 16px;
+    color: #000000;
+}
+
+.features li {
+    margin-bottom: 8px;
+}
+
+.subscribe-btn {
+    margin-top: 20px; /* Space above the button */
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: rgb(6, 5, 5);
+    background-color: #fdc38c; /* Button background color */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.subscribe-btn:hover {
+    background-color: #cab8a6; /* Change color on hover */
 }

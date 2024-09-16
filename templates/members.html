@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrediSync Members</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <!--<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap">-->
-
 </head>
-<body>
-    <!--sidebar-->
-    <div class="sidebar">
 
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
         <div class="logo">
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
         </div>
@@ -22,7 +20,7 @@
             <p class="admin-role">Admin</p>
         </div>
         
-        <!--sidebar navs-->
+        <!-- Sidebar Navigation -->
         <nav class="menu">
             <ul>
                 <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
@@ -32,12 +30,13 @@
         </nav>
     </div>
 
+    <!-- Main Content -->
     <div class="main-content">
         <div class="header">
             <h1>Members</h1>
             <div class="header-right">
                 <input type="text" placeholder="Search..." class="search-bar">
-                <button class="notification-bell">
+                <button class="notification-bell" aria-label="Notifications">
                     <img src="{{ url_for('static', filename='icons/bell-icon.png') }}" alt="Notification Bell">
                 </button>
                 <button class="add-member-btn">ADD NEW MEMBER</button>

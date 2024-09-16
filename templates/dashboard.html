@@ -10,11 +10,9 @@
 <body>
     <!--sidebar-->
     <div class="sidebar">
-
         <div class="logo">
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
         </div>
-
         <div class="profile-section">
             <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
             <h2>Cebu People</h2>
@@ -30,45 +28,70 @@
         </nav>
     </div>
 
-    <!--add your code inside this div-->
+    <!-- Main Content -->
     <div class="main-content">
-
         <h1>Dashboard</h1>
 
         <div class="dashboard-cards">
+            <!-- Existing Cards -->
             <div class="card">
                 <div>
-                    <h2>DATA</h2>
+                    <h2>ALL MEMBERS</h2>
                     <div class="value">4</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/cooperative-icon.png') }}">
             </div>
             <div class="card">
                 <div>
-                    <h2>DATA</h2>
+                    <h2>EVALUATED MEMBERS</h2>
                     <div class="value">20</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
             </div>
-            <div class="card">
-                <div>
-                    <h2>DATA</h2>
-                    <div class="value">20</div>
-                </div>
-                <img src="{{ url_for('static', filename='icons/payments-icon.png') }}">
-            </div>
-            <div class="card">
-                <div>
-                    <h2>DATA</h2>
-                    <div class="value">20</div>
-                </div>
-                <img src="{{ url_for('static', filename='icons/transaction-icon.png') }}">
-            </div>
         </div>
 
-        <br><br><br><p>add Subscription boxes below</p>
-
+        <!-- Subscription Plan Section -->
+        <div class="subscription-plan">
+            <h2>Subscription Plan</h2>
+            <div class="subscription-cards">
+                <div class="card">
+                    <div class="card-content">
+                        <div class="price">₱799</div>
+                        <div class="duration">per month</div>
+                        <hr>
+                        <ul class="features">
+                            <li>✓ 30 Borrower Evaluation</li>
+                            <li>✓ 50 Add-on Members</li>
+                        </ul>
+                        <button class="subscribe-btn">Subscribe</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="price">₱999</div>
+                        <div class="duration">per month</div>
+                        <hr>
+                        <ul class="features">
+                            <li>✓ 150 Borrower Evaluation</li>
+                            <li>✓ 200 Add-on Members</li>
+                        </ul>
+                        <button class="subscribe-btn">Subscribe</button>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-content">
+                        <div class="price">₱1299</div>
+                        <div class="duration">per month</div>
+                        <hr>
+                        <ul class="features">
+                            <li>✓ UNLI Borrower Evaluation</li>
+                            <li>✓ UNLI Add-on Members</li>
+                        </ul>
+                        <button class="subscribe-btn">Subscribe</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
 </body>
 </html>

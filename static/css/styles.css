@@ -60,7 +60,7 @@ body {
 .profile-section {
     text-align: center;
     margin-bottom: 50px;
-    padding-top: 30px; /* Removed duplicate padding-top */
+    padding-top: 30px; 
 }
 
 .profile-pic {
@@ -123,8 +123,8 @@ body {
 }
 
 .notification-bell img {
-    width: 24px; /* Adjust size as needed */
-    height: 24px; /* Adjust size as needed */
+    width: 24px; 
+    height: 24px; 
 }
 
 .add-member-btn {
@@ -186,7 +186,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-top: 20px;
-    justify-content: center; /* Center cards within the grid */
+    justify-content: center; 
 }
 
 .card {
@@ -217,13 +217,13 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
     margin-top: 20px;
-    justify-content: center; /* Center cards within the grid */
+    justify-content: center; 
 }
 
 .card {
     background-color: #ffeb9a;
-    width: 490px; /* Fixed width */
-    height: 280px; /* Fixed height */
+    width: 490px; 
+    height: 280px; 
     padding: 20px;
     border-radius: 8px;
     display: flex;
@@ -244,19 +244,19 @@ body {
 
 /* Subscription Plan Styles */
 .subscription-plan {
-    margin-top: 40px; /* Space above the subscription section */
+    margin-top: 40px; 
 }
 
 .subscription-plan h2 {
-    text-align: center; /* Center the header text */
+    text-align: center; 
     margin-bottom: 20px;
 }
 
 .subscription-cards {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Three columns */
+    grid-template-columns: repeat(3, 1fr); 
     gap: 10px;
-    justify-content: center; /* Center the grid items horizontally */
+    justify-content: center; 
 }
 
 /* Specific styles for Subscription Plan cards */
@@ -265,14 +265,14 @@ body {
     height: 250px; 
     padding: 10px;
     display: flex;
-    flex-direction: column; /* Stack content vertically */
-    align-items: center; /* Center content horizontally */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: Add shadow */
+    flex-direction: column; 
+    align-items: center; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
 }
 
 .card-content {
     text-align: center;
-    margin-top: 15px; /* Adjust this value to move content down */
+    margin-top: 15px; 
 }
 
 .price {
@@ -306,12 +306,12 @@ hr {
 }
 
 .subscribe-btn {
-    margin-top: 20px; /* Space above the button */
+    margin-top: 20px; 
     padding: 10px 20px;
     font-size: 16px;
     font-weight: bold;
     color: rgb(6, 5, 5);
-    background-color: #fdc38c; /* Button background color */
+    background-color: #fdc38c; 
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -319,5 +319,5 @@ hr {
 }
 
 .subscribe-btn:hover {
-    background-color: #cab8a6; /* Change color on hover */
+    background-color: #cab8a6; 
 }

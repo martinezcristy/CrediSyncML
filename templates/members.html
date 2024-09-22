@@ -46,9 +46,10 @@
         <table class="members-table">
             <thead>
                 <tr>
-                    <th>Membership ID</th>
+                    <th>Account Number</th>
                     <th>Name</th>
                     <th>Contact Number</th>
+                    <th>Email Address</th>
                     <th>Address</th>
                     <th>Date Applied</th>
                     <th>Actions</th>
@@ -59,6 +60,7 @@
                     <td>24182364</td>
                     <td>Rae Collins</td>
                     <td>095669871254</td>
+                    <td>raecollins@gmail.com</td>
                     <td>Cebu City</td>
                     <td>01-10-2023</td>
                     <td class="actions">
@@ -70,5 +72,36 @@
             </tbody>
         </table>
     </div>
+
+    <!-- Add New Member Modal -->
+    <div id="addMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2>Add New Member</h2>
+            <form id="addMemberForm">
+            <label for="account-number">Account Number</label>
+            <input type="text" id="account-number" name="account-number" required>
+
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="contact-number">Contact Number</label>
+            <input type="tel" id="contact-number" name="contact-number" required>
+
+            <label for="email-address">Email Address</label>
+            <input type="text" id="email-address" name="email-address" required>
+
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" required>
+
+            <label for="date-applied">Date Applied</label>
+            <input type="date" id="date-applied" name="date-applied" required>
+
+            <button type="submit" class="save-btn">Save</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/addMember.js') }}"></script>
 </body>
 </html>

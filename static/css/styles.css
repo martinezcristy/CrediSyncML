@@ -401,3 +401,26 @@ hr {
     background-color: #ff9a33;
 }
 
+.button-container {
+    display: flex;
+    justify-content: center; /* Center buttons */
+    margin-top: 20px; /* Space above buttons */
+}
+
+.confirm-btn, .cancel-btn {
+    margin: 0 10px; /* Space between buttons */
+    padding: 10px 20px; /* Button padding */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.confirm-btn {
+    background-color: #ff4c4c; /* Red for confirmation */
+    color: white;
+}
+
+.cancel-btn {
+    background-color: #ccc; /* Gray for cancel */
+    color: black;
+}

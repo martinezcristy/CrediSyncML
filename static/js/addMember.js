@@ -1,66 +1,81 @@
-// Get the modal, button, and close elements
 var modal = document.getElementById("addMemberModal");
 var btn = document.querySelector(".add-member-btn");
 var span = document.querySelector(".close-btn");
-var membersTableBody = document.querySelector(".members-table tbody"); // Select the table body
+var membersTableBody = document.querySelector(".members-table tbody");
+var currentDeclineRow; // To store the row to be deleted
 
-// Ensure modal behavior only happens on the members page
-if (window.location.pathname === "/members") {
-    // When the "Add New Member" button is clicked, display the modal
-    btn.onclick = function() {
-        modal.style.display = "block";
-    }
+// Open the "Add New Member" modal
+btn.onclick = function() {
+    modal.style.display = "block";
+}
 
-    // When the close button (X) is clicked, close the modal
-    span.onclick = function() {
+// Close the modal when the close button is clicked
+span.onclick = function() {
+    modal.style.display = "none";
+}
+
+// Close the modal when clicking outside of it
+window.onclick = function(event) {
+    if (event.target === modal) {
         modal.style.display = "none";
     }
+}
 
-    // When the user clicks outside the modal, close it
-    window.onclick = function(event) {
-        if (event.target === modal) {
-            modal.style.display = "none";
+// Handle form submission for adding a new member
+document.getElementById("addMemberForm").onsubmit = function(e) {
+    e.preventDefault();
+    
+    let requiredFields = document.querySelectorAll("#addMemberForm input[required]");
+    let allValid = true;
+
+    requiredFields.forEach(function(field) {
+        if (!field.value) {
+            field.style.borderColor = "red"; 
+            allValid = false;
+        } else {
+            field.style.borderColor = ""; 
         }
-    }
+    });
 
-    // Handle form submission (required fields)
-    document.getElementById("addMemberForm").onsubmit = function(e) {
-        e.preventDefault();
+    if (allValid) {
+        let newRow = document.createElement("tr");
+        newRow.innerHTML = `
+            <td>${document.getElementById("account-number").value}</td>
+            <td>${document.getElementById("name").value}</td>
+            <td>${document.getElementById("contact-number").value}</td>
+            <td>${document.getElementById("email-address").value}</td>
+            <td>${document.getElementById("address").value}</td>
+            <td>${document.getElementById("date-applied").value}</td>
+            <td class="actions">
+                <button class="approve">Approve</button>
+                <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                <button class="evaluate">Evaluate</button>
+            </td>
+        `;
+        membersTableBody.appendChild(newRow); 
         
-        // Check if all required fields are filled
-        let requiredFields = document.querySelectorAll("#addMemberForm input[required]");
-        let allValid = true;
+        alert("New member added!");
+        modal.style.display = "none"; 
+        document.getElementById("addMemberForm").reset(); 
+    }
+};
 
-        requiredFields.forEach(function(field) {
-            if (!field.value) {
-                field.style.borderColor = "red"; // Highlight the field
-                allValid = false;
-            } else {
-                field.style.borderColor = ""; // Reset the border color if filled
-            }
-        });
+// Open the decline modal and store the row to be deleted
+function openDeclineModal(button) {
+    currentDeclineRow = button.closest("tr"); // Store the row to be deleted
+    document.getElementById("declineMemberModal").style.display = "block";
+}
 
-        if (allValid) {
-            // Create a new table row
-            let newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td>${document.getElementById("account-number").value}</td>
-                <td>${document.getElementById("name").value}</td>
-                <td>${document.getElementById("contact-number").value}</td>
-                <td>${document.getElementById("email-address").value}</td>
-                <td>${document.getElementById("address").value}</td>
-                <td>${document.getElementById("date-applied").value}</td>
-                <td class="actions">
-                    <button class="approve">Approve</button>
-                    <button class="decline">Decline</button>
-                    <button class="evaluate">Evaluate</button>
-                </td>
-            `;
-            membersTableBody.appendChild(newRow); // Append the new row to the table body
-            
-            alert("New member added!");
-            modal.style.display = "none"; 
-            document.getElementById("addMemberForm").reset(); // Reset the form fields
-        }
-    };
+// Close the decline modal
+function closeDeclineModal() {
+    document.getElementById("declineMemberModal").style.display = "none";
+}
+
+// Confirm the decline and remove the row from the table
+function confirmDecline() {
+    if (currentDeclineRow) {
+        currentDeclineRow.remove(); // Remove the row from the table
+        alert("Member declined!");
+    }
+    closeDeclineModal();
 }

@@ -2,10 +2,175 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=p, initial-scale=1.0">
-    <title>Document</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediSync Evaluation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <p>evaluation page</p>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="CrediSync Logo">
+        </div>
+
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
+            <h2>Cebu People</h2>
+            <p class="admin-role">Admin</p>
+        </div>
+
+        <nav class="menu">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
+                <li><a href="{{ url_for('evaluation') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/evaluation-svgrepo-com.svg') }}" alt="Evaluation Icon">Evaluation</a></li>
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="evaluation-main-content">
+        <h1>Member Evaluation</h1>
+        <div class="header">
+            <div class="header-right">
+                <button class="notification-bell" aria-label="Notifications">
+                    <img src="{{ url_for('static', filename='icons/bell-icon.png') }}" alt="Notification Bell">
+                </button>
+            </div>
+        </div>
+
+        <!-- Form Section -->
+        <form class="evaluation-form">
+            <div class="form-group">
+                <label>Dependents</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Currently Employed</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Loan Amount</label>
+                <input type="text" placeholder="Enter loan amount">
+            </div>
+            <div class="form-group">
+                <label>Years Current Residence</label>
+                <input type="text" placeholder="Enter year(s)">
+            </div>
+            <div class="form-group">
+                <label>Employment Status</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="regular">Regular</option>
+                    <option value="contract">Contract</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Loan Term</label>
+                <select>
+                    <option value="">Enter loan term in months</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Asset Owner</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Years Employed</label>
+                <input type="text" placeholder="Enter years">
+            </div>
+            <div class="form-group">
+                <label>Have Co-Maker</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Credit Card Owner</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Monthly Salary</label>
+                <input type="text" placeholder="Enter monthly salary">
+            </div>
+            <div class="form-group">
+                <label>Repayment Schedule</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="bi-weekly">Bi-Weekly</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Have Savings Account</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Loan Purpose</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="regular">Regular</option>
+                    <option value="emergency">Emergency</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Have Outstanding Debts</label>
+                <select>
+                    <option value="">Please select</option>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                </select>
+            </div>
+            <button type="submit" class="evaluate-btn">Evaluate</button>
+        </form>
+        
+        <div class="evaluation-results">
+            <div class="prediction">
+                <h2>Prediction</h2>
+                <p>Rae Collins is eligible for loan</p>
+            </div>
+            <div class="credit-score">
+                <h2>Credit Score</h2>
+                <p>500</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/evaluation.js') }}"></script>
 </body>
 </html>

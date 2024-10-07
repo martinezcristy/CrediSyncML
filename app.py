@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
-#from flask_mysqldb import MySQL
+#from flask_mysqldb import MySQL also add jsonify for approve, decline and sending emails
 from flask_mysqldb import MySQL
 from models import Member
 
@@ -103,6 +103,16 @@ def settings():
 @app.route('/evaluation')
 def evaluation():
     return render_template('evaluation.html')
+
+#decline route
+@app.route('/declineMember', methods=['POST'])
+def decline():
+    return 'test decline'
+
+#approve route
+@app.route('/approveMember')
+def approve():
+    return 'test approve'
 
 if __name__ == "__main__":
     app.run(debug=True)

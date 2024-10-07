@@ -54,6 +54,11 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
         `;
         membersTableBody.appendChild(newRow); 
         
+        // Event listener for "Evaluate" button to redirect to evaluation page
+        newRow.querySelector(".evaluate").addEventListener("click", function() {
+            window.location.href = "/evaluation";  
+        });
+
         alert("New member added!");
         modal.style.display = "none"; 
         document.getElementById("addMemberForm").reset(); 

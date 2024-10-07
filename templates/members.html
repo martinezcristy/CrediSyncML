@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrediSync Members</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="{{ url_for('static', filename='js/phoneValidation.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/formValidation.js') }}"></script>
 </head>
 
 <body>
@@ -56,9 +56,25 @@
                     <th>Actions</th>
                 </tr>
             </thead>
+            <!-- tbody with jinja  -->
             <tbody>
-                <!-- No hardcoded data; new members will be added dynamically -->
+                {% for member in members %}
+                <tr>
+                    <td>{{ member.account_number }}</td>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.contact_number }}</td>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.address }}</td>
+                    <td>{{ member.date_applied }}</td>
+                    <td class="actions">
+                        <button class="approve">Approve</button>
+                        <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                        <button class="evaluate">Evaluate</button>
+                    </td>
+                </tr>
+                {% endfor %}
             </tbody>
+            
         </table>
     </div>
 

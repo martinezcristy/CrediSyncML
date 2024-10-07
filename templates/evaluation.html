@@ -36,34 +36,34 @@
         </div>
 
         <!-- Form Section -->
-        <form class="evaluation-form">
+        <form class="evaluation-form" method="POST" action="/evaluate">
             <div class="form-group">
                 <label>Dependents</label>
-                <select>
+                <select name="dependents">
                     <option value="">Please select</option>
-                    <option value="no">No</option>
-                    <option value="yes">Yes</option>
+                    <option value="false">No</option>
+                    <option value="true">Yes</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Currently Employed</label>
-                <select>
+                <select name="currently_employed">
                     <option value="">Please select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Loan Amount</label>
-                <input type="text" placeholder="Enter loan amount">
+                <input type="number" name="loan_amount" placeholder="Enter loan amount" required>
             </div>
             <div class="form-group">
                 <label>Years Current Residence</label>
-                <input type="text" placeholder="Enter year(s)">
+                <input type="number" name="years_current_residence" placeholder="Enter year(s)" required>
             </div>
             <div class="form-group">
                 <label>Employment Status</label>
-                <select>
+                <select name="employment_status">
                     <option value="">Please select</option>
                     <option value="regular">Regular</option>
                     <option value="contract">Contract</option>
@@ -71,57 +71,43 @@
             </div>
             <div class="form-group">
                 <label>Loan Term</label>
-                <select>
-                    <option value="">Enter loan term in months</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                </select>
+                <input type="number" name="loan_term" placeholder="Enter loan term in months" required>
             </div>
             <div class="form-group">
                 <label>Asset Owner</label>
-                <select>
+                <select name="asset_owner">
                     <option value="">Please select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Years Employed</label>
-                <input type="text" placeholder="Enter years">
+                <input type="number" name="years_employed" placeholder="Enter years" required>
             </div>
             <div class="form-group">
                 <label>Have Co-Maker</label>
-                <select>
+                <select name="have_co_maker">
                     <option value="">Please select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Credit Card Owner</label>
-                <select>
+                <select name="credit_card_owner">
                     <option value="">Please select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Monthly Salary</label>
-                <input type="text" placeholder="Enter monthly salary">
+                <input type="number" name="monthly_salary" placeholder="Enter monthly salary" required>
             </div>
             <div class="form-group">
                 <label>Repayment Schedule</label>
-                <select>
+                <select name="repayment_sched">
                     <option value="">Please select</option>
                     <option value="monthly">Monthly</option>
                     <option value="bi-weekly">Bi-Weekly</option>
@@ -129,15 +115,15 @@
             </div>
             <div class="form-group">
                 <label>Have Savings Account</label>
-                <select>
+                <select name="have_savings_account">
                     <option value="">Please select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Loan Purpose</label>
-                <select>
+                <select name="loan_purpose">
                     <option value="">Please select</option>
                     <option value="regular">Regular</option>
                     <option value="emergency">Emergency</option>
@@ -146,10 +132,10 @@
             </div>
             <div class="form-group">
                 <label>Have Outstanding Debts</label>
-                <select>
+                <select name="have_outstanding_debts">
                     <option value="">Please select</option>
-                    <option value="yes">Yes</option>
-                    <option value="no">No</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
                 </select>
             </div>
             <div class="form-group">

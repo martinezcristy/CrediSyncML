@@ -424,3 +424,84 @@ hr {
     background-color: #ccc; /* Gray for cancel */
     color: black;
 }
+
+/* Evaluation Form styles */
+.evaluation-main-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* 2 columns: form on the left, results on the right */
+    gap: 30px;
+    padding: 20px;
+}
+
+.evaluation-main-content .evaluation-form {
+    padding: 20px;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* Two-column layout for form fields */
+    gap: 15px; /* Space between items */
+    background-color: #F9F1D8; /* Light yellow background for the form */
+    width: 300%; /* Use 100% of the parent container */
+    max-width: 1000px; /* Optional: set a maximum width */
+    margin: 0 auto; /* Center the form horizontally */
+}
+
+.evaluation-main-content .evaluation-results {
+    display: flex;
+    flex-direction: column; /* Stack results vertically */
+    gap: 20px; /* Space between prediction and credit score */
+    align-self: flex-start; /* Align results to the top of their grid area */
+    margin-left: 150px;
+}
+
+.evaluation-main-content .evaluation-results h2 {
+    border-bottom: 2px solid #000000; /* Adjust thickness and color as needed */
+    padding-bottom: 5px; /* Add some space between the text and the line */
+    margin-bottom: 10px; /* Space below the line */
+    text-align: center;
+}
+
+.evaluation-main-content .evaluation-results .prediction,
+.evaluation-main-content .evaluation-results .credit-score {
+    padding: 30px; /* Increase padding for a bigger box */
+    border-radius: 10px; /* Rounded corners */
+    background-color: #F9F1D8; /* Light yellow background for each box */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Shadow for depth */
+    min-width: 250px; /* Set a minimum width for the boxes */
+}
+
+.evaluation-main-content .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+}
+
+.evaluation-main-content .form-group label {
+    margin-bottom: 8px; /* Add space between the label and textbox */
+}
+
+.evaluation-main-content .evaluate-btn {
+    grid-column: span 2;
+}
+
+.evaluation-form select {
+    background-color: #F2E1B6; /* Background color of the dropdown textbox */
+    color: #333; /* Text color for the selected option */
+    border: 1px solid #ccc; /* Border color */
+    padding: 10px; /* Add padding for better spacing */
+    border-radius: 4px; /* Optional: Rounded corners */
+}
+
+.evaluation-form input {
+    background-color: #F2E1B6; /* Same background color as the dropdown textbox */
+    color: #333; /* Text color for the input */
+    padding: 10px; /* Padding for better spacing */
+    border: 1px solid #ccc; /* Border color */
+    border-radius: 4px; /* Optional: Rounded corners */
+}
+
+
+
+
+
+

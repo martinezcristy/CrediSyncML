@@ -12,13 +12,11 @@
         <div class="logo">
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="CrediSync Logo">
         </div>
-
         <div class="profile-section">
             <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
             <h2>Cebu People</h2>
             <p class="admin-role">Admin</p>
         </div>
-
         <nav class="menu">
             <ul>
                 <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
@@ -39,7 +37,7 @@
         <form class="evaluation-form" method="POST" action="/evaluate">
             <div class="form-group">
                 <label>Dependents</label>
-                <select name="dependents">
+                <select name="dependents" required>
                     <option value="">Please select</option>
                     <option value="false">No</option>
                     <option value="true">Yes</option>
@@ -47,7 +45,7 @@
             </div>
             <div class="form-group">
                 <label>Currently Employed</label>
-                <select name="currently_employed">
+                <select name="currently_employed" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -63,7 +61,7 @@
             </div>
             <div class="form-group">
                 <label>Employment Status</label>
-                <select name="employment_status">
+                <select name="employment_status" required>
                     <option value="">Please select</option>
                     <option value="regular">Regular</option>
                     <option value="contract">Contract</option>
@@ -75,7 +73,7 @@
             </div>
             <div class="form-group">
                 <label>Asset Owner</label>
-                <select name="asset_owner">
+                <select name="asset_owner" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -87,7 +85,7 @@
             </div>
             <div class="form-group">
                 <label>Have Co-Maker</label>
-                <select name="have_co_maker">
+                <select name="have_co_maker" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -95,7 +93,7 @@
             </div>
             <div class="form-group">
                 <label>Credit Card Owner</label>
-                <select name="credit_card_owner">
+                <select name="credit_card_owner" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -107,7 +105,7 @@
             </div>
             <div class="form-group">
                 <label>Repayment Schedule</label>
-                <select name="repayment_sched">
+                <select name="repayment_sched" required>
                     <option value="">Please select</option>
                     <option value="monthly">Monthly</option>
                     <option value="bi-weekly">Bi-Weekly</option>
@@ -115,7 +113,7 @@
             </div>
             <div class="form-group">
                 <label>Have Savings Account</label>
-                <select name="have_savings_account">
+                <select name="have_savings_account" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -123,16 +121,15 @@
             </div>
             <div class="form-group">
                 <label>Loan Purpose</label>
-                <select name="loan_purpose">
+                <select name="loan_purpose" required>
                     <option value="">Please select</option>
                     <option value="regular">Regular</option>
                     <option value="emergency">Emergency</option>
                 </select>
-
             </div>
             <div class="form-group">
                 <label>Have Outstanding Debts</label>
-                <select name="have_outstanding_debts">
+                <select name="have_outstanding_debts" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>
@@ -154,6 +151,9 @@
             </div>
         </div> 
     </div>
+
+    <!-- Toast Message -->
+    <div id="toast" class="toast" style="display: none;">Please fill out all required fields.</div>
 
     <script src="{{ url_for('static', filename='js/evaluation.js') }}"></script>
 </body>

@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
 #from flask_mysqldb import MySQL
-from flask_mysqldb import MySQL
 from models import Member
 
 # from flask_mail import Mail, Message

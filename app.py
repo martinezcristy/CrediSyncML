@@ -34,6 +34,9 @@ def dashboard():
 # Members route
 @app.route('/members', methods=['GET', 'POST'])
 def members():
+     # Save the member to the database
+    cur = mysql.connection.cursor()
+
     if request.method == 'POST':
         # Retrieve form data
         account_number = request.form['account-number']
@@ -42,41 +45,18 @@ def members():
         email = request.form['email-address']
         address = request.form['address']
         date_applied = request.form['date-applied']
-        
-        # Create a new member with type hints
-        # new_member = Member(
-        #     account_number=account_number, 
-        #     name=name, 
-        #     contact_number=contact_number, 
-        #     email=email, 
-        #     address=address, 
-        #     date_applied=date_applied
-        # )
 
-        # Save the member to the database
-        cur = mysql.connection.cursor()
+       
         cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied) VALUES (%s, %s, %s, %s, %s, %s)", (account_number, name, contact_number, email, address, date_applied))
         mysql.connection.commit()
-        cur.close()
-            # flash('Member added successfully!', 'success')  # Inform user of successful insertion
-        # except Exception as e:
-            # print(f"Error inserting member: {e}")  # Print the error to console for debugging
-            # flash('An error occurred while adding the member. Please try again.', 'error')  # Inform user of error
-            # return redirect(url_for('members'))  
 
-        # return redirect(url_for('members'))
-        return render_template('members.html')
-
-    # For GET request, retrieve members from the database
-    cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM members")
     members_data = cur.fetchall()
     cur.close()
 
-    # Convert fetched data to Member objects
-    members_list = [Member(**member) for member in members_data]  # Using dictionary unpacking
-
-    return render_template('members.html', members=members_list)
+    # return redirect(url_for('members'))
+    # return render_template('members.html')
+    return render_template('members.html', members=members_data)
 
 # Settings route
 @app.route('/settings', methods=['GET', 'POST'])

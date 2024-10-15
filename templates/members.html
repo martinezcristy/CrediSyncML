@@ -59,16 +59,20 @@
             <tbody method="GET">
                 {% for member in members %}
                 <tr>
-                    <td>{{ account_number }}</td>
-                    <td>{{ name }}</td>
-                    <td>{{ contact_number }}</td>
-                    <td>{{ email }}</td>
-                    <td>{{ address }}</td>
-                    <td>{{ date_applied }}</td>
+                    <td>{{ member.account_number }}</td>
+                    <td>{{ member.name }}</td>
+                    <td>{{ member.contact_number }}</td>
+                    <td>{{ member.email }}</td>
+                    <td>{{ member.address }}</td>
+                    <td>{{ member.date_applied }}</td>
                     <td class="actions">
                         <button class="approve">Approve</button>
                         <button class="decline" onclick="openDeclineModal(this)">Decline</button>
-                        <button class="evaluate">Evaluate</button>
+                        <!-- Evaluate Button -->
+                        <form action="{{ url_for('evaluation') }}" method="GET">
+                            <input type="hidden" name="member_id" value="{{ member['id'] }}">
+                            <button type="submit" class="evaluate">Evaluate</button>
+                        </form>
                     </td>
                 </tr>
                 {% endfor %}

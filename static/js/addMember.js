@@ -100,11 +100,7 @@ membersTableBody.addEventListener('click', function(e) {
             alert('Error: Recipient not provided.');
         }
 
-    } else if (e.target.classList.contains('decline')) {
-        alert('declined!');
-    } else if (e.target.classList.contains('evaluate')) {
-        window.location.href = '/evaluation';
-    }
+    } 
 });
 
 // Open the decline modal and store the row to be deleted

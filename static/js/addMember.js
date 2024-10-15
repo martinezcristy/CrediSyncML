@@ -47,12 +47,14 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
             <td>${document.getElementById("address").value}</td>
             <td>${document.getElementById("date-applied").value}</td>
             <td class="actions">
-                <button class="approve">Approve</button>
+                <button class="approve" data-email="${document.getElementById("email-address").value}">Approve</button>
                 <button class="decline" onclick="openDeclineModal(this)">Decline</button>
                 <button class="evaluate">Evaluate</button>
             </td>
         `;
-        membersTableBody.appendChild(newRow); 
+
+        //display the new row from sql (newRow holds the table row html/markup )
+        membersTableBody.appendChild(newRow);
         
         // Event listener for "Evaluate" button to redirect to evaluation page
         newRow.querySelector(".evaluate").addEventListener("click", function() {
@@ -63,7 +65,47 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
         modal.style.display = "none"; 
         document.getElementById("addMemberForm").reset(); 
     }
+    
 };
+
+//temporary logic: if coop clicks on approve button, send the email. (dialog to confirm approve is the best practice)
+membersTableBody.addEventListener('click', function(e) {
+    if (e.target.classList.contains('approve')) {
+        //const row = event.target.closest('tr'); 
+        //const email = row.children[2].textContent;
+        const email = e.target.getAttribute('data-email');
+
+        // Send notification email
+        if(email){
+            fetch('/send_approval_email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ recipient: email }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(`Approved! Email sent to: ${email}`);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error sending email:', error);
+                alert('Failed to send email.');
+            });
+        }else {
+            alert('Error: Recipient not provided.');
+        }
+
+    } else if (e.target.classList.contains('decline')) {
+        alert('declined!');
+    } else if (e.target.classList.contains('evaluate')) {
+        window.location.href = '/evaluation';
+    }
+});
 
 // Open the decline modal and store the row to be deleted
 function openDeclineModal(button) {

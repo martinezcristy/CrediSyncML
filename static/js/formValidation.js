@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const emailInput = document.getElementById('email');
     const form = document.getElementById('my-form');
 
-    accountNumberInput.addEventListener('')
+    // accountNumberInput.addEventListener('')
 
     contactNumberInput.addEventListener('input', function (e) {
         this.value = this.value.replace(/[^0-9]/g, '');

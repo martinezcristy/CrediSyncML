@@ -121,9 +121,13 @@
         </div>
     </div>
 
-    <!-- <script src="{{ url_for('static', filename='js/addMember.js') }}"></script> -->
+    <!-- e load ang js para approve button -->
+    <script src="{{ url_for('static', filename='js/addMember.js') }}"></script>
+
+    <!-- e load ang js para sa decline button -->
     <script src="{{ url_for('static', filename='js/declineMember.js') }}"></script>
     
+    <!-- script for add member modal diri -->
     <script>
         // Function to open the Add Member modal
         document.querySelector('.add-member-btn').onclick = function() {
@@ -143,5 +147,8 @@
             }
         };
     </script>
+
+
 </body>
+
 </html>

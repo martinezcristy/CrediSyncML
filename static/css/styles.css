@@ -375,7 +375,7 @@ hr {
 }
 /* Style for the form inputs */
 #addMemberForm input {
-    width: 95%;
+    width: 100%;
     padding: 8px;
     margin: 10px 0;
     box-sizing: border-box;

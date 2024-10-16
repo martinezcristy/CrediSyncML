@@ -138,7 +138,12 @@ def decline():
 # Approve route
 @app.route('/approveMember')
 def approve():
-    return 'test approve'  
+    return 'test approve'
+
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -538,5 +538,124 @@ hr {
     display: none; /* Hidden by default */
 }
 
+/* Cooperative profile */
+
+.coop-main-content {
+    flex-grow: 1;
+    padding: 40px;
+    background-color: rgb(255, 234, 189);
+}
+
+/* Form Container */
+form {
+    background-color: #f9f1d8; /* Light yellow background */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+
+}
+
+/* Form Group Styles */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555; /* Darker color for labels */
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #ff7a00; /* Highlight on focus */
+    outline: none; /* Remove default outline */
+}
+
+/* Form Row Style */
+.form-row {
+    display: flex;
+    justify-content: space-between; /* Space between inputs */
+    gap: 20px; /* Space between the two fields */
+    margin-bottom: 20px; /* Space below each row */
+}
+
+.form-row .form-group {
+    flex: 1; /* Allow the input fields to take equal space */
+}
+
+.form-row .form-group label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555; /* Darker color for labels */
+}
+
+.form-row .form-control {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+    margin-top: 10px;
+}
+
+.form-row .form-control:focus {
+    border-color: #ff7a00; /* Highlight on focus */
+    outline: none; /* Remove default outline */
+}
+
+
+/* Textarea Specific Style */
+textarea {
+    resize: vertical; /* Allow vertical resizing only */
+}
+
+/* Save Changes Button */
+.btn {
+    display: block; 
+    width: 100%;
+    background-color: #ff7a00;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #ff9a33;
+    transform: scale(1.05);
+}
+
+.btn:active {
+    background-color: #e66b00;
+    transform: scale(0.98);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .coop-main-content {
+        padding: 20px; /* Reduce padding on smaller screens */
+    }
+
+    .form-control {
+        padding: 10px; /* Adjust padding for smaller screens */
+    }
+
+    .btn {
+        padding: 10px; /* Adjust button padding for smaller screens */
+    }
+}
 
 

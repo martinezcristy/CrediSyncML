@@ -391,7 +391,7 @@ hr {
 /* Save Button */
 .save-btn {
     display: block; 
-    margin: 20px auto; 
+    margin: 10px auto; 
     background-color: #ff7a00;
     color: white;
     padding: 10px 20px;
@@ -400,11 +400,31 @@ hr {
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
+    width: 100%;
 }
 
 .save-btn:hover {
     background-color: #ff9a33;
 }
+
+.clear-btn {
+    display: block; 
+    margin: 10px auto; 
+    background-color: #ccc; /* Gray background for the clear button */
+    color: black; /* Black text color */
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%;
+}
+
+.clear-btn:hover {
+    background-color: #aaa; /* Darker gray on hover */
+}
+
 
 .button-container {
     display: flex;

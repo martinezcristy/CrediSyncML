@@ -128,6 +128,14 @@ function confirmApprove() {
         .then(data => {
             if (data.message) {
                 alert(`Approved! Email sent to: ${currentApproveEmail}`);
+                const rows = membersTableBody.querySelectorAll("tr");
+                rows.forEach(row => {
+                    const approveButton = row.querySelector('.approve[data-email="' + currentApproveEmail + '"]');
+                    if (approveButton) {
+                        approveButton.textContent = "Approved"; // Change button text
+                        approveButton.disabled = true; // Disable the button
+                    }
+                });
             } else {
                 alert('Error: ' + data.error);
             }

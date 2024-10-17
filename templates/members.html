@@ -123,6 +123,19 @@
         </div>
     </div>
 
+    <!-- Approve Member Modal -->
+    <div id="approveMemberModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeApproveModal()">&times;</span>
+            <h2>Are you sure you want to approve this member?</h2>
+            <div class="button-container">
+                <button class="confirm-btn" onclick="confirmApprove()">Yes</button>
+                <button class="cancel-btn" onclick="closeApproveModal()">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+
     <!-- e load ang js para approve button -->
     <script src="{{ url_for('static', filename='js/addMember.js') }}"></script>
 

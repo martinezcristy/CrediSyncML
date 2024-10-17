@@ -68,40 +68,85 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
     
 };
 
-//temporary logic: if coop clicks on approve button, send the email. (dialog to confirm approve is the best practice)
+// //temporary logic: if coop clicks on approve button, send the email. (dialog to confirm approve is the best practice)
+// membersTableBody.addEventListener('click', function(e) {
+//     if (e.target.classList.contains('approve')) {
+//         //const row = event.target.closest('tr'); 
+//         //const email = row.children[2].textContent;
+//         const email = e.target.getAttribute('data-email');
+
+//         // Send notification email
+//         if(email){
+//             fetch('/send_approval_email', {
+//                 method: 'POST',
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                 body: JSON.stringify({ recipient: email }),
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.message) {
+//                     alert(`Approved! Email sent to: ${email}`);
+//                 } else {
+//                     alert('Error: ' + data.error);
+//                 }
+//             })
+//             .catch(error => {
+//                 console.error('Error sending email:', error);
+//                 alert('Failed to send email.');
+//             });
+//         }else {
+//             alert('Error: Recipient not provided.');
+//         }
+
+//     } 
+// });
+
+// Open the approval modal
+function openApproveModal(button) {
+    currentApproveEmail = button.getAttribute("data-email"); // Get the email from the clicked approve button
+    document.getElementById("approveMemberModal").style.display = "block";
+}
+
+// Close the approval modal
+function closeApproveModal() {
+    document.getElementById("approveMemberModal").style.display = "none";
+}
+
+// Confirm the approval and send the email
+function confirmApprove() {
+    if (currentApproveEmail) {
+        fetch('/send_approval_email', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ recipient: currentApproveEmail }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(`Approved! Email sent to: ${currentApproveEmail}`);
+            } else {
+                alert('Error: ' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error sending email:', error);
+            alert('Failed to send email.');
+        });
+    }
+    closeApproveModal();
+}
+
+// Attach event listener to the members table body
 membersTableBody.addEventListener('click', function(e) {
     if (e.target.classList.contains('approve')) {
-        //const row = event.target.closest('tr'); 
-        //const email = row.children[2].textContent;
-        const email = e.target.getAttribute('data-email');
-
-        // Send notification email
-        if(email){
-            fetch('/send_approval_email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ recipient: email }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.message) {
-                    alert(`Approved! Email sent to: ${email}`);
-                } else {
-                    alert('Error: ' + data.error);
-                }
-            })
-            .catch(error => {
-                console.error('Error sending email:', error);
-                alert('Failed to send email.');
-            });
-        }else {
-            alert('Error: Recipient not provided.');
-        }
-
+        openApproveModal(e.target); // Open the approval modal
     } 
 });
+
 
 // Open the decline modal and store the row to be deleted
 function openDeclineModal(button) {

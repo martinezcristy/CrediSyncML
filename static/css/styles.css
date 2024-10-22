@@ -2,22 +2,29 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
 /* General Reset */
+:root {
+    --primary-color: #FFFFFF; /* sidebar, cards, form components */
+    --primary-color-2: #F2F3F7; /* body background */
+    --secondary-color: #FBD504; /* buttons */
+    --accent-color: #ff7a00; /* hovers */
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Montserrat', sans-serif;
 }
 
 body {
     display: flex;
     height: 100vh;
-    background-color: rgb(251, 224, 158);
+    background-color: var(--primary-color-2);
 }
 
 .sidebar {
     width: 250px;
-    background-color: #F9F1D8;
+    background-color: var(--primary-color);
     padding: 18px;
 }
 
@@ -54,10 +61,6 @@ body {
     height: 20px; 
 }
 
-.sidebar .menu ul li a span {
-    vertical-align: middle; 
-}
-
 .profile-section {
     text-align: center;
     margin-bottom: 50px;
@@ -73,7 +76,7 @@ body {
 }
 
 .admin-role {
-    color: #ff7a00;
+    color: var(--accent-color);
     font-weight: bold;
 }
 
@@ -87,14 +90,15 @@ body {
 }
 
 .menu-item.active, .menu-item:hover {
-    background-color: #ff7a00;
+    background-color: var(--secondary-color);
     color: white;
 }
 
+/* dashboard main content */
 .main-content {
     flex-grow: 1;
     padding: 40px;
-    background-color: rgb(255, 234, 189);
+    background-color: var(--primary-color-2);
 }
 
 .header {
@@ -130,15 +134,21 @@ body {
 
 .add-member-btn {
     padding: 10px 20px;
-    background-color: #ff7a00;
+    background-color: var(--secondary-color);
     color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
 
+/* hover state color */
 .add-member-btn:hover {
-    background-color: #ff9a33;
+    background-color: var(--accent-color); /* Darker gray on hover */
+    transform: scale(1.05);
+}
+.add-member-btn:active {
+    background-color: var(--accent-color);
+    transform: scale(0.98);
 }
 
 .members-table {
@@ -153,7 +163,7 @@ body {
 }
 
 .members-table th {
-    background-color: #f5d96b;
+    background-color: var(--primary-color);
 }
 
 .actions {
@@ -183,48 +193,19 @@ body {
 
 /* Dashboard Styles */
 .dashboard-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-    margin-top: 20px;
-    justify-content: center; 
-}
-
-.card {
-    background-color: #ffeb9a;
-    width: 500px; 
-    height: 290px; 
-    padding: 20px;
-    border-radius: 8px;
+    /* flex-wrap: wrap; */
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
-
-.card h2 {
-    margin: 0;
-    font-size: 18px;
-}
-
-.card .value {
-    font-size: 28px;
-    font-weight: bold;
-}
-
-/* Dashboard Styles */
-.dashboard-cards {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    overflow-x: auto;
+    gap: 40px;
+    margin-left:40px;
     margin-top: 20px;
-    justify-content: center; 
+    justify-content: flex-start; 
 }
 
 .card {
-    background-color: #ffeb9a;
-    width: 490px; 
-    height: 280px; 
+    background-color: var(--primary-color) !important;
+    width: 300px; 
+    height: 190px; 
     padding: 20px;
     border-radius: 8px;
     display: flex;
@@ -254,16 +235,16 @@ body {
 }
 
 .subscription-cards {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(3, 1fr); 
-    gap: 10px;
+    gap: 30px;
     justify-content: center; 
 }
 
 /* Specific styles for Subscription Plan cards */
 .subscription-cards .card {
-    width: 350px; 
-    height: 250px; 
+    width: 300px; 
+    height: 200px; 
     padding: 10px;
     display: flex;
     flex-direction: column; 
@@ -312,15 +293,22 @@ hr {
     font-size: 16px;
     font-weight: bold;
     color: rgb(6, 5, 5);
-    background-color: #fdc38c; 
+    background-color: var(--secondary-color); 
     border: none;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
+/* hover state color */
 .subscribe-btn:hover {
-    background-color: #cab8a6; 
+    background-color: var(--accent-color); /* Darker gray on hover */
+    transform: scale(1.05);
+}
+
+.subscribe-btn:active {
+    background-color: var(--accent-color);
+    transform: scale(0.98);
 }
 
 /* Styles for Add New Member Modal */
@@ -341,7 +329,7 @@ hr {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%); /* Center the modal */
-    background-color: #ecd98cf1;
+    background-color: var(--primary-color);
     padding: 20px;
     border: 1px solid #888;
     width: 90%; /* Adjust width */
@@ -372,15 +360,19 @@ hr {
 }
 
 #addMemberForm {
+    background-color: var(--primary-color-2);
     margin-top: 20px;
+    height: 520px; /* height sa form sulod sa modal */
 }
+
 /* Style for the form inputs */
 #addMemberForm input {
-    width: 100%;
+    width: 100%; /* width sa text field */
+    height: 6%; /* height sa text field */
     padding: 8px;
     margin: 10px 0;
     box-sizing: border-box;
-    border: 2px solid #ccc;
+    border: 1px solid #ccc;
     border-radius: 4px;
 }
 
@@ -389,23 +381,37 @@ hr {
     font-weight: bold;
 }
 
+/* Focus effect */
+#addMemberForm input:focus {
+    border-color: var(--secondary-color); /* Change border color on focus */
+    outline: none; /* Remove default outline */
+}
+
 /* Save Button */
 .save-btn {
     display: block; 
     margin: 10px auto; 
-    background-color: #ff7a00;
+    background-color: var(--secondary-color);
     color: white;
-    padding: 10px 20px;
+    padding: 5px 15px;  /* from 10px 20px to 5 and 15 para ma tupong ang text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    width: 100%;
+    width: 100%; 
+    height: 6%;
 }
 
+/* hover state color */
 .save-btn:hover {
-    background-color: #ff9a33;
+    background-color: var(--accent-color);
+    transform: scale(1.05);
+}
+
+.save-btn:active {
+    background-color: var(--accent-color);
+    transform: scale(0.98);
 }
 
 .clear-btn {
@@ -413,42 +419,25 @@ hr {
     margin: 10px auto; 
     background-color: #ccc; /* Gray background for the clear button */
     color: black; /* Black text color */
-    padding: 10px 20px;
+    padding: 5px 15px;  /* from 10px 20px to 5 and 15 para ma tupong ang text */
     border: none;
     border-radius: 5px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
     width: 100%;
+    height: 6%;
 }
 
+/* hover state color */
 .clear-btn:hover {
-    background-color: #aaa; /* Darker gray on hover */
+    background-color: var(--accent-color); /* Darker gray on hover */
+    transform: scale(1.05);
 }
 
-
-.button-container {
-    display: flex;
-    justify-content: center; /* Center buttons */
-    margin-top: 20px; /* Space above buttons */
-}
-
-.confirm-btn, .cancel-btn {
-    margin: 0 10px; /* Space between buttons */
-    padding: 10px 20px; /* Button padding */
-    border: none; 
-    border-radius: 5px; /* Rounded corners */
-    cursor: pointer; 
-}
-
-.confirm-btn {
-    background-color: #ff4c4c; 
-    color: white;
-}
-
-.cancel-btn {
-    background-color: #ccc; 
-    color: black;
+.clear-btn:active {
+    background-color: var(--accent-color);
+    transform: scale(0.98);
 }
 
 /* Evaluation Form styles */
@@ -569,14 +558,15 @@ hr {
 .coop-main-content {
     flex-grow: 1;
     padding: 40px;
-    background-color: rgb(255, 234, 189);
+    background-color: var(--primary-color-2);
 }
 
 /* Form Container */
 form {
-    background-color: #f9f1d8; /* Light yellow background */
+    background-color: var(--primary-color); /* Light yellow background */
     padding: 30px;
     border-radius: 10px;
+    border: 1px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
     margin-top: 50px;
 
@@ -602,7 +592,7 @@ form {
 }
 
 .form-control:focus {
-    border-color: #ff7a00; /* Highlight on focus */
+    border-color: var(--secondary-color); /* Highlight on focus */
     outline: none; /* Remove default outline */
 }
 
@@ -634,21 +624,15 @@ form {
 }
 
 .form-row .form-control:focus {
-    border-color: #ff7a00; /* Highlight on focus */
+    border-color: var(--secondary-color); /* Highlight on focus */
     outline: none; /* Remove default outline */
-}
-
-
-/* Textarea Specific Style */
-textarea {
-    resize: vertical; /* Allow vertical resizing only */
 }
 
 /* Save Changes Button */
 .btn {
     display: block; 
     width: 100%;
-    background-color: #ff7a00;
+    background-color: var(--secondary-color);
     color: white;
     padding: 12px;
     border: none;
@@ -669,19 +653,103 @@ textarea {
     transform: scale(0.98);
 }
 
+
+/* Textarea Specific Style */
+textarea {
+    resize: vertical; /* Allow vertical resizing only */
+}
+
 /* Responsive Adjustments */
-@media (max-width: 768px) {
-    .coop-main-content {
-        padding: 20px; /* Reduce padding on smaller screens */
-    }
-
-    .form-control {
-        padding: 10px; /* Adjust padding for smaller screens */
-    }
-
-    .btn {
-        padding: 10px; /* Adjust button padding for smaller screens */
+@media (max-width: 1200px) {
+    /* Styles for large tablets / small desktops */
+    .dashboard-cards {
+        gap: 30px; /* Adjust gap */
+        margin-left: 0; /* Remove left margin */
+        justify-content: center; /* Center cards */
     }
 }
 
+@media (max-width: 992px) {
+    /* Styles for tablets */
+    body {
+        flex-direction: column; /* Stack sidebar and main content vertically */
+        height: auto; /* Allow body to expand with content */
+    }
 
+    .sidebar {
+        width: 100%; /* Full width on small screens */
+        padding: 10px; /* Adjust padding */
+    }
+
+    .main-content {
+        padding: 20px; /* Reduce padding */
+    }
+
+    .card {
+        width: 100%; /* Full width for cards */
+        max-width: 300px; /* Optional: Max width for cards */
+        height: auto; /* Let height adjust based on content */
+    }
+
+    .header {
+        flex-direction: column; /* Stack header items vertically */
+        align-items: flex-start; /* Align items to start */
+    }
+
+    .header-right {
+        margin-top: 10px; /* Space between header sections */
+    }
+}
+
+@media (max-width: 768px) {
+    /* Styles for small tablets and large smartphones */
+    .sidebar {
+        padding: 5px; /* Further reduce padding */
+    }
+
+    .sidebar .logo img {
+        width: 80px; /* Adjust logo size */
+    }
+
+    .profile-pic {
+        width: 60px; /* Adjust profile picture size */
+        height: 60px; 
+    }
+
+    .dashboard-cards {
+        gap: 20px; /* Adjust gap for smaller screens */
+        justify-content: center; /* Center cards */
+    }
+
+    .evaluation-main-content {
+        grid-template-columns: 1fr; /* Stack columns */
+    }
+
+    .form-row {
+        flex-direction: column; /* Stack form fields vertically */
+    }
+
+    .form-row .form-group {
+        margin-bottom: 15px; /* Space between stacked fields */
+    }
+
+    .subscription-cards {
+        flex-direction: column; /* Stack subscription cards vertically */
+        align-items: center; /* Center items */
+    }
+}
+
+@media (max-width: 576px) {
+    /* Styles for extra small devices (phones) */
+    .sidebar {
+        padding: 5px; /* Further reduce padding */
+    }
+
+    .dashboard-cards {
+        gap: 10px; /* Smaller gap */
+    }
+
+    .card {
+        padding: 15px; /* Reduce padding */
+    }
+}

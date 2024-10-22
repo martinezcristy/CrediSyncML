@@ -28,12 +28,9 @@
         </nav>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
         <h1>Dashboard</h1>
-
         <div class="dashboard-cards">
-            <!-- Existing Cards -->
             <div class="card">
                 <div>
                     <h2>ALL MEMBERS</h2>
@@ -47,13 +44,24 @@
                     <div class="value">20</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
+
             </div>
+            <div class="card">
+                <div>
+                    <h2>EVALUATED MEMBERS</h2>
+                    <div class="value">20</div>
+                </div>
+                <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
+
+            </div>
+
         </div>
 
-        <!-- Subscription Plan Section -->
+        
         <div class="subscription-plan">
             <h2>Subscription Plan</h2>
             <div class="subscription-cards">
+
                 <div class="card">
                     <div class="card-content">
                         <div class="price">₱799</div>
@@ -66,32 +74,38 @@
                         <button class="subscribe-btn">Subscribe</button>
                     </div>
                 </div>
+
                 <div class="card">
                     <div class="card-content">
-                        <div class="price">₱999</div>
+                        <div class="price">₱799</div>
                         <div class="duration">per month</div>
                         <hr>
                         <ul class="features">
-                            <li>✓ 150 Borrower Evaluation</li>
-                            <li>✓ 200 Add-on Members</li>
+                            <li>✓ 30 Borrower Evaluation</li>
+                            <li>✓ 50 Add-on Members</li>
                         </ul>
                         <button class="subscribe-btn">Subscribe</button>
                     </div>
                 </div>
+
                 <div class="card">
                     <div class="card-content">
-                        <div class="price">₱1299</div>
+                        <div class="price">₱799</div>
                         <div class="duration">per month</div>
                         <hr>
                         <ul class="features">
-                            <li>✓ UNLI Borrower Evaluation</li>
-                            <li>✓ UNLI Add-on Members</li>
+                            <li>✓ 30 Borrower Evaluation</li>
+                            <li>✓ 50 Add-on Members</li>
                         </ul>
                         <button class="subscribe-btn">Subscribe</button>
                     </div>
                 </div>
             </div>
+
         </div>
+
     </div>
+
+   
 </body>
 </html>

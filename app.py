@@ -8,6 +8,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import json
 
 load_dotenv()
 
@@ -52,10 +53,16 @@ mail = Mail(app)
 # Initialize MySQL
 mysql = MySQL(app)
 
+# Load subscription plans from JSON file
+def load_subscriptions():
+    with open('subscriptions.json') as f:
+        return json.load(f)
+
 # Dashboard route
 @app.route('/', methods=['GET'])
 def dashboard():
-    return render_template('dashboard.html')
+    subscriptions = load_subscriptions()
+    return render_template('dashboard.html', subscriptions=subscriptions)
 
 # Members route
 @app.route('/members', methods=['GET', 'POST'])

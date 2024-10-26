@@ -214,13 +214,13 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.card h2 {
+/* .card h2 {
     margin: 0;
     font-size: 18px;
-}
+} */
 
 .card .value {
-    font-size: 28px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -237,19 +237,20 @@ body {
 .subscription-cards {
     display: flex;
     grid-template-columns: repeat(3, 1fr); 
-    gap: 30px;
+    gap: 40px;
     justify-content: center; 
 }
 
 /* Specific styles for Subscription Plan cards */
 .subscription-cards .card {
     width: 300px; 
-    height: 200px; 
+    height: 300px; 
     padding: 10px;
     display: flex;
     flex-direction: column; 
     align-items: center; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    margin-bottom: 20px;
 }
 
 .card-content {
@@ -257,9 +258,14 @@ body {
     margin-top: 15px; 
 }
 
-.price {
+.name {
     font-size: 32px;
     font-weight: bold;
+    color: #333;
+}
+
+.price {
+    font-size: 22px;
     color: #333;
 }
 

@@ -1,0 +1,17 @@
+[
+    {
+        "title": "ALL MEMBERS",
+        "value": 4,
+        "icon": "cooperative-icon.png"
+    },
+    {
+        "title": "EVALUATED MEMBERS",
+        "value": 20,
+        "icon": "applicants-icon.png"
+    },
+    {
+        "title": "APPROVED MEMBERS",
+        "value": 15,
+        "icon": "approved-icon.png"
+    }
+]

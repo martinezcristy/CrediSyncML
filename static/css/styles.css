@@ -446,6 +446,34 @@ hr {
     transform: scale(0.98);
 }
 
+/* yes and cancel button in same line */
+.button-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 20px; 
+}
+
+.confirm-btn, .cancel-btn {
+    margin: 0 10px;
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+
+.confirm-btn {
+    background-color: var(--secondary-color) !important; 
+    color: white;
+    background-color: var(--accent-color); 
+    transform: scale(1.05);
+}
+
+.cancel-btn {
+    background-color: #ccc; 
+    color: black;
+}
+
+
 /* Evaluation Form styles */
 .evaluation-main-content {
     display: grid;

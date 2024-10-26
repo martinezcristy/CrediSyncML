@@ -37,23 +37,26 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
         }
     });
 
+    //<td>${document.getElementById("name").value}</td>
     if (allValid) {
         let newRow = document.createElement("tr");
+        let applicantName = document.getElementById("name").value;
         newRow.innerHTML = `
             <td>${document.getElementById("account-number").value}</td>
-            <td>${document.getElementById("name").value}</td>
+            <td>${applicantName}</td>
             <td>${document.getElementById("contact-number").value}</td>
             <td>${document.getElementById("email-address").value}</td>
             <td>${document.getElementById("address").value}</td>
             <td>${document.getElementById("date-applied").value}</td>
             <td class="actions">
-                <button class="approve" data-email="${document.getElementById("email-address").value}">Approve</button>
+                <button class="approve" 
+                    data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
                 <button class="decline" onclick="openDeclineModal(this)">Decline</button>
                 <button class="evaluate">Evaluate</button>
             </td>
         `;
 
-        //display the new row from sql (newRow holds the table row html/markup )
+        //display the new row from sql (newRow holds the table row html/markup ) 
         membersTableBody.appendChild(newRow);
         
         // Event listener for "Evaluate" button to redirect to evaluation page
@@ -116,13 +119,18 @@ function closeApproveModal() {
 
 // Confirm the approval and send the email
 function confirmApprove() {
+    const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
+    const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
     if (currentApproveEmail) {
         fetch('/send_approval_email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ recipient: currentApproveEmail }),
+            body: JSON.stringify({ 
+                recipient: currentApproveEmail,
+                applicantName: applicantName // Send the applicant's name
+             }),
         })
         .then(response => response.json())
         .then(data => {

@@ -92,6 +92,7 @@ def members():
 @app.route('/send_approval_email', methods=['POST'])
 def send_approval_email_route():
     recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
+    applicant_name = request.json.get('applicantName')  # Get the applicant's name
     if recipient:
         subject = "Credisync - Loan Application Approved"
         # message = "Your request has been approved!"
@@ -103,6 +104,10 @@ def send_approval_email_route():
         try:
             with open(html_file_path, 'r') as file:
                 html_content = file.read()
+                # Replace placeholders with actual values
+                html_content = html_content.replace("[SUBJECT HERE]", subject)
+                html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are pleased to inform you that your credisync loan application has been approved.")
+                html_content = html_content.replace("[APPNAME HERE]", "CREDISYNC")
         except Exception as e:
             return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
 

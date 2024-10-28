@@ -203,6 +203,7 @@ body {
 }
 
 .card {
+    flex-grow: 1;
     background-color: var(--primary-color) !important;
     width: 300px; 
     height: 190px; 
@@ -235,6 +236,7 @@ body {
 }
 
 .subscription-cards {
+    flex-grow: 1;
     display: flex;
     grid-template-columns: repeat(3, 1fr); 
     gap: 40px;

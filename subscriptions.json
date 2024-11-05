@@ -1,0 +1,32 @@
+[
+    {
+        "name": "Basic Plan",
+        "price": 799,
+        "duration": "per month",
+        "features": [
+            "30 Borrower Evaluation",
+            "50 Add-on Members",
+            "data"
+        ]
+    },
+    {
+        "name": "Standard Plan",
+        "price": 1499,
+        "duration": "per month",
+        "features": [
+            "50 Borrower Evaluation",
+            "100 Add-on Members",
+            "Priority Support"
+        ]
+    },
+    {
+        "name": "Premium Plan",
+        "price": 2499,
+        "duration": "per month",
+        "features": [
+            "Unlimited Borrower Evaluation",
+            "Unlimited Add-on Members",
+            "Dedicated Account Manager"
+        ]
+    }
+]

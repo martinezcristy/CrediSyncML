@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify
 #redirect, url_for, flash
-# from flask_mail import Mail
+from flask_mail import Mail
 from flask_mysqldb import MySQL
 # from models import Member
 from dotenv import load_dotenv
@@ -48,7 +48,7 @@ app.config.update(
     MAIL_DEFAULT_SENDER=EMAIL_DEFAULT_SENDER,
 )
 
-# mail = Mail(app)
+mail = Mail(app)
 
 # Initialize MySQL
 mysql = MySQL(app)
@@ -145,34 +145,7 @@ def evaluation():
 # Decline route
 @app.route('/declineMember', methods=['POST'])
 def decline():
-    data = request.get_json()
-    member_id = data.get('member_id')  # Extract member_id from JSON request
-
-    if not member_id:
-        return jsonify({"error": "Member ID not provided"}), 400
-
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT account_number, name, contact_number, email, address, date_applied FROM members WHERE id = %s", (member_id,))
-    member = cur.fetchone()
-
-    if not member:
-        cur.close()
-        return jsonify({"error": "Member not found."}), 404
-
-    # Insert data into declined_members
-    cur.execute("""
-        INSERT INTO declined_members (account_number, name, contact_number, email, address, date_applied)
-        VALUES (%s, %s, %s, %s, %s, %s)
-    """, (member['account_number'], member['name'], member['contact_number'], member['email'], member['address'], member['date_applied']))
-
-    # Delete from members
-    cur.execute("DELETE FROM members WHERE id = %s", (member_id,))
-
-    # Commit transaction and close cursor
-    mysql.connection.commit()
-    cur.close()
-
-    return jsonify({"message": "Member declined successfully."}), 200
+    return 'test decline'  
 
 # Approve route
 @app.route('/approveMember')

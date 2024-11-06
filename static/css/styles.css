@@ -203,6 +203,7 @@ body {
 }
 
 .card {
+    flex-grow: 1;
     background-color: var(--primary-color) !important;
     width: 300px; 
     height: 190px; 
@@ -214,13 +215,13 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.card h2 {
+/* .card h2 {
     margin: 0;
     font-size: 18px;
-}
+} */
 
 .card .value {
-    font-size: 28px;
+    font-size: 18px;
     font-weight: bold;
 }
 
@@ -235,21 +236,23 @@ body {
 }
 
 .subscription-cards {
+    flex-grow: 1;
     display: flex;
     grid-template-columns: repeat(3, 1fr); 
-    gap: 30px;
+    gap: 40px;
     justify-content: center; 
 }
 
 /* Specific styles for Subscription Plan cards */
 .subscription-cards .card {
     width: 300px; 
-    height: 200px; 
+    height: 300px; 
     padding: 10px;
     display: flex;
     flex-direction: column; 
     align-items: center; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    margin-bottom: 20px;
 }
 
 .card-content {
@@ -257,9 +260,14 @@ body {
     margin-top: 15px; 
 }
 
-.price {
+.name {
     font-size: 32px;
     font-weight: bold;
+    color: #333;
+}
+
+.price {
+    font-size: 22px;
     color: #333;
 }
 
@@ -439,6 +447,34 @@ hr {
     background-color: var(--accent-color);
     transform: scale(0.98);
 }
+
+/* yes and cancel button in same line */
+.button-container {
+    display: flex;
+    justify-content: center; 
+    margin-top: 20px; 
+}
+
+.confirm-btn, .cancel-btn {
+    margin: 0 10px;
+    padding: 10px 20px; 
+    border: none; 
+    border-radius: 5px; 
+    cursor: pointer; 
+}
+
+.confirm-btn {
+    background-color: var(--secondary-color) !important; 
+    color: white;
+    background-color: var(--accent-color); 
+    transform: scale(1.05);
+}
+
+.cancel-btn {
+    background-color: #ccc; 
+    color: black;
+}
+
 
 /* Evaluation Form styles */
 .evaluation-main-content {
@@ -657,99 +693,4 @@ form {
 /* Textarea Specific Style */
 textarea {
     resize: vertical; /* Allow vertical resizing only */
-}
-
-/* Responsive Adjustments */
-@media (max-width: 1200px) {
-    /* Styles for large tablets / small desktops */
-    .dashboard-cards {
-        gap: 30px; /* Adjust gap */
-        margin-left: 0; /* Remove left margin */
-        justify-content: center; /* Center cards */
-    }
-}
-
-@media (max-width: 992px) {
-    /* Styles for tablets */
-    body {
-        flex-direction: column; /* Stack sidebar and main content vertically */
-        height: auto; /* Allow body to expand with content */
-    }
-
-    .sidebar {
-        width: 100%; /* Full width on small screens */
-        padding: 10px; /* Adjust padding */
-    }
-
-    .main-content {
-        padding: 20px; /* Reduce padding */
-    }
-
-    .card {
-        width: 100%; /* Full width for cards */
-        max-width: 300px; /* Optional: Max width for cards */
-        height: auto; /* Let height adjust based on content */
-    }
-
-    .header {
-        flex-direction: column; /* Stack header items vertically */
-        align-items: flex-start; /* Align items to start */
-    }
-
-    .header-right {
-        margin-top: 10px; /* Space between header sections */
-    }
-}
-
-@media (max-width: 768px) {
-    /* Styles for small tablets and large smartphones */
-    .sidebar {
-        padding: 5px; /* Further reduce padding */
-    }
-
-    .sidebar .logo img {
-        width: 80px; /* Adjust logo size */
-    }
-
-    .profile-pic {
-        width: 60px; /* Adjust profile picture size */
-        height: 60px; 
-    }
-
-    .dashboard-cards {
-        gap: 20px; /* Adjust gap for smaller screens */
-        justify-content: center; /* Center cards */
-    }
-
-    .evaluation-main-content {
-        grid-template-columns: 1fr; /* Stack columns */
-    }
-
-    .form-row {
-        flex-direction: column; /* Stack form fields vertically */
-    }
-
-    .form-row .form-group {
-        margin-bottom: 15px; /* Space between stacked fields */
-    }
-
-    .subscription-cards {
-        flex-direction: column; /* Stack subscription cards vertically */
-        align-items: center; /* Center items */
-    }
-}
-
-@media (max-width: 576px) {
-    /* Styles for extra small devices (phones) */
-    .sidebar {
-        padding: 5px; /* Further reduce padding */
-    }
-
-    .dashboard-cards {
-        gap: 10px; /* Smaller gap */
-    }
-
-    .card {
-        padding: 15px; /* Reduce padding */
-    }
 }

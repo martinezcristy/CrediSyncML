@@ -1,14 +1,18 @@
 from flask import Flask, render_template, request, jsonify
 #redirect, url_for, flash
+<<<<<<< HEAD
 # from flask_mail import Mail
 from flask_mysqldb import MySQL 
+=======
+from flask_mail import Mail
+from flask_mysqldb import MySQL
+>>>>>>> 8b48406659f377a0efa068014a0466734498b072
 # from models import Member
 from dotenv import load_dotenv
 import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import json
 
 load_dotenv()
 
@@ -48,21 +52,15 @@ app.config.update(
     MAIL_DEFAULT_SENDER=EMAIL_DEFAULT_SENDER,
 )
 
-# mail = Mail(app)
+mail = Mail(app)
 
 # Initialize MySQL
 mysql = MySQL(app)
 
-# Load subscription plans from JSON file
-def load_subscriptions():
-    with open('subscriptions.json') as f:
-        return json.load(f)
-
 # Dashboard route
 @app.route('/', methods=['GET'])
 def dashboard():
-    subscriptions = load_subscriptions()
-    return render_template('dashboard.html', subscriptions=subscriptions)
+    return render_template('dashboard.html')
 
 # Members route
 @app.route('/members', methods=['GET', 'POST'])
@@ -92,7 +90,6 @@ def members():
 @app.route('/send_approval_email', methods=['POST'])
 def send_approval_email_route():
     recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
-    applicant_name = request.json.get('applicantName')  # Get the applicant's name
     if recipient:
         subject = "Credisync - Loan Application Approved"
         # message = "Your request has been approved!"
@@ -104,10 +101,6 @@ def send_approval_email_route():
         try:
             with open(html_file_path, 'r') as file:
                 html_content = file.read()
-                # Replace placeholders with actual values
-                html_content = html_content.replace("[SUBJECT HERE]", subject)
-                html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are pleased to inform you that your credisync loan application has been approved.")
-                html_content = html_content.replace("[APPNAME HERE]", "CREDISYNC")
         except Exception as e:
             return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
 
@@ -143,6 +136,7 @@ def evaluation():
     return render_template('evaluation.html')
 
 # Decline route
+<<<<<<< HEAD
 # @app.route('/declineMember', methods=['POST'])
 # def decline():
 #     data = request.get_json()
@@ -173,6 +167,11 @@ def evaluation():
 #     cur.close()
 
 #     return jsonify({"message": "Member declined successfully."}), 200
+=======
+@app.route('/declineMember', methods=['POST'])
+def decline():
+    return 'test decline'  
+>>>>>>> 8b48406659f377a0efa068014a0466734498b072
 
 # Approve route
 @app.route('/approveMember')

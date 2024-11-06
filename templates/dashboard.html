@@ -30,10 +30,7 @@
 
     <div class="main-content">
         <h1>Dashboard</h1>
-
-        <!-- analytics boxes -->
         <div class="dashboard-cards">
-
             <div class="card">
                 <div>
                     <h2>ALL MEMBERS</h2>
@@ -41,53 +38,72 @@
                 </div>
                 <img src="{{ url_for('static', filename='icons/cooperative-icon.png') }}">
             </div>
-
             <div class="card">
                 <div>
                     <h2>EVALUATED MEMBERS</h2>
                     <div class="value">20</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
-    
-            </div>
 
+            </div>
             <div class="card">
                 <div>
                     <h2>EVALUATED MEMBERS</h2>
                     <div class="value">20</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
-    
+
             </div>
-        
+
         </div>
 
-
-        <!-- subscription boxes -->
-        <div class="dashboard-cards">
-            
+        
+        <div class="subscription-plan">
+            <h2>Subscription Plan</h2>
             <div class="subscription-cards">
-                {% for plan in subscriptions %}
-                    <div class="card">
-                        <div class="card-content">
-                            <div class="name">{{ plan.name }}</div>
-                            <div class="price">₱{{ plan.price }}</div>
-                            <div class="duration">{{ plan.duration }}</div>
-                            <hr>
-                            <ul class="features">
-                                {% for feature in plan.features %}
-                                <li>✓ {{ feature }}</li>
-                                {% endfor %}
-                            </ul>
-                            <button class="subscribe-btn">Subscribe</button>
-                        </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="price">₱799</div>
+                        <div class="duration">per month</div>
+                        <hr>
+                        <ul class="features">
+                            <li>✓ 30 Borrower Evaluation</li>
+                            <li>✓ 50 Add-on Members</li>
+                        </ul>
+                        <button class="subscribe-btn">Subscribe</button>
                     </div>
-                   
-                {% endfor %}
-                
+                </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="price">₱799</div>
+                        <div class="duration">per month</div>
+                        <hr>
+                        <ul class="features">
+                            <li>✓ 30 Borrower Evaluation</li>
+                            <li>✓ 50 Add-on Members</li>
+                        </ul>
+                        <button class="subscribe-btn">Subscribe</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-content">
+                        <div class="price">₱799</div>
+                        <div class="duration">per month</div>
+                        <hr>
+                        <ul class="features">
+                            <li>✓ 30 Borrower Evaluation</li>
+                            <li>✓ 50 Add-on Members</li>
+                        </ul>
+                        <button class="subscribe-btn">Subscribe</button>
+                    </div>
+                </div>
             </div>
-        
+
         </div>
+
     </div>
 
    

@@ -6,7 +6,7 @@ from flask_mysqldb import MySQL
 =======
 from flask_mail import Mail
 from flask_mysqldb import MySQL
->>>>>>> 8b48406659f377a0efa068014a0466734498b072
+>>>>>>> b48406659f377a0efa068014a0466734498b072
 # from models import Member
 from dotenv import load_dotenv
 import os

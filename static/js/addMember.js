@@ -38,72 +38,71 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
     });
 
     if (allValid) {
-        let newRow = document.createElement("tr");
-        let applicantName = document.getElementById("name").value;
-        newRow.innerHTML = `
-            <td>${document.getElementById("account-number").value}</td>
-            <td>${applicantName}</td>
-            <td>${document.getElementById("contact-number").value}</td>
-            <td>${document.getElementById("email-address").value}</td>
-            <td>${document.getElementById("address").value}</td>
-            <td>${document.getElementById("date-applied").value}</td>
-             <td class="actions">
-                <button class="approve" 
-                    data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
-                <button class="decline" onclick="openDeclineModal(this)">Decline</button>
-                <button class="evaluate">Evaluate</button>
-            </td>
-        `;
+        // Gather form data
+        const formData = new FormData(document.getElementById("addMemberForm"));
 
-        //display the new row from sql (newRow holds the table row html/markup )
-        membersTableBody.appendChild(newRow);
+        // Use fetch to send the data to the server
+        fetch("/members", {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data =>{
+            if(data.success){
+                // Dynamically create the new table row
+                let newRow = document.createElement("tr");
+                let applicantName = document.getElementById("name").value;
+                newRow.innerHTML = `
+                    <td>${document.getElementById("account-number").value}</td>
+                    <td>${applicantName}</td>
+                    <td>${document.getElementById("contact-number").value}</td>
+                    <td>${document.getElementById("email-address").value}</td>
+                    <td>${document.getElementById("address").value}</td>
+                    <td>${document.getElementById("date-applied").value}</td>
+                    <td class="actions">
+                        <button class="approve" 
+                            data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
+                        <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                        <button class="evaluate">Evaluate</button>
+                    </td>
+                `;
+                // Add the new row to the table in the UI
+                document.querySelector(".members-table tbody").appendChild(newRow);
+
+                // Event listener for "Evaluate" button to redirect to evaluation page
+                newRow.querySelector(".evaluate").addEventListener("click", function() {
+                    window.location.href = "/evaluation";  
+                });
+
+                // Clear the form and close the modal
+                document.getElementById("addMemberForm").reset();
+                alert("New member added!");
+                document.getElementById("addMemberModal").style.display = "none"; 
+            }
+            else {
+                // Show error message if insertion failed
+                alert("Failed to add member! Error: " + data.error);
+            }
+        })
+        .catch(error => {
+            console.error("Error adding member:", error);
+            alert("There was an error processing your request.");
+        });  
+
+        // //display the new row from sql (newRow holds the table row html/markup )
+        // membersTableBody.appendChild(newRow);
         
-        // Event listener for "Evaluate" button to redirect to evaluation page
-        newRow.querySelector(".evaluate").addEventListener("click", function() {
-            window.location.href = "/evaluation";  
-        });
+        // // Event listener for "Evaluate" button to redirect to evaluation page
+        // newRow.querySelector(".evaluate").addEventListener("click", function() {
+        //     window.location.href = "/evaluation";  
+        // });
 
-        alert("New member added!");
-        modal.style.display = "none"; 
-        document.getElementById("addMemberForm").reset(); 
+        // alert("New member added!");
+        // modal.style.display = "none"; 
+        // document.getElementById("addMemberForm").reset(); 
     }
     
 };
-
-// //temporary logic: if coop clicks on approve button, send the email. (dialog to confirm approve is the best practice)
-// membersTableBody.addEventListener('click', function(e) {
-//     if (e.target.classList.contains('approve')) {
-//         //const row = event.target.closest('tr'); 
-//         //const email = row.children[2].textContent;
-//         const email = e.target.getAttribute('data-email');
-
-//         // Send notification email
-//         if(email){
-//             fetch('/send_approval_email', {
-//                 method: 'POST',
-//                 headers: {
-//                     'Content-Type': 'application/json',
-//                 },
-//                 body: JSON.stringify({ recipient: email }),
-//             })
-//             .then(response => response.json())
-//             .then(data => {
-//                 if (data.message) {
-//                     alert(`Approved! Email sent to: ${email}`);
-//                 } else {
-//                     alert('Error: ' + data.error);
-//                 }
-//             })
-//             .catch(error => {
-//                 console.error('Error sending email:', error);
-//                 alert('Failed to send email.');
-//             });
-//         }else {
-//             alert('Error: Recipient not provided.');
-//         }
-
-//     } 
-// });
 
 // Open the approval modal
 function openApproveModal(button) {

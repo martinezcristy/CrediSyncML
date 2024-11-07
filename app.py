@@ -79,8 +79,14 @@ def members():
         address = request.form['address']
         date_applied = request.form['date-applied']
 
-        cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied) VALUES (%s, %s, %s, %s, %s, %s)", (account_number, name, contact_number, email, address, date_applied))
-        mysql.connection.commit()
+        try:
+            cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied) VALUES (%s, %s, %s, %s, %s, %s)", (account_number, name, contact_number, email, address, date_applied))
+            mysql.connection.commit()
+            # Return success response
+            return jsonify({"success": True}), 200
+        except Exception as e:
+            mysql.connection.rollback()  # In case of an error, rollback
+            return jsonify({"success": False, "error": str(e)}), 500
 
     cur.execute("SELECT * FROM members")
     members_data = cur.fetchall() #fetch from sql db inag start ani nga route

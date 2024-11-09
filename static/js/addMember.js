@@ -52,6 +52,7 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
                 // Dynamically create the new table row
                 let newRow = document.createElement("tr");
                 let applicantName = document.getElementById("name").value;
+                let status = "Pending"; 
                 newRow.innerHTML = `
                     <td>${document.getElementById("account-number").value}</td>
                     <td>${applicantName}</td>
@@ -59,6 +60,7 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
                     <td>${document.getElementById("email-address").value}</td>
                     <td>${document.getElementById("address").value}</td>
                     <td>${document.getElementById("date-applied").value}</td>
+                    <td>${status}</td>
                     <td class="actions">
                         <button class="approve" 
                             data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
@@ -129,6 +131,24 @@ function confirmApprove() {
                 recipient: currentApproveEmail,
                 applicantName: applicantName // Send the applicant's name
              }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                // Send request to update the member's status to "Approved"
+                return fetch('/update_member_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
+                        status: 'Approved' // Set status to "Approved"
+                     }),
+                });
+            } else {
+                alert('Error: ' + data.error);
+            }
         })
         .then(response => response.json())
         .then(data => {

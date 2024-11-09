@@ -82,7 +82,7 @@ def members():
         date_applied = request.form['date-applied']
 
         try:
-            cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied) VALUES (%s, %s, %s, %s, %s, %s)", (account_number, name, contact_number, email, address, date_applied))
+            cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Pending')", (account_number, name, contact_number, email, address, date_applied))
             mysql.connection.commit()
             # Return success response
             return jsonify({"success": True}), 200
@@ -96,6 +96,44 @@ def members():
 
     # return render_template('members.html')
     return render_template('members.html', members=members_data)
+
+# Declined  members route
+@app.route('/decline_member', methods=['POST'])
+def decline_member():
+    # decline using account number
+    account_number = request.json.get('account_number')
+
+    if not account_number:
+        return jsonify({"error": "Account number not provided"}), 400
+
+    cur = mysql.connection.cursor() 
+
+    try:
+        # Retrieve the member details didto sa members table gamit ang account number gikan html
+        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+        member = cur.fetchone()
+
+        if not member:
+            return jsonify({"error": "Member not found"}), 404
+
+         # Update the member's status to 'Declined' in members table
+        cur.execute("UPDATE members SET status = 'Declined' WHERE account_number = %s", (account_number,))
+
+        # Insert the declined member into declined_members table
+        cur.execute("INSERT INTO declined_members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Declined')",
+                    (member['account_number'], member['name'], member['contact_number'], member['email'], member['address'], member['date_applied']))
+
+        # Delete the member from the members table pero no need for now since we want to countnumber of rows in members para display in dashboard
+        # cur.execute("DELETE FROM members WHERE account_number = %s", (account_number,))
+        # mysql.connection.commit()
+        
+        return jsonify({"message": "Member declined successfully!"}), 200
+    except Exception as e:
+        mysql.connection.rollback()  # Rollback in case of error
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
 
 @app.route('/send_approval_email', methods=['POST'])
 def send_approval_email_route():
@@ -140,6 +178,30 @@ def send_approval_email_route():
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Recipient not provided."}), 400
 
+# Route to update member status
+@app.route('/update_member_status', methods=['POST'])
+def update_member_status():
+    data = request.json
+    account_number = data.get('account_number')
+    status = data.get('status')
+
+    if not account_number or not status:
+        return jsonify({"error": "Account number or status not provided"}), 400
+
+    cur = mysql.connection.cursor()
+
+    try:
+        # Update the member's status
+        cur.execute("UPDATE members SET status = %s WHERE account_number = %s", (status, account_number))
+        mysql.connection.commit()
+
+        return jsonify({"success": True}), 200
+    except Exception as e:
+        mysql.connection.rollback()  # Rollback in case of error
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
 # Settings route
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
@@ -150,15 +212,10 @@ def settings():
 def evaluation():
     return render_template('evaluation.html')
 
-# Approve route
-@app.route('/approveMember')
-def approve():
-    return 'test approve'
-
+# display 404 html
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
-
 
 if __name__ == "__main__":
     app.run(debug=True)

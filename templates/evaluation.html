@@ -13,17 +13,18 @@
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="CrediSync Logo">
         </div>
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
-            <h2>Cebu People</h2>
-            <p class="admin-role">Admin</p>
+            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <h2>MAVENCO</h2>
+            <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
-        <nav class="menu">
-            <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
-                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
-            </ul>
-        </nav>
+       <!-- Sidebar Navigation -->
+       <nav class="menu">
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+            <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+            <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
+        </ul>
+    </nav>
     </div>
 
     <!-- Main Content -->
@@ -51,7 +52,6 @@
         <form class="evaluation-form" method="POST" action="/evaluate">
 
             
-           
             <div class="form-group">
                 <label>Dependents</label>
                 <select name="dependents" required>

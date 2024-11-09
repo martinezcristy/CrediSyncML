@@ -16,9 +16,9 @@
         </div>
 
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/cpmp-logo.jpg') }}" alt="Karthi Madesh" class="profile-pic">
-            <h2>Cebu People</h2>
-            <p class="admin-role">Admin</p>
+            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <h2>MAVENCO</h2>
+            <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
         
         <!-- Sidebar Navigation -->
@@ -37,9 +37,6 @@
             <h1>Members</h1>
             <div class="header-right">
                 <input type="text" placeholder="Search..." class="search-bar">
-                <button class="notification-bell" aria-label="Notifications">
-                    <img src="{{ url_for('static', filename='icons/bell-icon.png') }}" alt="Notification Bell">
-                </button>
                 <button class="add-member-btn">ADD NEW MEMBER</button>
             </div>
         </div>
@@ -53,27 +50,26 @@
                     <th>Email Address</th>
                     <th>Address</th>
                     <th>Date Applied</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody method="GET">
                 {% for member in members %}
-                <tr>
+                <tr data-account-number="{{ member['account_number'] }}">
                     <td>{{ member.account_number }}</td>
                     <td>{{ member.name }}</td>
                     <td>{{ member.contact_number }}</td>
                     <td>{{ member.email }}</td>
                     <td>{{ member.address }}</td>
                     <td>{{ member.date_applied }}</td>
+                    <td>{{ member.status }}</td>
                     <td class="actions">
                         <button class="approve">Approve</button>
                         <button class="decline" onclick="openDeclineModal(this)">Decline</button>
-                        <!-- Evaluate Button -->
-                        <form action="{{ url_for('evaluation') }}" method="GET">
-                            <input type="hidden" name="member_id" value="{{ member['id'] }}">
-                            <button type="submit" class="evaluate">Evaluate</button>
-                        </form>
+                        <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
                     </td>
+                   
                 </tr>
                 {% endfor %}
             </tbody>

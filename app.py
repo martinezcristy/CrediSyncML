@@ -125,7 +125,7 @@ def decline_member():
 
         # Delete the member from the members table pero no need for now since we want to countnumber of rows in members para display in dashboard
         # cur.execute("DELETE FROM members WHERE account_number = %s", (account_number,))
-        # mysql.connection.commit()
+        mysql.connection.commit()
         
         return jsonify({"message": "Member declined successfully!"}), 200
     except Exception as e:

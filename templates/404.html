@@ -3,9 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>404 Not Found</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/404.css') }}">
+    <!-- Add Font Awesome CDN link -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha384-k6RqeWeci5ZR/Lv4MR0sA0FfDOMdYwP2qIIeeKh8rD2Mc9i4wZ3H6l60fOgwq3d" crossorigin="anonymous">
 </head>
 <body>
-    test only not found 404 html ui here
+    <div class="not-found page-content">
+        
+        <div class="content-wrapper"> 
+            <div class="notfound-container">
+                <div class="notfound-message">
+                    <div class="notfound-title">
+                        <img src="{{ url_for('static', filename='icons/not-found-error-alert-svgrepo-com.svg') }}" alt="Not Found Icon" />
+                    </div>
+                    <div class="not-found-message">
+                        We can't seem to find the page you're looking for.
+                        <br />
+                        The requested URL was not found on this server.
+                    </div>
+                    <a href="{{ url_for('dashboard') }}" class="not-found-link">
+                        Go back to dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

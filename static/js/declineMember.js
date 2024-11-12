@@ -29,7 +29,6 @@ function confirmDecline() {
         })
         .then(data => {
             alert(data.message);
-            currentDeclineRow.remove(); // Remove the row from the table if the request is successful
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

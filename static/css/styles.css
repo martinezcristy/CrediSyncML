@@ -183,6 +183,10 @@ body {
     height: 50px !important;
 }
 
+.members-table tbody tr:hover { 
+    background-color:   rgba(251, 213, 4, 0.3); 
+    cursor: pointer;
+}
 .actions {
     display: flex;
     gap: 10px;
@@ -624,6 +628,7 @@ hr {
     flex-grow: 1;
     padding: 40px;
     background-color: var(--primary-color-2);
+    height: 500px;
 }
 .coop-main-content h1{
     font-size: 20px;
@@ -635,7 +640,7 @@ form {
     border-radius: 10px;
     border: 1px;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
+    margin-top: 10px;
 
 }
 
@@ -723,4 +728,8 @@ form {
 /* Textarea Specific Style */
 textarea {
     resize: vertical; /* Allow vertical resizing only */
+}
+
+.member-profile-image {
+    text-align: center;
 }

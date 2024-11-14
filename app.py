@@ -66,6 +66,38 @@ def dashboard():
     subscriptions = load_subscriptions()
     return render_template('dashboard.html', subscriptions=subscriptions)
 
+# @app.route('/', methods=['GET'])
+# def dashboard():
+#     cur = mysql.connection.cursor()
+
+#     try:
+#         # Total number of members
+#         cur.execute("SELECT COUNT(*) FROM members")
+#         all_members_count = cur.fetchone()[0]
+
+#         # Total number of declined members
+#         cur.execute("SELECT COUNT(*) FROM declined_members")
+#         declined_members_count = cur.fetchone()[0]
+
+#         # Close cursor
+#         cur.close()
+
+#         # Load subscription json
+#         subscriptions = load_subscriptions()  # Replace with your subscription loading logic
+
+#         return render_template('dashboard.html',
+#                                all_members_count=all_members_count,
+#                                declined_members_count=declined_members_count,
+#                                subscriptions=subscriptions)
+
+#     except mysql.connect.Error as e:
+#         # Handle database errors
+#         return jsonify({"error": f"Database error: {str(e)}"}), 500
+
+#     except Exception as e:
+#         # Handle other unexpected errors (optional)
+#         return jsonify({"error": "An unexpected error occurred."}), 500
+    
 # Members route
 @app.route('/members', methods=['GET', 'POST'])
 def members():
@@ -141,7 +173,7 @@ def send_approval_email_route():
     applicant_name = request.json.get('applicantName')  # Get the applicant's name
     if recipient:
         subject = "Credisync - Loan Application Approved"
-        # message = "Your request has been approved!"
+        app_name = "CREDISYNC"
 
          # Get the path sa html email content mao ni ma display sa email 
         html_file_path = os.path.join('templates', 'email.html')
@@ -153,7 +185,7 @@ def send_approval_email_route():
                 # Replace placeholders with actual values
                 html_content = html_content.replace("[SUBJECT HERE]", subject)
                 html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are pleased to inform you that your credisync loan application has been approved.")
-                html_content = html_content.replace("[APPNAME HERE]", "CREDISYNC")
+                html_content = html_content.replace("[APPNAME HERE]", app_name)
         except Exception as e:
             return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
 
@@ -165,8 +197,6 @@ def send_approval_email_route():
 
         # Attach the HTML content to the email
         msg.attach(MIMEText(html_content, 'html'))
-        
-        # text = f"Subject: {subject}\n\n{message}"
 
         try:
             with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
@@ -212,6 +242,27 @@ def settings():
 def evaluation():
     return render_template('evaluation.html')
 
+# Member profile page fetch from db
+@app.route('/member-profile/<account_number>')
+def member_profile(account_number):
+    cur = mysql.connection.cursor()
+    try:
+        # Fetch member details based on account number
+        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+        member = cur.fetchone()
+
+        # Close cursor
+        cur.close()
+
+        if member:
+            return render_template('member-profile.html', member=member)
+        else:
+            return "Member not found", 404
+
+    except Exception as e:
+        cur.close()
+        return jsonify({"error": str(e)}), 500
+
 # display 404 html
 @app.errorhandler(404)
 def page_not_found(error):
@@ -219,3 +270,6 @@ def page_not_found(error):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+# if __name__ == "__main__":
+# app.run(debug=True, host='0.0.0.0')

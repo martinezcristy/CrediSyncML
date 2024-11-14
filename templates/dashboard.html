@@ -37,7 +37,7 @@
             <div class="card">
                 <div>
                     <h2>ALL MEMBERS</h2>
-                    <div class="value">4</div>
+                    <div class="value">{{ all_members_count }}</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/cooperative-icon.png') }}">
             </div>
@@ -45,7 +45,7 @@
             <div class="card">
                 <div>
                     <h2>EVALUATED MEMBERS</h2>
-                    <div class="value">20</div>
+                    <div class="value">0</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
     
@@ -54,7 +54,7 @@
             <div class="card">
                 <div>
                     <h2>DECLINED MEMBERS</h2>
-                    <div class="value">20</div>
+                    <div class="value">{{ declined_members_count }}</div>
                 </div>
                 <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
     

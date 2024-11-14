@@ -56,7 +56,9 @@
             </thead>
             <tbody method="GET">
                 {% for member in members %}
-                <tr data-account-number="{{ member['account_number'] }}">
+                <!-- <tr data-account-number="{{ member['account_number'] }}">  
+                <tr data-url="{{ url_for('member_profile', account_number=member['account_number']) }}"></tr> -->
+                <tr data-url="{{ url_for('member_profile', account_number=member['account_number']) }}">   
                     <td>{{ member.account_number }}</td>
                     <td>{{ member.name }}</td>
                     <td>{{ member.contact_number }}</td>
@@ -140,12 +142,27 @@
     
     <!-- script for add member modal diri -->
     <script>
-        // Function to open the Add Member modal
+
+        //clickable row - redirect to member profile component
+        document.querySelectorAll('.members-table tbody tr').forEach(row => {
+            row.addEventListener('click', function() {
+                window.location = this.dataset.url;
+            });
+        });
+        
+        //prevent actions buttons redirecting you to member profile page
+        document.querySelectorAll('.actions button').forEach(button => {
+            button.addEventListener('click', function(event) {
+                event.stopPropagation();
+            });
+        });
+         
+        // open add member modal
         document.querySelector('.add-member-btn').onclick = function() {
             document.getElementById('addMemberModal').style.display = 'block';
         };
 
-        // Function to close the Add Member modal
+        // close add member modal
         document.querySelector('.close-btn').onclick = function() {
             document.getElementById('addMemberModal').style.display = 'none';
         };

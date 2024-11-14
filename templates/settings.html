@@ -30,8 +30,11 @@
     </div>
 
     <div class="coop-main-content">
-        <h1>Cooperative Profile</h1>
+       
         <form action="/update">
+            <div class="member-profile-image">
+                <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
+            </div>
             <div class="form-row">
                 <div class="form-group">
                     <label for="coopName">Cooperative Name</label>
@@ -54,14 +57,7 @@
                 </div>
             </div>
     
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="description">Description</label>
-                    <textarea id="description" class="form-control" rows="4" placeholder="Enter a description"></textarea>
-                </div>
-            </div>
-    
-            <button type="submit" class="btn">Save Changes</button>
+            <button type="submit" class="btn">Save</button>
         </form>
     </div>
 

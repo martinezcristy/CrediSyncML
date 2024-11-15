@@ -37,7 +37,7 @@
         <div class="evaluation-results">
             <div class="prediction">
                 <h2>Prediction</h2>
-                <p>Rae Collins is eligible for loan</p>
+                <p>{{ member.name }} is eligible for loan</p>
             </div>
         </div>
         <div class="evaluation-results">
@@ -51,15 +51,6 @@
         <!-- Form Section -->
         <form class="evaluation-form" method="POST" action="/evaluate">
 
-            
-            <div class="form-group">
-                <label>Dependents</label>
-                <select name="dependents" required>
-                    <option value="">Please select</option>
-                    <option value="false">No</option>
-                    <option value="true">Yes</option>
-                </select>
-            </div>
             <div class="form-group">
                 <label>Currently Employed</label>
                 <select name="currently_employed" required>
@@ -71,18 +62,6 @@
             <div class="form-group">
                 <label>Loan Amount</label>
                 <input type="number" name="loan_amount" placeholder="Enter loan amount" required>
-            </div>
-            <div class="form-group">
-                <label>Years Current Residence</label>
-                <input type="number" name="years_current_residence" placeholder="Enter year(s)" required>
-            </div>
-            <div class="form-group">
-                <label>Employment Status</label>
-                <select name="employment_status" required>
-                    <option value="">Please select</option>
-                    <option value="regular">Regular</option>
-                    <option value="contract">Contract</option>
-                </select>
             </div>
             <div class="form-group">
                 <label>Loan Term</label>
@@ -97,20 +76,8 @@
                 </select>
             </div>
             <div class="form-group">
-                <label>Years Employed</label>
-                <input type="number" name="years_employed" placeholder="Enter years" required>
-            </div>
-            <div class="form-group">
                 <label>Have Co-Maker</label>
                 <select name="have_co_maker" required>
-                    <option value="">Please select</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Credit Card Owner</label>
-                <select name="credit_card_owner" required>
                     <option value="">Please select</option>
                     <option value="true">Yes</option>
                     <option value="false">No</option>

@@ -237,10 +237,34 @@ def update_member_status():
 def settings():
     return render_template('settings.html')
 
-# Evaluation route
-@app.route('/evaluation')
+@app.route('/evaluation', methods=['GET'])
 def evaluation():
-    return render_template('evaluation.html')
+    # Get the account_number from the query parameters
+    account_number = request.args.get('account_number')
+
+    if not account_number:
+        return "Account number not provided", 400  # Handle the case where no account_number is passed
+
+    # Create a cursor and try to fetch the member data by account_number
+    cur = mysql.connection.cursor()
+    try:
+        # Query to get the member data by account_number
+        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+        member = cur.fetchone()
+
+        # If member doesn't exist, return a 404 or similar error
+        if not member:
+            return "Member not found", 404
+
+        # Render the evaluation page with member data
+        return render_template('evaluation.html', member=member)
+
+    except Exception as e:
+        print(f"Error fetching member: {e}")
+        return "Error fetching member data", 500
+    finally:
+        cur.close()
+
 
 # Member profile page fetch from db
 @app.route('/member-profile/<account_number>')

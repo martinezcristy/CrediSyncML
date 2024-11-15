@@ -154,6 +154,18 @@
         document.querySelectorAll('.actions button').forEach(button => {
             button.addEventListener('click', function(event) {
                 event.stopPropagation();
+                // Ensure button actions work correctly 
+                const action = this.classList.contains('approve') ? 'approve' : 
+                this.classList.contains('decline') ? 'decline' : 
+                this.classList.contains('evaluate') ? 'evaluate' : null; 
+
+                if (action === 'approve') { 
+                    openApproveModal(this); 
+                } else if (action === 'decline') {
+                    openDeclineModal(this); 
+                } else if (action === 'evaluate') {
+                     evaluateMember(); 
+                }
             });
         });
          
@@ -176,6 +188,20 @@
         };
     </script>
 
+    <script>
+    // Add event listeners to the evaluate buttons
+    document.querySelectorAll('.evaluate').forEach(function(button) {
+        button.addEventListener('click', function(event) {
+            // Get the account number from the row
+            var accountNumber = event.target.closest('tr').querySelector('td').textContent.trim();
+            
+            // Redirect to the evaluation page with the account number as a URL parameter
+            window.location.href = "/evaluation?account_number=" + accountNumber;
+        });
+    });
+    </script>
+
+    <script src="{{ url_for('static', filename='js/evaluateMember.js') }}"></script>
 
 </body>
 

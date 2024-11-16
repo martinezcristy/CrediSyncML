@@ -507,11 +507,11 @@ hr {
 
 /* Evaluation Form styles */
 .evaluation-main-content {
-    flex-grow: 1;
     display: grid;
-    grid-template-columns: 2fr 1fr; /* 2 columns: form on the left, results on the right */
+    grid-template-columns: 2fr 1fr; /* Two columns: form on the left, results on the right */
     gap: 30px;
     padding: 40px;
+    align-items: start; /* Ensures the grid aligns from the top */
 }
 
 .evaluation-main-content .evaluation-form {
@@ -532,7 +532,7 @@ hr {
 .evaluation-main-content .evaluation-results {
     display: flex;
     flex-direction: column; /* Stack results vertically */
-    gap: 20px; /* Space between prediction and credit score */
+    gap: 15px; /* Space between prediction and credit score */
     align-self: flex-start; /* Align results to the top of their grid area */
     margin-left: 20px;
 }
@@ -544,13 +544,22 @@ hr {
     text-align: center;
 }
 
-.evaluation-main-content .evaluation-results .prediction,
+.evaluation-main-content .evaluation-results .prediction {
+    width: 380px; /* Adjust the width as needed */
+    padding: 20px;
+    border-radius: 10px;
+    background-color: var(--primary-color); /* Light yellow background */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: 50px;
+}
+
 .evaluation-main-content .evaluation-results .credit-score {
-    width: 250px; /* Adjust this to make the box smaller */
-    padding: 20px; 
-    border-radius: 10px; 
-    background-color: var(--primary-color); /* Light yellow background for each box */
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); 
+    width: 380px; 
+    padding: 20px;
+    border-radius: 10px;
+    background-color: var(--primary-color);
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: -160px; /* Move the box to the left */
 }
 
 .evaluation-main-content .form-group {
@@ -564,7 +573,8 @@ hr {
 }
 
 .evaluation-main-content .evaluate-btn {
-    grid-column: span 2;
+    grid-column: span 2; /* Ensure the button spans both columns */
+    justify-self: center; /* Center the button horizontally */
 }
 
 .evaluation-form select {
@@ -584,8 +594,14 @@ hr {
     border-radius: 4px; 
 }
 
+.evaluate-btn-container {
+    display: flex;
+    justify-content: center; /* Center the button */
+    width: 100%; /* Ensure it takes full width */
+    margin-top: 20px; /* Add space above */
+}
+
 .evaluate-btn {
-    grid-column: span 2; 
     background-color: var(--secondary-color);
     color: white;
     padding: 10px 20px;
@@ -596,6 +612,9 @@ hr {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     margin-top: 10px;
+    width: 300px; /* Adjust the width */
+    grid-column: 1 / span 2; /* Ensure the button spans both columns */
+    justify-self: center; /* This centers the button horizontally */
 }
 
 .evaluate-btn:hover {
@@ -607,6 +626,7 @@ hr {
     background-color: #e66b00;
     transform: scale(0.98);
 }
+
 
 /* Evaluation Toast Message */
 .toast {

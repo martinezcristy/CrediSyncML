@@ -63,59 +63,66 @@
                 <input type="number" name="loan_amount" placeholder="Enter loan amount" required>
             </div>
             <div class="form-group">
-                <label>Loan Term</label>
-                <input type="number" name="loan_term" placeholder="Enter loan term in months" required>
-            </div>
-            <div class="form-group">
                 <label>Asset Owner</label>
                 <select name="asset_owner" required>
                     <option value="">Please select</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                    <option value="no_assets">No assets</option>
+                    <option value="owns_properties_vehicle">Owns properties/vehicle</option>
+                    <option value="owns_both">Owns both properties and vehicle</option>
                 </select>
-            </div>
+            </div>            
             <div class="form-group">
                 <label>Have Co-Maker</label>
                 <select name="have_co_maker" required>
                     <option value="">Please select</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                    <option value="no_co_maker">No co-maker</option>
+                    <option value="moderate_reliability">Co-maker with moderate reliability</option>
+                    <option value="strong_reliability">Co-maker with strong reliability</option>
                 </select>
-            </div>
+            </div>            
             <div class="form-group">
                 <label>Monthly Salary</label>
-                <input type="number" name="monthly_salary" placeholder="Enter monthly salary" required>
-            </div>
+                <select name="monthly_salary" required>
+                    <option value="">Please select</option>
+                    <option value="low_salary">P11,300 below</option>
+                    <option value="med_salary">P11,301 to P41,299</option>
+                    <option value="high_salary">P41,300 above</option>
+                </select>
+            </div>            
             <div class="form-group">
                 <label>Repayment Schedule</label>
                 <select name="repayment_sched" required>
                     <option value="">Please select</option>
+                    <option value="quarterly">Quarterly</option>
                     <option value="monthly">Monthly</option>
-                    <option value="bi-weekly">Bi-Weekly</option>
+                    <option value="weekly">Weekly</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Have Savings Account</label>
-                <select name="have_savings_account" required>
+                <label>Payment Method</label>
+                <select name="payment_method" required>
                     <option value="">Please select</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                    <option value="cash">Cash</option>
+                    <option value="post_dated_check">Post-dated Check</option>
+                    <option value="debit_to_savings">Debit to Savings Account</option>
+                </select>
+            </div>            
+            <div class="form-group">
+                <label>Savings Account Status</label>
+                <select name="savings_account_status" required>
+                    <option value="">Please select</option>
+                    <option value="no_savings">No Savings Account</option>
+                    <option value="not_active">Not Active</option>
+                    <option value="active">Active</option>
                 </select>
             </div>
             <div class="form-group">
-                <label>Loan Purpose</label>
-                <select name="loan_purpose" required>
+                <label>Loan Term</label>
+                <select name="loan_term" required>
                     <option value="">Please select</option>
-                    <option value="regular">Regular</option>
-                    <option value="emergency">Emergency</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Have Outstanding Debts</label>
-                <select name="have_outstanding_debts" required>
-                    <option value="">Please select</option>
-                    <option value="true">Yes</option>
-                    <option value="false">No</option>
+                    <option value="low_term">85 months above (Mortgage)</option>
+                    <option value="med_term">60 to 84 months (Auto Loans)</option>
+                    <option value="high_term">12 to 60 months (Personal)</option>
                 </select>
             </div>
             <div class="form-group">

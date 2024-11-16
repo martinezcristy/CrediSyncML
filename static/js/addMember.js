@@ -91,17 +91,6 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
             alert("There was an error processing your request.");
         });  
 
-        // //display the new row from sql (newRow holds the table row html/markup )
-        // membersTableBody.appendChild(newRow);
-        
-        // // Event listener for "Evaluate" button to redirect to evaluation page
-        // newRow.querySelector(".evaluate").addEventListener("click", function() {
-        //     window.location.href = "/evaluation";  
-        // });
-
-        // alert("New member added!");
-        // modal.style.display = "none"; 
-        // document.getElementById("addMemberForm").reset(); 
     }
     
 };
@@ -159,7 +148,7 @@ function confirmApprove() {
                     const approveButton = row.querySelector('.approve[data-email="' + currentApproveEmail + '"]');
                     if (approveButton) {
                         approveButton.textContent = "Approved"; // Change button text
-                        approveButton.disabled = true; // Disable the button
+                        approveButton.style.display = "none"; // hide button
                     }
                 });
             } else {

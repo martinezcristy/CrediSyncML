@@ -232,6 +232,21 @@ def update_member_status():
     finally:
         cur.close()
 
+# Route to fetch the status of all members
+@app.route('/get_member_statuses', methods=['GET'])
+def get_member_statuses():
+    cur = mysql.connection.cursor()
+
+    try:
+        # Fetch all members and their status from the database
+        cur.execute("SELECT account_number, name, email, status FROM members")
+        members = cur.fetchall()
+
+        return jsonify({"members": members}), 200
+    except Exception as e:
+        cur.close()
+        return jsonify({"error": str(e)}), 500
+
 # Settings route
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():

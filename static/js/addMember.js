@@ -163,11 +163,41 @@ function confirmApprove() {
     closeApproveModal();
 }
 
+
 // Attach event listener to the members table body
 membersTableBody.addEventListener('click', function(e) {
     if (e.target.classList.contains('approve')) {
         openApproveModal(e.target); // Open the approval modal
     } 
+});
+
+// Fetch current member status on page load
+function loadMemberStatuses() {
+    fetch('/get_member_statuses')  // Endpoint to get all member statuses
+        .then(response => response.json())
+        .then(data => {
+            if (data.members) {
+                data.members.forEach(member => {
+                    const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
+                    if (approveButton) {
+                        if (member.status === 'Approved') {
+                            approveButton.textContent = "Approved";
+                            approveButton.style.display = "none"; // Hide button if already approved
+                        }
+                    }
+                });
+            } else {
+                console.error("Error loading member statuses:", data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error loading member statuses:', error);
+        });
+}
+
+// Call this function on page load
+document.addEventListener('DOMContentLoaded', function() {
+    loadMemberStatuses();
 });
 
 

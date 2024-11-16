@@ -141,7 +141,7 @@ function confirmApprove() {
         })
         .then(response => response.json())
         .then(data => {
-            if (data.message) {
+            if (data.success) {
                 alert(`Approved! Email sent to: ${currentApproveEmail}`);
                 const rows = membersTableBody.querySelectorAll("tr");
                 rows.forEach(row => {
@@ -152,7 +152,7 @@ function confirmApprove() {
                     }
                 });
             } else {
-                alert('Error: ' + data.error);
+                alert('Error: ' + (data.error || 'Unknown error'));
             }
         })
         .catch(error => {

@@ -147,7 +147,6 @@ function confirmApprove() {
                 rows.forEach(row => {
                     const approveButton = row.querySelector('.approve[data-email="' + currentApproveEmail + '"]');
                     if (approveButton) {
-                        approveButton.textContent = "Approved"; // Change button text
                         approveButton.style.display = "none"; // hide button
                     }
                 });
@@ -181,7 +180,7 @@ function loadMemberStatuses() {
                     const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
                     if (approveButton) {
                         if (member.status === 'Approved') {
-                            approveButton.textContent = "Approved";
+                            // approveButton.textContent = "Approved";
                             approveButton.style.display = "none"; // Hide button if already approved
                         }
                     }
@@ -195,11 +194,9 @@ function loadMemberStatuses() {
         });
 }
 
-// Call this function on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadMemberStatuses();
+document.addEventListener("DOMContentLoaded", function() {
+    loadMemberStatuses(); 
 });
-
 
 // Open the decline modal and store the row to be deleted
 function openDeclineModal(button) {

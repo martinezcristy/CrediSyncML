@@ -242,10 +242,12 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* .card h2 {
-    margin: 0;
-    font-size: 18px;
-} */
+.card img {
+    width: 60px;  
+    height: 60px;  
+    object-fit: contain;  
+}
+
 
 .card .value {
     font-size: 18px;

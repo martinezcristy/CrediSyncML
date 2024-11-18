@@ -33,34 +33,31 @@
 
         <!-- analytics boxes -->
         <div class="dashboard-cards">
-
             <div class="card">
                 <div>
                     <h2>ALL MEMBERS</h2>
                     <div class="value">{{ all_members_count }}</div>
                 </div>
-                <img src="{{ url_for('static', filename='icons/cooperative-icon.png') }}">
+                <img src="{{ url_for('static', filename='icons/users-group-rounded-svgrepo-com.svg') }}">
             </div>
-
+        
             <div class="card">
                 <div>
                     <h2>EVALUATED MEMBERS</h2>
                     <div class="value">0</div>
                 </div>
-                <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
-    
+                <img src="{{ url_for('static', filename='icons/user-check-rounded-svgrepo-com.svg') }}">
             </div>
-
+        
             <div class="card">
                 <div>
                     <h2>DECLINED MEMBERS</h2>
                     <div class="value">{{ declined_members_count }}</div>
                 </div>
-                <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
-    
+                <img src="{{ url_for('static', filename='icons/user-cross-rounded-svgrepo-com.svg') }}">
             </div>
-        
         </div>
+        
 
 
         <!-- subscription boxes -->

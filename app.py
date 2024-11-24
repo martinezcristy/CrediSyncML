@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify
-#redirect, url_for, flash
+#redirect, url_for,
 # from flask_mail import Mail
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
@@ -55,7 +55,7 @@ mail = Mail(app)
 # Initialize MySQL
 mysql = MySQL(app)
 
-# Load subscription plans from JSON file
+# Load subscription plans data from JSON file
 def load_subscriptions():
     with open('subscriptions.json') as f:
         return json.load(f)
@@ -98,6 +98,7 @@ def dashboard():
 #         # Handle other unexpected errors (optional)
 #         return jsonify({"error": "An unexpected error occurred."}), 500
     
+
 # Members route
 @app.route('/members', methods=['GET', 'POST'])
 def members():
@@ -128,6 +129,7 @@ def members():
 
     # return render_template('members.html')
     return render_template('members.html', members=members_data)
+
 
 # Declined  members route
 @app.route('/decline_member', methods=['POST'])
@@ -166,7 +168,7 @@ def decline_member():
     finally:
         cur.close()
 
-
+# Route for sending the approval notification thru email
 @app.route('/send_approval_email', methods=['POST'])
 def send_approval_email_route():
     recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
@@ -208,7 +210,8 @@ def send_approval_email_route():
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Recipient not provided."}), 400
 
-# Route to update member status
+
+# Route to update member loan application status
 @app.route('/update_member_status', methods=['POST'])
 def update_member_status():
     data = request.json
@@ -232,26 +235,74 @@ def update_member_status():
     finally:
         cur.close()
 
-# Route to fetch the status of all members
-@app.route('/get_member_statuses', methods=['GET'])
-def get_member_statuses():
-    cur = mysql.connection.cursor()
+# # Route to fetch the status of all members
+# @app.route('/get_member_statuses', methods=['GET'])
+# def get_member_statuses():
+#     cur = mysql.connection.cursor()
 
-    try:
-        # Fetch all members and their status from the database
-        cur.execute("SELECT account_number, name, email, status FROM members")
-        members = cur.fetchall()
+#     try:
+#         # Fetch all members and their status from the database
+#         cur.execute("SELECT account_number, name, email, status FROM members")
+#         members = cur.fetchall()
 
-        return jsonify({"members": members}), 200
-    except Exception as e:
-        cur.close()
-        return jsonify({"error": str(e)}), 500
+#         return jsonify({"members": members}), 200
+#     except Exception as e:
+#         cur.close()
+#         return jsonify({"error": str(e)}), 500
 
-# Settings route
+# Settings page
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    return render_template('settings.html')
+    if request.method == 'POST':
+        # Handle form submission
+        coop_name = request.form['coopName']
+        coop_shortName = request.form['coopShortName']
+        address = request.form['address']
+        contact_number = request.form['contactNumber']
+        email = request.form['email']
 
+        cur = mysql.connection.cursor()
+        try:
+            cur.execute("""
+                UPDATE user
+                SET coop_name = %s, coop_shortName = %s, address = %s, contact_number = %s, email = %s
+                LIMIT 1
+            """, (coop_name, coop_shortName, address, contact_number, email))
+            mysql.connection.commit()
+        except Exception as e:
+            mysql.connection.rollback()
+            return f"Error updating user: {str(e)}", 500
+        finally:
+            cur.close()
+        return redirect(url_for('settings'))
+    else:
+        # Initial data fetching is handled by the get_user endpoint via AJAX
+        return render_template('settings.html')
+
+@app.route('/get_user', methods=['GET'])
+def get_user():
+    cur = mysql.connection.cursor()
+    try:
+        cur.execute("SELECT coop_name, coop_shortName, address, contact_number, email FROM user LIMIT 1")
+        user = cur.fetchone()
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        user_data = {
+            "coop_name": user[0],
+            "coop_shortName": user[1],
+            "address": user[2],
+            "contact_number": user[3],
+            "email": user[4]
+        }
+        return jsonify(user_data), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    finally:
+        cur.close()
+
+# Evaluation page
 @app.route('/evaluation', methods=['GET'])
 def evaluation():
     # Get the account_number from the query parameters
@@ -281,7 +332,7 @@ def evaluation():
         cur.close()
 
 
-# Member profile page fetch from db
+# Member profile page 
 @app.route('/member-profile/<account_number>')
 def member_profile(account_number):
     cur = mysql.connection.cursor()

@@ -515,7 +515,6 @@ hr {
     padding: 40px;
     align-items: start; /* Ensures the grid aligns from the top */
 }
-
 .evaluation-main-content .evaluation-form {
     flex-grow: 1;
     padding: 20px;
@@ -544,6 +543,7 @@ hr {
     padding-bottom: 5px; /* Space between the text and the line */
     margin-bottom: 10px; /* Space below the line */
     text-align: center;
+    flex-grow: 1;
 }
 
 .evaluation-main-content .evaluation-results .prediction {
@@ -577,6 +577,7 @@ hr {
 .evaluation-main-content .evaluate-btn {
     grid-column: span 2; /* Ensure the button spans both columns */
     justify-self: center; /* Center the button horizontally */
+    width: 100%;
 }
 
 .evaluation-form select {

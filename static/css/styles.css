@@ -98,6 +98,23 @@ body {
     color: white;
 }
 
+.logout-section { 
+    margin-top: 50px; 
+    padding-bottom: 20px; /* Optional: add some spacing at the bottom */ 
+} 
+.logout-item { 
+    display: flex; 
+    align-items: center; 
+    text-decoration: none; 
+    color: black; 
+    font-weight: bold; 
+}
+.logout-item img { 
+    width: 20px; 
+    height: 20px; 
+    margin-right: 10px; 
+}
+
 /* dashboard main content */
 .main-content {
     flex-grow: 1;

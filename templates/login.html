@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="wrapper">
+        <form method="POST" action="{{ url_for('login') }}">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+            <h1>SIGN IN</h1>
+            <div class="user-type">
+                <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Cooperative Icon"> 
+            </div>
+            <div class="email-input">
+                <label for="cooperative_id">Cooperative ID</label><br>
+                <input type="text" id="cooperative_id" name="cooperative_id" placeholder="Enter your cooperative ID" required/>
+            </div>
+            <div class="password-input">
+                <label for="password">Password</label><br>
+                <input type="password" id="password" name="password" placeholder="Enter your password" required/>
+            </div>
+            <!-- <div class="forgot-link">
+                <a href="#">Forgot your password?</a>
+            </div> -->
+            <button type="submit">LOGIN</button>
+            <!-- <div class="signup-link">
+                <p>Don't have an account? <a href="#">Sign up</a></p>
+            </div> -->
+        </form>
+        
+    </div>
+</body>
+</html>

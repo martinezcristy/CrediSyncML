@@ -50,9 +50,39 @@
             </div>
         </div>
 
-       
-        <!-- Form Section -->
-        <form class="evaluation-form" method="POST" action="/evaluate">
+        <!-- <form class="evaluation-form" method="POST" action="/evaluation">
+            <label for="payment_history_score">Payment History Score:</label>
+            <input type="text" name="payment_history_score" required><br>
+        
+            <label for="monthly_salary_score">Monthly Salary Score:</label>
+            <input type="text" name="monthly_salary_score" required><br>
+        
+            <label for="loan_term_score">Loan Term Score:</label>
+            <input type="text" name="loan_term_score" required><br>
+        
+            <label for="co_maker_score">Co-Maker Score:</label>
+            <input type="text" name="co_maker_score" required><br>
+        
+            <label for="savings_account_score">Savings Account Score:</label>
+            <input type="text" name="savings_account_score" required><br>
+        
+            <label for="asset_owner_score">Asset Owner Score:</label>
+            <input type="text" name="asset_owner_score" required><br>
+        
+            <label for="payment_method_score">Payment Method Score:</label>
+            <input type="text" name="payment_method_score" required><br>
+        
+            <label for="repayment_schedule_score">Repayment Schedule Score:</label>
+            <input type="text" name="repayment_schedule_score" required><br>
+        
+            <label for="credit_score">Credit Score:</label>
+            <input type="text" name="credit_score" required><br>
+        
+            <button type="submit">Evaluate</button>
+        </form> -->
+        
+    
+        <form class="evaluation-form" method="POST" action="/evaluation">
 
             <div class="form-group">
                 <label>Payment_History</label>
@@ -90,10 +120,7 @@
                     <option value="strong_reliability">Co-maker with strong reliability</option>
                 </select>
             </div>
-            <!-- <div class="form-group">
-                <label>Loan Amount</label>
-                <input type="number" name="loan_amount" placeholder="Enter loan amount" required>
-            </div> -->
+    
             <div class="form-group">
                 <label>Savings Account Status</label>
                 <select name="savings_account_status" required>

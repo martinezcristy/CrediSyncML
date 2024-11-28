@@ -1,10 +1,8 @@
-from flask import Flask, render_template, request, jsonify
-#redirect, url_for,
+from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for
 # from flask_mail import Mail
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
 from flask_mysqldb import MySQL
-# from models import Member
 from dotenv import load_dotenv
 import os
 import smtplib
@@ -51,18 +49,54 @@ app.config.update(
 )
 
 mail = Mail(app)
-
 # Initialize MySQL
 mysql = MySQL(app)
+
+# Before request to check if user is logged in
+@app.before_request 
+def before_request(): 
+    g.user = None 
+    if 'user_id' in session: 
+        g.user = session['user_id']
+    elif request.endpoint not in ('login', 'static'):
+        return redirect(url_for('login'))
 
 # Load subscription plans data from JSON file
 def load_subscriptions():
     with open('subscriptions.json') as f:
         return json.load(f)
 
+# Login route
+@app.route('/login', methods=['GET', 'POST']) 
+def login(): 
+    if request.method == 'POST':
+        cooperative_id = request.form['cooperative_id']
+        password = request.form['password']
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM user WHERE cooperative_id = %s AND password = %s', (cooperative_id, password))
+        user = cursor.fetchone()
+        cursor.close()
+        if user:
+            session.pop('error', None) # Clear any previous error messages
+            session['user_id'] = user['cooperative_id']
+            return redirect(url_for('dashboard'))
+        else:
+            session['error'] = 'Invalid credentials. Please try again.'
+            return redirect(url_for('login'))
+    return render_template('login.html')
+
+# Logout route
+@app.route('/logout')
+def logout():
+    session.pop('user_id', None)
+    return redirect(url_for('login'))
+
+
 # Dashboard route
 @app.route('/', methods=['GET'])
 def dashboard():
+    if not g.user:
+        return redirect(url_for('login'))
     subscriptions = load_subscriptions()
     return render_template('dashboard.html', subscriptions=subscriptions)
 
@@ -97,9 +131,8 @@ def dashboard():
 #     except Exception as e:
 #         # Handle other unexpected errors (optional)
 #         return jsonify({"error": "An unexpected error occurred."}), 500
-    
 
-# Members route
+# Members route cooperative end
 @app.route('/members', methods=['GET', 'POST'])
 def members():
      # Save the member to the database
@@ -302,7 +335,87 @@ def get_user():
     finally:
         cur.close()
 
-# Evaluation page
+# # Evaluation page
+# @app.route('/evaluation', methods=['GET', 'POST'])
+# def evaluation():
+#     try:
+#         # Handling GET request: Display member info
+#         if request.method == 'GET':
+#             account_number = request.args.get('account_number')
+
+#             if not account_number:
+#                 return jsonify({"error": "Account number not provided"}), 400  # Handle the case where no account_number is passed
+
+#             # Get member data from DB
+#             cur = mysql.connection.cursor()
+
+#             try:
+#                 # Query to get the member data by account_number
+#                 cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+#                 member = cur.fetchone()
+
+#                 # If member doesn't exist, return a 404 error
+#                 if not member:
+#                     return jsonify({"error": "Member not found"}), 404
+
+#                 # Render the evaluation page with member data
+#                 return render_template('evaluation.html', member=member)
+
+#             except Exception as e:
+#                 app.logger.error(f"Database error: {str(e)}")
+#                 return jsonify({"error": "Error fetching member data"}), 500
+#             finally:
+#                 cur.close()
+
+#         # Handling POST request: Perform prediction based on form data
+#         elif request.method == 'POST':
+#             form_data = request.form
+
+#             # Validate inputs
+#             required_fields = [
+#                 'payment_history_score', 'monthly_salary_score', 'loan_term_score',
+#                 'co_maker_score', 'savings_account_score', 'asset_owner_score',
+#                 'payment_method_score', 'repayment_schedule_score', 'credit_score'
+#             ]
+#             missing_fields = [field for field in required_fields if not form_data.get(field)]
+#             if missing_fields:
+#                 return jsonify({"error": f"Missing required form data: {', '.join(missing_fields)}"}), 400
+
+#             # Map form data to numerical features for the model
+#             features = [
+#                 float(form_data.get('payment_history_score')),
+#                 float(form_data.get('monthly_salary_score')),
+#                 float(form_data.get('loan_term_score')),
+#                 float(form_data.get('co_maker_score')),
+#                 float(form_data.get('savings_account_score')),
+#                 float(form_data.get('asset_owner_score')),
+#                 float(form_data.get('payment_method_score')),
+#                 float(form_data.get('repayment_schedule_score')),
+#                 float(form_data.get('credit_score'))
+#             ]
+
+#             features_array = np.array([features])
+
+#             # Predict eligibility using the pre-loaded model
+#             eligibility_prediction = ELIGIBILITY_MODEL.predict(features_array)[0]
+
+#             # Convert eligibility prediction to human-readable text
+#             eligibility_text = 'Eligible' if eligibility_prediction == 1 else 'Not eligible'
+
+#             # Log the result (for debugging purposes)
+#             app.logger.info(f"Prediction result - Eligibility: {eligibility_text}")
+
+#             # Return prediction result as JSON response
+#             return jsonify({
+#                 'eligibility': eligibility_text
+#             })
+
+#     except Exception as e:
+#         # Log any unexpected errors
+#         app.logger.error(f"Unexpected error: {str(e)}")
+#         return jsonify({"error": "Internal server error"}), 500
+
+    
 @app.route('/evaluation', methods=['GET'])
 def evaluation():
     # Get the account_number from the query parameters

@@ -507,14 +507,49 @@ def member_profile(account_number):
         # Close cursor
         cur.close()
 
+        success_message = session.pop('success', None) # Get success message if available
+
         if member:
-            return render_template('member-profile.html', member=member)
+            return render_template('member-profile.html', member=member, success=success_message)
         else:
             return "Member not found", 404
 
     except Exception as e:
         cur.close()
         return jsonify({"error": str(e)}), 500
+
+# Edit member route  
+@app.route('/update-member', methods=['POST'])
+def update_member():
+    try:
+        account_number = request.form['account_number']
+        name = request.form['name']
+        contact_number = request.form['contact_number']
+        email = request.form['email']
+        address = request.form['address']
+
+        cur = mysql.connection.cursor()
+
+        # Update member details in the database
+        cur.execute("""
+            UPDATE members
+            SET name = %s, contact_number = %s, email = %s, address = %s
+            WHERE account_number = %s
+        """, (name, contact_number, email, address, account_number))
+        
+        mysql.connection.commit()
+        cur.close()
+        
+        # Set success message in session
+        session['success'] = 'Member information updated successfully.'
+
+        return redirect(url_for('member_profile', account_number=account_number))
+    except KeyError as e:
+        return jsonify({"error": f"Missing form field: {str(e)}"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 
 # display 404 html
 @app.errorhandler(404)

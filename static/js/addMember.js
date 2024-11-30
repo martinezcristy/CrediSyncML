@@ -142,8 +142,7 @@ function confirmApprove() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // alert(`Approved! Email sent to: ${currentApproveEmail}`);
-                showDialog(`You have approved ${applicantName} successfully. An email has been sent to their email.`);
+                alert(`You have approved ${applicantName}. A notification has been sent to: ${currentApproveEmail}`);
                 approveButton.style.display = "none"; 
                 declineButton.style.display = "none"; 
                 approveButton.closest('tr').querySelector('.status-cell').textContent = 'Approved';
@@ -153,8 +152,7 @@ function confirmApprove() {
         })
         .catch(error => {
             console.error('Error sending email:', error);
-            // alert('Failed to send email.');
-            showDialog('Failed to send email.');
+            alert('Failed to send email.');
         });
     }
     closeApproveModal();
@@ -166,43 +164,6 @@ membersTableBody.addEventListener('click', function(e) {
         openApproveModal(e.target); // Open the approval modal
     } 
 });
-
-//show dialog after approving or declining a member
-function showDialog(message) {
-    document.getElementById('dialog-message').textContent = message;
-    document.getElementById('dialog').style.display = 'block';
-}
-
-function closeDialog() {
-    document.getElementById('dialog').style.display = 'none';
-}
-
-function declineMember(accountNumber) {
-    fetch('/decline_member', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ 
-            account_number: accountNumber
-        }),
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.message) {
-            showDialog(`You have declined the member successfully.`);
-            // Refresh the page after 2 seconds
-            setTimeout(() => location.reload(), 2000);
-        } else {
-            showDialog('Error: ' + data.error);
-        }
-    })
-    .catch(error => {
-        console.error('Error declining member:', error);
-        showDialog('Failed to decline the member.');
-    });
-}
-
 
 // // Fetch current member status on page load
 // function loadMemberStatuses() {

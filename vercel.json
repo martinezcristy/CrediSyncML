@@ -2,12 +2,7 @@
     "builds": [
       {
         "src": "app.py",
-        "use": "@vercel/python",
-        "config": {
-          "functions": {
-            "includeFiles": ["build.sh"]
-          }
-        }
+        "use": "@vercel/python"
       }
     ],
     "routes": [

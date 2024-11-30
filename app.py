@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for
+from werkzeug.security import generate_password_hash
+import bcrypt
 # from flask_mail import Mail
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
@@ -52,13 +54,13 @@ mail = Mail(app)
 # Initialize MySQL
 mysql = MySQL(app)
 
-# Before request to check if user is logged in
+# Before request to check if user is logged in but allow access to signup
 @app.before_request 
 def before_request(): 
     g.user = None 
     if 'user_id' in session: 
         g.user = session['user_id']
-    elif request.endpoint not in ('login', 'static'):
+    elif request.endpoint not in ('login', 'signup', 'static'):
         return redirect(url_for('login'))
 
 # Load subscription plans data from JSON file
@@ -67,23 +69,38 @@ def load_subscriptions():
         return json.load(f)
 
 # Login route
-@app.route('/login', methods=['GET', 'POST']) 
-def login(): 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     if request.method == 'POST':
         cooperative_id = request.form['cooperative_id']
         password = request.form['password']
+
         cursor = mysql.connection.cursor()
-        cursor.execute('SELECT * FROM user WHERE cooperative_id = %s AND password = %s', (cooperative_id, password))
+        cursor.execute('SELECT * FROM user WHERE cooperative_id = %s', (cooperative_id,))
         user = cursor.fetchone()
         cursor.close()
+
         if user:
-            session.pop('error', None) # Clear any previous error messages
-            session['user_id'] = user['cooperative_id']
-            return redirect(url_for('dashboard'))
+            stored_password = user['password'].encode('utf-8')
+            entered_password = password.encode('utf-8')
+
+            # Debugging logs
+            print(f"Stored Password: {stored_password}")
+            print(f"Entered Password: {entered_password}")
+
+            if bcrypt.checkpw(entered_password, stored_password):
+                session.pop('error', None)  # Clear any previous error messages
+                session['user_id'] = user['cooperative_id']
+                return redirect(url_for('dashboard'))
+            else:
+                session['error'] = 'Invalid credentials. Please try again.'
+                return redirect(url_for('login'))
         else:
             session['error'] = 'Invalid credentials. Please try again.'
             return redirect(url_for('login'))
-    return render_template('login.html')
+    success_message = session.pop('success', None) # Get success message if available
+    error_message = session.pop('error', None) #if entered wrong credentials
+    return render_template('login.html', success=success_message, error=error_message)
 
 # Logout route
 @app.route('/logout')
@@ -91,6 +108,39 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    if request.method == 'POST':
+        cooperative_id = request.form['cooperative_id']
+        cooperative_name = request.form['cooperative_name']
+        address = request.form['address']
+        contact_number = request.form['contact_number']
+        password = request.form['password']
+
+        cursor = mysql.connection.cursor()
+        cursor.execute('SELECT * FROM user WHERE cooperative_id = %s', (cooperative_id,))
+        existing_user = cursor.fetchone()
+        if existing_user:
+            session['error'] = 'Cooperative ID already exists. Please try a different ID.'
+            cursor.close()
+            return redirect(url_for('signup'))
+
+        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+
+        try:
+            cursor.execute('INSERT INTO user (cooperative_id, password, cooperative_name, address, contact_number) VALUES (%s, %s, %s, %s, %s)',
+                           (cooperative_id, hashed_password.decode('utf-8'), cooperative_name, address, contact_number))
+            mysql.connection.commit()
+            session.pop('error', None)  # Clear any previous error messages
+            session['success'] = 'User account successfully created!'
+            cursor.close()
+            return redirect(url_for('login'))
+        except Exception as e:
+            session['error'] = str(e)
+            cursor.close()
+            return redirect(url_for('signup'))
+
+    return render_template('signup.html')
 
 # Dashboard route
 @app.route('/', methods=['GET'])

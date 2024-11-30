@@ -109,6 +109,7 @@ function closeApproveModal() {
 // Confirm the approval and send the email
 function confirmApprove() {
     const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
+    const declineButton = approveButton.nextElementSibling;
     const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
     if (currentApproveEmail) {
         fetch('/send_approval_email', {
@@ -124,7 +125,6 @@ function confirmApprove() {
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-                // Send request to update the member's status to "Approved"
                 return fetch('/update_member_status', {
                     method: 'POST',
                     headers: {
@@ -142,26 +142,23 @@ function confirmApprove() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(`Approved! Email sent to: ${currentApproveEmail}`);
-                const rows = membersTableBody.querySelectorAll("tr");
-                rows.forEach(row => {
-                    const approveButton = row.querySelector('.approve[data-email="' + currentApproveEmail + '"]');
-                    if (approveButton) {
-                        approveButton.style.display = "none"; // hide button
-                    }
-                });
+                // alert(`Approved! Email sent to: ${currentApproveEmail}`);
+                showDialog(`You have approved ${applicantName} successfully. An email has been sent to their email.`);
+                approveButton.style.display = "none"; 
+                declineButton.style.display = "none"; 
+                approveButton.closest('tr').querySelector('.status-cell').textContent = 'Approved';
             } else {
                 alert('Error: ' + (data.error || 'Unknown error'));
-            }
+            } 
         })
         .catch(error => {
             console.error('Error sending email:', error);
-            alert('Failed to send email.');
+            // alert('Failed to send email.');
+            showDialog('Failed to send email.');
         });
     }
     closeApproveModal();
 }
-
 
 // Attach event listener to the members table body
 membersTableBody.addEventListener('click', function(e) {
@@ -170,33 +167,70 @@ membersTableBody.addEventListener('click', function(e) {
     } 
 });
 
-// Fetch current member status on page load
-function loadMemberStatuses() {
-    fetch('/get_member_statuses')  // Endpoint to get all member statuses
-        .then(response => response.json())
-        .then(data => {
-            if (data.members) {
-                data.members.forEach(member => {
-                    const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
-                    if (approveButton) {
-                        if (member.status === 'Approved') {
-                            // approveButton.textContent = "Approved";
-                            approveButton.style.display = "none"; // Hide button if already approved
-                        }
-                    }
-                });
-            } else {
-                console.error("Error loading member statuses:", data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading member statuses:', error);
-        });
+//show dialog after approving or declining a member
+function showDialog(message) {
+    document.getElementById('dialog-message').textContent = message;
+    document.getElementById('dialog').style.display = 'block';
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    loadMemberStatuses(); 
-});
+function closeDialog() {
+    document.getElementById('dialog').style.display = 'none';
+}
+
+function declineMember(accountNumber) {
+    fetch('/decline_member', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            account_number: accountNumber
+        }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.message) {
+            showDialog(`You have declined the member successfully.`);
+            // Refresh the page after 2 seconds
+            setTimeout(() => location.reload(), 2000);
+        } else {
+            showDialog('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error declining member:', error);
+        showDialog('Failed to decline the member.');
+    });
+}
+
+
+// // Fetch current member status on page load
+// function loadMemberStatuses() {
+//     fetch('/get_member_statuses')  // Endpoint to get all member statuses
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.members) {
+//                 data.members.forEach(member => {
+//                     const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
+//                     if (approveButton) {
+//                         if (member.status === 'Approved') {
+//                             // approveButton.textContent = "Approved";
+//                             approveButton.style.display = "none"; // Hide button if already approved
+//                         }
+//                     }
+//                 });
+//             } else {
+//                 console.error("Error loading member statuses:", data.error);
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error loading member statuses:', error);
+//         });
+// }
+
+// document.addEventListener("DOMContentLoaded", function() {
+//     loadMemberStatuses(); 
+// });
 
 // Open the decline modal and store the row to be deleted
 function openDeclineModal(button) {

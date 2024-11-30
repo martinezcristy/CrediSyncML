@@ -1,0 +1,139 @@
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+/* General Reset */
+:root {
+    --primary-color: #FFFFFF; /* sidebar, cards, form components */
+    --primary-color-2: #F2F3F7; /* body background */
+    --secondary-color: #FBD504; /* buttons */
+    --accent-color: #ff7a00; /* hovers */
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    font-size: 12px;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Montserrat', sans-serif; 
+    background-color: var(--primary-color-2);
+}
+
+.wrapper {
+    width: 100%;
+    max-width: 450px;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    background-color: var(--primary-color);
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+form img {
+    width: 100px;
+    margin: 0 auto 20px;
+}
+
+form h1 {
+    font-size: 20px;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* User type styles */
+.user-type {
+    display: flex;
+    justify-content: center;
+    
+}
+
+.user-type img {
+    width: 50px;
+    height: 50px;
+}
+
+/* Flex container for input fields */
+.form-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.form-row-password{
+    display: block;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.input-field {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.input-field label {
+    color: #757473;
+    font-size: 12px;
+    text-align: left;
+}
+
+.input-field input {
+    border-radius: 5px;
+    border: 1px solid #ad9983;
+    width: 100%;
+    height: 30px;
+    padding-left: 5px;
+}
+
+input::placeholder {
+    color: #e3e3e3;
+    font-family: 'Montserrat', sans-serif;
+    padding: 10px;
+    font-size: 10px;
+}
+
+button {
+    width: 100%;
+    height: 40px;
+    border-radius: 5px;
+    background-color: var(--secondary-color);
+    color: #fdfbf6;
+    border: none;
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+}
+
+button:hover {
+    background-color: var(--accent-color);
+    cursor: pointer;
+}
+
+.signup-link {
+    margin-top: 10px;
+    text-align: center;
+}
+
+.signup-link p {
+    font-size: 12px;
+    font-family: 'Montserrat', sans-serif;
+    color: #6c6c6c;
+}
+
+.signup-link a {
+    color: #6c6c6c;
+}

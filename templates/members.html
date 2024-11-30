@@ -29,6 +29,10 @@
                 <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
             </ul>
         </nav>
+
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -65,13 +69,17 @@
                     <td>{{ member.email }}</td>
                     <td>{{ member.address }}</td>
                     <td>{{ member.date_applied }}</td>
-                    <td>{{ member.status }}</td>
+                    <td class="status-cell">{{ member.status }}</td>
                     <td class="actions">
-                        <button class="approve">Approve</button>
-                        <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                        {% if member.status == 'Pending' %}
+                            <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approve</button>
+                            <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                        {% else %}
+                            <button class="approve" style="display:none;">Approve</button>
+                            <button class="decline" style="display:none;">Decline</button>
+                        {% endif %}
                         <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
                     </td>
-                   
                 </tr>
                 {% endfor %}
             </tbody>
@@ -108,6 +116,14 @@
         </div>
     </div>
 
+    <!-- show this dialog -->
+    <div id="dialog" class="dialog">
+        <div class="dialog-content">
+            <span class="close" onclick="closeDialog()">&times;</span>
+            <div class="dialog-icon">&#9989;</div> <!-- Checkmark icon -->
+            <p id="dialog-message"></p>
+        </div>
+    </div>
 
     <!-- Decline Member Modal -->
     <div id="declineMemberModal" class="modal">

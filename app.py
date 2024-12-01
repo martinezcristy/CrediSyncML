@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for
 from werkzeug.security import generate_password_hash
 import bcrypt
-# from flask_mail import Mail
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
 from flask_mysqldb import MySQL
@@ -54,7 +53,7 @@ mail = Mail(app)
 # Initialize MySQL
 mysql = MySQL(app)
 
-# Before request to check if user is logged in but allow access to signup
+# Check if user is logged in, allowed access to signup
 @app.before_request 
 def before_request(): 
     g.user = None 
@@ -108,6 +107,7 @@ def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
 
+# Signup route
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
@@ -182,11 +182,10 @@ def dashboard():
 #         # Handle other unexpected errors (optional)
 #         return jsonify({"error": "An unexpected error occurred."}), 500
 
-# Members route cooperative end
+# Members route
 @app.route('/members', methods=['GET', 'POST'])
 def members():
-     # Save the member to the database
-    cur = mysql.connection.cursor()
+    cur = mysql.connection.cursor() # Save the member to the database
 
     if request.method == 'POST':
         # Retrieve form data
@@ -196,6 +195,25 @@ def members():
         email = request.form['email-address']
         address = request.form['address']
         date_applied = request.form['date-applied']
+
+        # Validate if account number or email already exists in the database
+        cur.execute("SELECT * FROM members WHERE account_number = %s OR email = %s", (account_number, email))
+        existing_member = cur.fetchone()
+
+        if existing_member:
+            # Check which one exists and send the appropriate error
+            if existing_member[1] == account_number:
+                error_message = "Account number already exists."
+            elif existing_member[3] == email:
+                error_message = "Email address already exists."
+            else:
+                error_message = "There was an error processing your request."
+
+            # Render the page with the error message and form data
+            return render_template('members.html', error_message=error_message, 
+                                   account_number=account_number, name=name,
+                                   contact_number=contact_number, email=email,
+                                   address=address, date_applied=date_applied)
 
         try:
             cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Pending')", (account_number, name, contact_number, email, address, date_applied))
@@ -207,11 +225,32 @@ def members():
             return jsonify({"success": False, "error": str(e)}), 500
 
     cur.execute("SELECT * FROM members")
-    members_data = cur.fetchall() #fetch from sql db inag start ani nga route
+    members_data = cur.fetchall() #fetch from sql db when this route is called
     cur.close()
 
     # return render_template('members.html')
     return render_template('members.html', members=members_data)
+
+# Check if the member account number and email exists (Add Member Form Modal)
+# @app.route('/check_member', methods=['POST'])
+# def check_member():
+#     account_number = request.form['account_number']
+#     email = request.form['email']
+
+#     cur = mysql.connection.cursor()
+#     cur.execute("SELECT * FROM members WHERE account_number = %s OR email = %s", (account_number, email))
+#     member = cur.fetchone()
+#     cur.close()
+
+#     if member:
+#         error_message = ""
+#         if member['account_number'] == account_number:
+#             error_message += "Account number already exists. "
+#         if member['email'] == email:
+#             error_message += "Email already exists. "
+#         return jsonify({"exists": True, "message": error_message.strip()}), 200
+#     else:
+#         return jsonify({"exists": False}), 200
 
 
 # Declined  members route
@@ -294,12 +333,13 @@ def send_approval_email_route():
     return jsonify({"error": "Recipient not provided."}), 400
 
 
-# Route to update member loan application status
+# Route to update member information
 @app.route('/update_member_status', methods=['POST'])
 def update_member_status():
     data = request.json
-    account_number = data.get('account_number')
+    account_number = data.get('account_number') #account number is read only
     status = data.get('status')
+    email = data.get('email') #include this in checking
 
     if not account_number or not status:
         return jsonify({"error": "Account number or status not provided"}), 400
@@ -307,6 +347,13 @@ def update_member_status():
     cur = mysql.connection.cursor()
 
     try:
+        # Check if email exists (excluding the current member)
+        cur.execute("SELECT * FROM members WHERE email = %s AND account_number != %s", (email, account_number))
+        email_exists = cur.fetchone()
+
+        if email_exists:
+            return jsonify({"error": "Email already exists for another account"}), 409
+
         # Update the member's status
         cur.execute("UPDATE members SET status = %s WHERE account_number = %s", (status, account_number))
         mysql.connection.commit()
@@ -318,63 +365,46 @@ def update_member_status():
     finally:
         cur.close()
 
-# # Route to fetch the status of all members
-# @app.route('/get_member_statuses', methods=['GET'])
-# def get_member_statuses():
-#     cur = mysql.connection.cursor()
-
-#     try:
-#         # Fetch all members and their status from the database
-#         cur.execute("SELECT account_number, name, email, status FROM members")
-#         members = cur.fetchall()
-
-#         return jsonify({"members": members}), 200
-#     except Exception as e:
-#         cur.close()
-#         return jsonify({"error": str(e)}), 500
-
-# Settings page
-@app.route('/settings', methods=['GET', 'POST'])
+# Profile route
+@app.route('/settings', methods=['POST'])
 def settings():
-    if request.method == 'POST':
-        # Handle form submission
-        coop_name = request.form['coopName']
-        coop_shortName = request.form['coopShortName']
-        address = request.form['address']
-        contact_number = request.form['contactNumber']
-        email = request.form['email']
+    try:
+        data = request.get_json()
+        cooperative_id = data['cooperative_id']
+        coop_name = data['coop_name']
+        address = data['address']
+        contact_number = data['contact_number']
+        email = data['email']
 
         cur = mysql.connection.cursor()
-        try:
-            cur.execute("""
-                UPDATE user
-                SET coop_name = %s, coop_shortName = %s, address = %s, contact_number = %s, email = %s
-                LIMIT 1
-            """, (coop_name, coop_shortName, address, contact_number, email))
-            mysql.connection.commit()
-        except Exception as e:
-            mysql.connection.rollback()
-            return f"Error updating user: {str(e)}", 500
-        finally:
-            cur.close()
-        return redirect(url_for('settings'))
-    else:
-        # Initial data fetching is handled by the get_user endpoint via AJAX
-        return render_template('settings.html')
+        cur.execute("""
+            UPDATE user
+            SET cooperative_name = %s, address = %s, contact_number = %s, email = %s
+            WHERE cooperative_id = %s
+        """, (coop_name, address, contact_number, email, cooperative_id))
+        mysql.connection.commit()
+        cur.close()
 
+        return jsonify({"message": "User updated successfully!"}), 200
+    except Exception as e:
+        mysql.connection.rollback()
+        return jsonify({"error": str(e)}), 500
+
+
+# Route to fetch user details
 @app.route('/get_user', methods=['GET'])
 def get_user():
     cur = mysql.connection.cursor()
     try:
-        cur.execute("SELECT coop_name, coop_shortName, address, contact_number, email FROM user LIMIT 1")
+        cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number, email FROM user LIMIT 1")
         user = cur.fetchone()
 
         if not user:
             return jsonify({"error": "User not found"}), 404
 
         user_data = {
-            "coop_name": user[0],
-            "coop_shortName": user[1],
+            "cooperative_id": user[0],
+            "cooperative_name": user[1],
             "address": user[2],
             "contact_number": user[3],
             "email": user[4]
@@ -385,87 +415,8 @@ def get_user():
     finally:
         cur.close()
 
-# # Evaluation page
-# @app.route('/evaluation', methods=['GET', 'POST'])
-# def evaluation():
-#     try:
-#         # Handling GET request: Display member info
-#         if request.method == 'GET':
-#             account_number = request.args.get('account_number')
 
-#             if not account_number:
-#                 return jsonify({"error": "Account number not provided"}), 400  # Handle the case where no account_number is passed
-
-#             # Get member data from DB
-#             cur = mysql.connection.cursor()
-
-#             try:
-#                 # Query to get the member data by account_number
-#                 cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
-#                 member = cur.fetchone()
-
-#                 # If member doesn't exist, return a 404 error
-#                 if not member:
-#                     return jsonify({"error": "Member not found"}), 404
-
-#                 # Render the evaluation page with member data
-#                 return render_template('evaluation.html', member=member)
-
-#             except Exception as e:
-#                 app.logger.error(f"Database error: {str(e)}")
-#                 return jsonify({"error": "Error fetching member data"}), 500
-#             finally:
-#                 cur.close()
-
-#         # Handling POST request: Perform prediction based on form data
-#         elif request.method == 'POST':
-#             form_data = request.form
-
-#             # Validate inputs
-#             required_fields = [
-#                 'payment_history_score', 'monthly_salary_score', 'loan_term_score',
-#                 'co_maker_score', 'savings_account_score', 'asset_owner_score',
-#                 'payment_method_score', 'repayment_schedule_score', 'credit_score'
-#             ]
-#             missing_fields = [field for field in required_fields if not form_data.get(field)]
-#             if missing_fields:
-#                 return jsonify({"error": f"Missing required form data: {', '.join(missing_fields)}"}), 400
-
-#             # Map form data to numerical features for the model
-#             features = [
-#                 float(form_data.get('payment_history_score')),
-#                 float(form_data.get('monthly_salary_score')),
-#                 float(form_data.get('loan_term_score')),
-#                 float(form_data.get('co_maker_score')),
-#                 float(form_data.get('savings_account_score')),
-#                 float(form_data.get('asset_owner_score')),
-#                 float(form_data.get('payment_method_score')),
-#                 float(form_data.get('repayment_schedule_score')),
-#                 float(form_data.get('credit_score'))
-#             ]
-
-#             features_array = np.array([features])
-
-#             # Predict eligibility using the pre-loaded model
-#             eligibility_prediction = ELIGIBILITY_MODEL.predict(features_array)[0]
-
-#             # Convert eligibility prediction to human-readable text
-#             eligibility_text = 'Eligible' if eligibility_prediction == 1 else 'Not eligible'
-
-#             # Log the result (for debugging purposes)
-#             app.logger.info(f"Prediction result - Eligibility: {eligibility_text}")
-
-#             # Return prediction result as JSON response
-#             return jsonify({
-#                 'eligibility': eligibility_text
-#             })
-
-#     except Exception as e:
-#         # Log any unexpected errors
-#         app.logger.error(f"Unexpected error: {str(e)}")
-#         return jsonify({"error": "Internal server error"}), 500
-
-    
+# Evaluation route
 @app.route('/evaluation', methods=['GET'])
 def evaluation():
     # Get the account_number from the query parameters
@@ -493,7 +444,6 @@ def evaluation():
         return "Error fetching member data", 500
     finally:
         cur.close()
-
 
 # Member profile page 
 @app.route('/member-profile/<account_number>')
@@ -548,8 +498,6 @@ def update_member():
         return jsonify({"error": f"Missing form field: {str(e)}"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
 
 # display 404 html
 @app.errorhandler(404)

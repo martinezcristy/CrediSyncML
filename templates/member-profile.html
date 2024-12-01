@@ -14,7 +14,7 @@
         </div>
 
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
             <h2>MAVENCO</h2>
             <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
@@ -45,6 +45,8 @@
             {% if success %} 
                 <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
             {% endif %}
+
+            <div id="error-message" style="display: none; color: red; text-align: center;"></div>
 
             <div class="form-row">
                 <div class="form-group">

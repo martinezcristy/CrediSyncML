@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrediSync Members</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/formValidation.js') }}"></script>
 </head>
 
@@ -16,7 +17,7 @@
         </div>
 
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
             <h2>MAVENCO</h2>
             <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
@@ -91,7 +92,21 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Add New Member</h2>
-            <form id="addMemberForm" method="POST" action="/members">
+            <form id="addMemberForm" method="POST" action="/members" onsubmit="return validateForm(event)">
+
+                <!-- Display error message if any -->
+                {% if error_message %}
+                    <div id="error-message" style="color: red; display: block;">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+                
+                {% if success_message %}
+                    <div id="success-message" style="color: green; display: block;">
+                        {{ success_message }}
+                    </div>
+                {% endif %}
+
                 <label for="account-number">Account Number</label>
                 <input type="text" id="account-number" name="account-number" required>
 
@@ -115,6 +130,7 @@
             </form>
         </div>
     </div>
+
 
     <!-- show this dialog -->
     <div id="dialog" class="dialog">

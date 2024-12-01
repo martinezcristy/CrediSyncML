@@ -42,7 +42,8 @@ function updateUser(event) {
     .then(response => response.json())
     .then(data => {
         if (data.message) {
-            alert('User updated successfully!');
+            document.getElementById('success-message').textContent = data.message;
+            document.getElementById('success-message').style.display = 'block';
         } else {
             alert('Error: ' + (data.error || 'Unknown error'));
         }

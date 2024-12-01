@@ -4,7 +4,6 @@ from flask_bcrypt import Bcrypt
 import bcrypt
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
-from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 import os
 import smtplib
@@ -41,8 +40,6 @@ EMAIL_USERNAME = os.getenv("MAIL_USERNAME")
 EMAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 EMAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
 
-
-
 #MYSQL CONFIGURATION
 app.config['MYSQL_HOST'] = MYSQL_HOST
 app.config['MYSQL_USER'] = MYSQL_USER
@@ -61,8 +58,6 @@ app.config.update(
 )
 
 mail = Mail(app)
-# Initialize MySQL
-mysql = MySQL(app)
 
 # Check if user is logged in, allowed access to signup
 @app.before_request 

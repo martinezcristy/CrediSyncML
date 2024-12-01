@@ -14,7 +14,7 @@
         </div>
 
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
             <h2>MAVENCO</h2>
             <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
@@ -27,45 +27,50 @@
                 <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
             </ul>
         </nav>
+
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
     </div>
 
 
     <div class="coop-main-content">
-        <!-- {% if member %}
-        <p><strong>Account Number:</strong> {{ member.account_number }}</p>
-        <p><strong>Name:</strong> {{ member.name }}</p>
-        <p><strong>Contact Number:</strong> {{ member.contact_number }}</p>
-        <p><strong>Email:</strong> {{ member.email }}</p>
-        <p><strong>Address:</strong> {{ member.address }}</p>
-        <p><strong>Date Applied:</strong> {{ member.date_applied }}</p>
-        <p><strong>Status:</strong> {{ member.status }}</p>
-        {% else %}
-        <p>Member not found.</p>
-        {% endif %} -->
 
-        <form action="/update">
+        <form action="{{ url_for('update_member') }}" method="post">
+
             <div class="member-profile-image">
                 <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
             </div>
+
+            {% if success %} 
+                <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
+            {% endif %}
+
+            <div id="error-message" style="display: none; color: red; text-align: center;"></div>
+
             <div class="form-row">
                 <div class="form-group">
-                    <label for="coopName">Account Number</label>
-                    <input type="text" id="coopName" class="form-control" value="{{member.account_number}}">
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" name="account_number" class="form-control" value="{{ member.account_number }}" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="address">Name</label>
-                    <input type="text" id="address" class="form-control" value="{{member.name}}">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" class="form-control" value="{{ member.name }}">
                 </div>
             </div>
-    
+
             <div class="form-row">
                 <div class="form-group">
                     <label for="contactNumber">Contact Number</label>
-                    <input type="text" id="contactNumber" class="form-control" value="{{member.contact_number}}">
+                    <input type="text" id="contactNumber" name="contact_number" class="form-control" value="{{ member.contact_number }}">
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" value="{{ member.address }}">
+                    <input type="email" id="email" name="email" class="form-control" value="{{ member.email }}">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" name="address" class="form-control" value="{{ member.address }}">
                 </div>
             </div>
 
@@ -75,8 +80,10 @@
                     <input type="text" id="contactNumber" class="form-control" value="{{member.status}}" disabled>
                 </div>
             </div>
-
             <button type="submit" class="btn">Save</button>
         </form>
+        
 </body>
 </html>
+
+

@@ -1,3 +1,86 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        </div>
+
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
+            <h2>MAVENCO</h2>
+            <p class="admin-role">Mandaue City Public Market Vendors</p>
+        </div>
+        
+        <nav class="menu">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
+    </div>
+
+    <div class="coop-main-content">
+       
+        <form action="/settings" method="POST" onsubmit="updateUser(event)">
+            <div class="member-profile-image">
+                <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Profile" class="profile-pic">
+                <h2>{{ user.coop_shortName if user else 'No Coop Name' }}</h2>
+            </div>
+            <br><br>
+            {% if success %}
+                <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
+            {% endif %}
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="coopShortName">Cooperative ID</label>
+                    <input type="text" id="coopID" class="form-control" name="coopShortName" value="{{ user.coop_cooperative_id if user else '' }}" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="coopName">Cooperative Name</label>
+                    <input type="text" id="coopName" class="form-control" name="coopName" value="{{ user.coop_name if user else '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input type="text" id="address" class="form-control" name="address" value="{{ user.address if user else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="contactNumber">Contact Number</label>
+                    <input type="text" id="contactNumber" class="form-control" name="contactNumber" value="{{ user.contact_number if user else '' }}">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" name="email" value="{{ user.email if user else '' }}">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">Save</button>
+        </form>
+         
+    </div>
+
+    <script src="{{ url_for('static', filename='scripts/userProfile.js') }}"></script>
+
+</body>
+</html> -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,59 +90,95 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+    <form action="#" onsubmit="updateUser(event)">
+        <div class="member-profile-image">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Profile" class="profile-pic">
+            <h2>{{ user.cooperative_name if user else 'No Coop Name' }}</h2>
         </div>
-
-        <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Karthi Madesh" class="profile-pic">
-            <h2>MAVENCO</h2>
-            <p class="admin-role">Mandaue City Public Market Vendors</p>
+        <br><br>
+        {% if success %}
+            <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
+        {% endif %}
+        <div class="form-row">
+            <div class="form-group">
+                <label for="coopID">Cooperative ID</label>
+                <input type="text" id="coopID" class="form-control" name="cooperative_id" value="" readonly>
+            </div>
+            <div class="form-group">
+                <label for="coopName">Cooperative Name</label>
+                <input type="text" id="coopName" class="form-control" name="coop_name" value="">
+            </div>
         </div>
         
-        <!-- Sidebar Navigation -->
-        <nav class="menu">
-            <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
-                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
-            </ul>
-        </nav>
-    </div>
-
-    <div class="coop-main-content">
-       
-        <form action="/update">
-            <div class="member-profile-image">
-                <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="address">Address</label>
+                <input type="text" id="address" class="form-control" name="address" value="">
             </div>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="coopName">Cooperative Name</label>
-                    <input type="text" id="coopName" class="form-control" placeholder="Enter cooperative name">
-                </div>
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" class="form-control" placeholder="Enter address">
-                </div>
+            <div class="form-group">
+                <label for="contactNumber">Contact Number</label>
+                <input type="text" id="contactNumber" class="form-control" name="contact_number" value="">
             </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" class="form-control" name="email" value="">
+            </div>
+        </div>
+        
+        <button type="submit" class="btn">Save</button>
+    </form>
     
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="contactNumber">Contact Number</label>
-                    <input type="text" id="contactNumber" class="form-control" placeholder="Enter contact number">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" class="form-control" placeholder="Enter email">
-                </div>
-            </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            fetch('/get_user')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        console.error(data.error);
+                    } else {
+                        document.getElementById('coopID').value = data.cooperative_id;
+                        document.getElementById('coopName').value = data.cooperative_name;
+                        document.getElementById('address').value = data.address;
+                        document.getElementById('contactNumber').value = data.contact_number;
+                        document.getElementById('email').value = data.email;
+                    }
+                })
+                .catch(error => console.error('Error fetching user data:', error));
+        });
     
-            <button type="submit" class="btn">Save</button>
-        </form>
-    </div>
-
+        function updateUser(event) {
+            event.preventDefault();
+    
+            const user = {
+                cooperative_id: document.getElementById('coopID').value,
+                coop_name: document.getElementById('coopName').value,
+                address: document.getElementById('address').value,
+                contact_number: document.getElementById('contactNumber').value,
+                email: document.getElementById('email').value
+            };
+    
+            fetch('/settings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(user)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    alert(data.message);
+                } else if (data.error) {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error('Error updating user:', error));
+        }
+    </script>
+    
 </body>
 </html>
+

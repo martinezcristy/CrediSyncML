@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CrediSync Members</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/formValidation.js') }}"></script>
 </head>
 
@@ -16,7 +17,7 @@
         </div>
 
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
             <h2>MAVENCO</h2>
             <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
@@ -26,9 +27,13 @@
             <ul>
                 <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
                 <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
             </ul>
         </nav>
+
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -65,13 +70,17 @@
                     <td>{{ member.email }}</td>
                     <td>{{ member.address }}</td>
                     <td>{{ member.date_applied }}</td>
-                    <td>{{ member.status }}</td>
+                    <td class="status-cell">{{ member.status }}</td>
                     <td class="actions">
-                        <button class="approve">Approve</button>
-                        <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                        {% if member.status == 'Pending' %}
+                            <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approve</button>
+                            <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                        {% else %}
+                            <button class="approve" style="display:none;">Approve</button>
+                            <button class="decline" style="display:none;">Decline</button>
+                        {% endif %}
                         <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
                     </td>
-                   
                 </tr>
                 {% endfor %}
             </tbody>
@@ -83,7 +92,21 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Add New Member</h2>
-            <form id="addMemberForm" method="POST" action="/members">
+            <form id="addMemberForm" method="POST" action="/members" onsubmit="return validateForm(event)">
+
+                <!-- Display error message if any -->
+                {% if error_message %}
+                    <div id="error-message" style="color: red; display: block;">
+                        {{ error_message }}
+                    </div>
+                {% endif %}
+                
+                {% if success_message %}
+                    <div id="success-message" style="color: green; display: block;">
+                        {{ success_message }}
+                    </div>
+                {% endif %}
+
                 <label for="account-number">Account Number</label>
                 <input type="text" id="account-number" name="account-number" required>
 
@@ -108,6 +131,15 @@
         </div>
     </div>
 
+
+    <!-- show this dialog -->
+    <div id="dialog" class="dialog">
+        <div class="dialog-content">
+            <span class="close" onclick="closeDialog()">&times;</span>
+            <div class="dialog-icon">&#9989;</div> <!-- Checkmark icon -->
+            <p id="dialog-message"></p>
+        </div>
+    </div>
 
     <!-- Decline Member Modal -->
     <div id="declineMemberModal" class="modal">

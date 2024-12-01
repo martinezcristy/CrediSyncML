@@ -14,7 +14,7 @@
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
         </div>
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
             <h2>MAVENCO</h2>
             <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
@@ -23,9 +23,12 @@
             <ul>
                 <li><a href="{{ url_for('dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
                 <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
             </ul>
         </nav>
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
     </div>
 
     <div class="main-content">
@@ -33,34 +36,31 @@
 
         <!-- analytics boxes -->
         <div class="dashboard-cards">
-
             <div class="card">
                 <div>
                     <h2>ALL MEMBERS</h2>
                     <div class="value">{{ all_members_count }}</div>
                 </div>
-                <img src="{{ url_for('static', filename='icons/cooperative-icon.png') }}">
+                <img src="{{ url_for('static', filename='icons/users-group-rounded-svgrepo-com.svg') }}">
             </div>
-
+        
             <div class="card">
                 <div>
                     <h2>EVALUATED MEMBERS</h2>
                     <div class="value">0</div>
                 </div>
-                <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
-    
+                <img src="{{ url_for('static', filename='icons/user-check-rounded-svgrepo-com.svg') }}">
             </div>
-
+        
             <div class="card">
                 <div>
                     <h2>DECLINED MEMBERS</h2>
                     <div class="value">{{ declined_members_count }}</div>
                 </div>
-                <img src="{{ url_for('static', filename='icons/applicants-icon.png') }}">
-    
+                <img src="{{ url_for('static', filename='icons/user-cross-rounded-svgrepo-com.svg') }}">
             </div>
-        
         </div>
+        
 
 
         <!-- subscription boxes -->

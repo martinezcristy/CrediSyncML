@@ -109,6 +109,7 @@ function closeApproveModal() {
 // Confirm the approval and send the email
 function confirmApprove() {
     const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
+    const declineButton = approveButton.nextElementSibling;
     const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
     if (currentApproveEmail) {
         fetch('/send_approval_email', {
@@ -124,7 +125,6 @@ function confirmApprove() {
         .then(response => response.json())
         .then(data => {
             if (data.message) {
-                // Send request to update the member's status to "Approved"
                 return fetch('/update_member_status', {
                     method: 'POST',
                     headers: {
@@ -142,18 +142,13 @@ function confirmApprove() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert(`Approved! Email sent to: ${currentApproveEmail}`);
-                const rows = membersTableBody.querySelectorAll("tr");
-                rows.forEach(row => {
-                    const approveButton = row.querySelector('.approve[data-email="' + currentApproveEmail + '"]');
-                    if (approveButton) {
-                        approveButton.textContent = "Approved"; // Change button text
-                        approveButton.style.display = "none"; // hide button
-                    }
-                });
+                alert(`You have approved ${applicantName}. A notification has been sent to: ${currentApproveEmail}`);
+                approveButton.style.display = "none"; 
+                declineButton.style.display = "none"; 
+                approveButton.closest('tr').querySelector('.status-cell').textContent = 'Approved';
             } else {
                 alert('Error: ' + (data.error || 'Unknown error'));
-            }
+            } 
         })
         .catch(error => {
             console.error('Error sending email:', error);
@@ -163,7 +158,6 @@ function confirmApprove() {
     closeApproveModal();
 }
 
-
 // Attach event listener to the members table body
 membersTableBody.addEventListener('click', function(e) {
     if (e.target.classList.contains('approve')) {
@@ -171,35 +165,33 @@ membersTableBody.addEventListener('click', function(e) {
     } 
 });
 
-// Fetch current member status on page load
-function loadMemberStatuses() {
-    fetch('/get_member_statuses')  // Endpoint to get all member statuses
-        .then(response => response.json())
-        .then(data => {
-            if (data.members) {
-                data.members.forEach(member => {
-                    const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
-                    if (approveButton) {
-                        if (member.status === 'Approved') {
-                            approveButton.textContent = "Approved";
-                            approveButton.style.display = "none"; // Hide button if already approved
-                        }
-                    }
-                });
-            } else {
-                console.error("Error loading member statuses:", data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error loading member statuses:', error);
-        });
-}
+// // Fetch current member status on page load
+// function loadMemberStatuses() {
+//     fetch('/get_member_statuses')  // Endpoint to get all member statuses
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.members) {
+//                 data.members.forEach(member => {
+//                     const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
+//                     if (approveButton) {
+//                         if (member.status === 'Approved') {
+//                             // approveButton.textContent = "Approved";
+//                             approveButton.style.display = "none"; // Hide button if already approved
+//                         }
+//                     }
+//                 });
+//             } else {
+//                 console.error("Error loading member statuses:", data.error);
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error loading member statuses:', error);
+//         });
+// }
 
-// Call this function on page load
-document.addEventListener('DOMContentLoaded', function() {
-    loadMemberStatuses();
-});
-
+// document.addEventListener("DOMContentLoaded", function() {
+//     loadMemberStatuses(); 
+// });
 
 // Open the decline modal and store the row to be deleted
 function openDeclineModal(button) {

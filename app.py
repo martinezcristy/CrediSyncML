@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 #redirect, url_for, flash
 # from flask_mail import Mail
 from flask_mysqldb import MySQL 
-from flask_mail import Mail
+# from flask_mail import Mail
 from flask_mysqldb import MySQL
 # from models import Member
 from dotenv import load_dotenv
@@ -50,7 +50,7 @@ app.config.update(
     MAIL_DEFAULT_SENDER=EMAIL_DEFAULT_SENDER,
 )
 
-mail = Mail(app)
+# mail = Mail(app)
 
 # Initialize MySQL
 mysql = MySQL(app)

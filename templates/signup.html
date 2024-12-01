@@ -11,56 +11,65 @@
         <form method="POST" action="{{ url_for('signup') }}" onsubmit="return validateForm();">
 
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        
+            <div class="user-type">
+                <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Cooperative Icon">
+            </div>
+            
+            <div id="error-message" style="display: none; color: red;"></div>
 
-                <div class="user-type">
-                    <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Cooperative Icon">
+            <div class="form-row">
+                <div class="input-field">
+                    <label for="cooperative_id">Cooperative ID</label><br>
+                    <input type="text" id="cooperative_id" name="cooperative_id" placeholder="Enter your cooperative ID" required pattern="[A-Za-z0-9]+" title="Cooperative ID must contain letters and numbers only."/>
+                    <div class="error-message" id="cooperative_id_error" style="color: red; display: none;"></div>
                 </div>
-
-                <div class="form-row">
-                    <div class="input-field">
-                        <label for="cooperative_id">Cooperative ID</label><br>
-                        <input type="text" id="cooperative_id" name="cooperative_id" placeholder="Enter your cooperative ID" required pattern="[A-Za-z0-9]+" title="Cooperative ID must contain letters and numbers only."/>
-                        
-                    </div>
-                    <div class="input-field">
-                        <label for="cooperative_name">Cooperative Name</label><br>
-                        <input type="text" id="cooperative_name" name="cooperative_name" placeholder="Enter your cooperative name" required/>
-                    </div>
+                <div class="input-field">
+                    <label for="cooperative_name">Cooperative Name</label><br>
+                    <input type="text" id="cooperative_name" name="cooperative_name" placeholder="Enter your cooperative name" required/>
+                    <div class="error-message" id="cooperative_name_error" style="color: red; display: none;"></div>
                 </div>
-
-                <div class="form-row">
-                    <div class="input-field">
-                        <label for="address">Address</label><br>
-                        <input type="text" id="address" name="address" placeholder="Enter your address" required/>
-                    </div>
-                    <div class="input-field">
-                        <label for="contact_number">Contact Number</label><br>
-                        <input type="text" id="contact_number" name="contact_number" placeholder="Enter your contact number" required maxlength="12"/>                      
-                    </div>
-                    
-                </div>  
-                
-                <div class="form-row-password">
-                    <div class="input-field">
-                        <label for="password">Password</label><br>
-                        <input type="password" id="password" name="password" placeholder="Enter your password" required/>
-                    </div>
-
-                    <br>
-    
-                    <div class="input-field">
-                        <label for="confirm_password">Confirm Password</label><br>
-                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required/>
-                    </div>
+            </div>
+        
+            <div class="form-row">
+                <div class="input-field">
+                    <label for="address">Address</label><br>
+                    <input type="text" id="address" name="address" placeholder="Enter your address" required/>
+                    <div class="error-message" id="address_error" style="color: red; display: none;"></div>
                 </div>
-
-                <div id="error-message" style="display: none; color: red;"></div>
-
-                <button type="submit">SIGN UP</button>
-
-                <div class="signup-link"> <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p> </div>
+                <div class="input-field">
+                    <label for="contact_number">Contact Number</label><br>
+                    <input type="text" id="contact_number" name="contact_number" placeholder="Enter your contact number" required maxlength="12"/>
+                    <div class="error-message" id="contact_number_error" style="color: red; display: none;"></div>
+                </div>
+            </div>
+        
+            <div class="form-row-password">
+                <div class="input-field">
+                    <label for="password">Password</label><br>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required/>
+                    <div class="error-message" id="password_error" style="color: red; display: none;"></div>
+                </div>
+        
+                <br>
+        
+                <div class="input-field">
+                    <label for="confirm_password">Confirm Password</label><br>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required/>
+                    <div class="error-message" id="confirm_password_error" style="color: red; display: none;"></div>
+                </div>
+            </div>
+        
+            <button type="submit">SIGN UP</button>
+        
+            <div class="signup-link">
+                <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
+            </div>
         </form>
+        
+        <!-- Link to the external JavaScript file -->
+        <script src="{{ url_for('static', filename='js/signupValidation.js') }}"></script>
+        
     </div>
-    <script src="{{ url_for('static', filename='js/signupValidation.js') }}"></script>
 </body>
 </html>

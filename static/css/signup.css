@@ -137,3 +137,11 @@ button:hover {
 .signup-link a {
     color: #6c6c6c;
 }
+
+.error-message {
+    margin-top: 5px;
+    font-size: 10px; 
+    text-align: left;
+    color: red;
+    display: none;
+}

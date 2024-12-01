@@ -418,13 +418,12 @@ hr {
 #addMemberForm {
     background-color: var(--primary-color-2);
     margin-top: 20px;
-    height: 520px; /* height sa form sulod sa modal */
+    height: 520px;
 }
-
 /* Style for the form inputs */
 #addMemberForm input {
-    width: 100%; /* width sa text field */
-    height: 6%; /* height sa text field */
+    width: 100%; 
+    height: 46%; 
     padding: 8px;
     margin: 10px 0;
     box-sizing: border-box;
@@ -437,10 +436,22 @@ hr {
     font-weight: bold;
 }
 
+
+/* Flexbox styles */
+.form-row-member{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.form-group-member{
+    flex: 0 0 48%; /* 48% to leave some space between the two inputs */
+}
+
 /* Focus effect */
 #addMemberForm input:focus {
-    border-color: var(--secondary-color); /* Change border color on focus */
-    outline: none; /* Remove default outline */
+    border-color: var(--secondary-color); 
+    outline: none;
 }
 
 /* Save Button */
@@ -496,7 +507,16 @@ hr {
     transform: scale(0.98);
 }
 
-/* yes and cancel button in same line */
+/* error message per input field */
+.error-message {
+    margin-top: 2px;
+    font-size: 9px; 
+    text-align: left;
+    color: red;
+    display: none;
+}
+
+/* confirm dialog: yes and cancel button in same line */
 .button-container {
     display: flex;
     justify-content: center; 
@@ -709,7 +729,7 @@ form {
 }
 
 /* Form Row Style */
-.form-row {
+.form-row {                                                     
     display: flex;
     justify-content: space-between; /* Space between inputs */
     gap: 20px; /* Space between the two fields */
@@ -816,3 +836,29 @@ textarea {
     font-size: 50px;
     color: green;
 }
+
+.no-member-yet {
+    display: flex;
+    justify-content: flex-start; /* Align items to the left horizontally */
+    align-items: center; /* Vertically center within the flex container */
+    flex-direction: column; /* Stack the image and text vertically */
+    height: 200px; /* Adjust height as needed */
+    text-align: left; /* Align text to the left */
+    color: #666; /* Light gray color for the text */
+    margin-top: 200px; /* Push the content towards the bottom */
+    margin-left: 15px; /* Adjust left margin to move it to the left */
+    margin-right: 150px; /* Push it to the left while keeping it centered relative to the page */
+}
+
+.no-member-yet img {
+    max-width: 80px; /* Limit the size of the image */
+    max-height: 80px; /* Limit the height of the image */
+    margin-bottom: 15px; /* Space between the image and text */
+    margin-left: 1px; /* Adjust left margin for the image */
+}
+
+.no-member-yet .message {
+    font-size: 13px;
+    color: #333; /* Darker text color */
+}
+

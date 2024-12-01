@@ -165,34 +165,6 @@ membersTableBody.addEventListener('click', function(e) {
     } 
 });
 
-// // Fetch current member status on page load
-// function loadMemberStatuses() {
-//     fetch('/get_member_statuses')  // Endpoint to get all member statuses
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.members) {
-//                 data.members.forEach(member => {
-//                     const approveButton = document.querySelector(`.approve[data-email="${member.email}"]`);
-//                     if (approveButton) {
-//                         if (member.status === 'Approved') {
-//                             // approveButton.textContent = "Approved";
-//                             approveButton.style.display = "none"; // Hide button if already approved
-//                         }
-//                     }
-//                 });
-//             } else {
-//                 console.error("Error loading member statuses:", data.error);
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Error loading member statuses:', error);
-//         });
-// }
-
-// document.addEventListener("DOMContentLoaded", function() {
-//     loadMemberStatuses(); 
-// });
-
 // Open the decline modal and store the row to be deleted
 function openDeclineModal(button) {
     currentDeclineRow = button.closest("tr"); // Store the row to be deleted

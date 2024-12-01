@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for
-from werkzeug.security import generate_password_hash
+from flask_session import Session
+from flask_bcrypt import Bcrypt
 import bcrypt
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
-from flask_mysqldb import MySQL
 from dotenv import load_dotenv
 import os
 import smtplib
@@ -16,11 +16,21 @@ load_dotenv()
 # Create Flask app instance
 app = Flask(__name__)
 
+app.secret_key = os.getenv('SECRET_KEY')
+app.config['SESSION_TYPE'] = 'filesystem'
+Session(app)
+
+# Initialize Bcrypt
+bcrypt = Bcrypt(app)
+
 # SQL values from env
 MYSQL_HOST = os.getenv('SQL_HOSTNAME')
 MYSQL_USER = os.getenv('SQL_USERNAME')
 MYSQL_PASSWORD = os.getenv('SQL_PASSWORD')
 MYSQL_DB = os.getenv('SQL_DB')
+
+# Initialize MySQL
+mysql = MySQL(app)
 
 # Email values from env
 EMAIL_SERVER = os.getenv("MAIL_SERVER")
@@ -30,7 +40,7 @@ EMAIL_USERNAME = os.getenv("MAIL_USERNAME")
 EMAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
 EMAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
 
-app.secret_key = os.getenv('SECRET_KEY', 'your_default_secret_key')  # Ensure you have a secret key for session management
+
 
 #MYSQL CONFIGURATION
 app.config['MYSQL_HOST'] = MYSQL_HOST
@@ -50,15 +60,14 @@ app.config.update(
 )
 
 mail = Mail(app)
-# Initialize MySQL
-mysql = MySQL(app)
+
 
 # Check if user is logged in, allowed access to signup
 @app.before_request 
 def before_request(): 
     g.user = None 
-    if 'user_id' in session: 
-        g.user = session['user_id']
+    if 'cooperative_id' in session: 
+        g.user = session['cooperative_id']
     elif request.endpoint not in ('login', 'signup', 'static'):
         return redirect(url_for('login'))
 
@@ -66,30 +75,26 @@ def before_request():
 def load_subscriptions():
     with open('subscriptions.json') as f:
         return json.load(f)
-
-# Login route
+    
+# Login route 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         cooperative_id = request.form['cooperative_id']
         password = request.form['password']
 
+        # Assuming you are using flask-mysqldb for DB connection, adjust if necessary
         cursor = mysql.connection.cursor()
         cursor.execute('SELECT * FROM user WHERE cooperative_id = %s', (cooperative_id,))
         user = cursor.fetchone()
         cursor.close()
 
         if user:
-            stored_password = user['password'].encode('utf-8')
-            entered_password = password.encode('utf-8')
-
-            # Debugging logs
-            print(f"Stored Password: {stored_password}")
-            print(f"Entered Password: {entered_password}")
-
-            if bcrypt.checkpw(entered_password, stored_password):
+            # Compare entered password with stored hashed password
+            if bcrypt.check_password_hash(user['password'], password):  # Correct method for checking hashed password
                 session.pop('error', None)  # Clear any previous error messages
-                session['user_id'] = user['cooperative_id']
+                session['logged_in'] = True
+                session['cooperative_id'] = user['cooperative_id']  # Store cooperative_id in session
                 return redirect(url_for('dashboard'))
             else:
                 session['error'] = 'Invalid credentials. Please try again.'
@@ -97,9 +102,44 @@ def login():
         else:
             session['error'] = 'Invalid credentials. Please try again.'
             return redirect(url_for('login'))
-    success_message = session.pop('success', None) # Get success message if available
-    error_message = session.pop('error', None) #if entered wrong credentials
+
+    # Success or error messages from session
+    success_message = session.pop('success', None)  # Get success message if available
+    error_message = session.pop('error', None)  # if entered wrong credentials
     return render_template('login.html', success=success_message, error=error_message)
+
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     if request.method == 'POST':
+#         cooperative_id = request.form['cooperative_id']
+#         password = request.form['password']
+
+#         cursor = mysql.connection.cursor()
+#         cursor.execute('SELECT * FROM user WHERE cooperative_id = %s', (cooperative_id,))
+#         user = cursor.fetchone()
+#         cursor.close()
+
+#         if user:
+#             stored_password = user['password'].encode('utf-8')
+#             entered_password = password.encode('utf-8')
+
+#             # Debugging logs
+#             print(f"Stored Password: {stored_password}")
+#             print(f"Entered Password: {entered_password}")
+
+#             if bcrypt.checkpw(entered_password, stored_password):
+#                 session.pop('error', None)  # Clear any previous error messages
+#                 session['user_id'] = user['cooperative_id']
+#                 return redirect(url_for('dashboard'))
+#             else:
+#                 session['error'] = 'Invalid credentials. Please try again.'
+#                 return redirect(url_for('login'))
+#         else:
+#             session['error'] = 'Invalid credentials. Please try again.'
+#             return redirect(url_for('login'))
+#     success_message = session.pop('success', None) # Get success message if available
+#     error_message = session.pop('error', None) #if entered wrong credentials
+#     return render_template('login.html', success=success_message, error=error_message)
 
 # Logout route
 @app.route('/logout')
@@ -182,10 +222,11 @@ def dashboard():
 #         # Handle other unexpected errors (optional)
 #         return jsonify({"error": "An unexpected error occurred."}), 500
 
-# Members route
 @app.route('/members', methods=['GET', 'POST'])
 def members():
-    cur = mysql.connection.cursor() # Save the member to the database
+    cur = mysql.connection.cursor()
+    coop_id = session.get('cooperative_id')  # Get cooperative_id from session
+    print(f"Cooperative ID from session: {coop_id}")  # Debugging log
 
     if request.method == 'POST':
         # Retrieve form data
@@ -196,15 +237,15 @@ def members():
         address = request.form['address']
         date_applied = request.form['date-applied']
 
-        # Validate if account number or email already exists in the database
-        cur.execute("SELECT * FROM members WHERE account_number = %s OR email = %s", (account_number, email))
+        # Validate if account number or email already exists in the database for this cooperative
+        cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s)", (coop_id, account_number, email))
         existing_member = cur.fetchone()
 
         if existing_member:
             # Check which one exists and send the appropriate error
-            if existing_member[1] == account_number:
+            if existing_member[2] == account_number:
                 error_message = "Account number already exists."
-            elif existing_member[3] == email:
+            elif existing_member[4] == email:
                 error_message = "Email address already exists."
             else:
                 error_message = "There was an error processing your request."
@@ -216,7 +257,7 @@ def members():
                                    address=address, date_applied=date_applied)
 
         try:
-            cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Pending')", (account_number, name, contact_number, email, address, date_applied))
+            cur.execute("INSERT INTO members (cooperative_id, account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')", (coop_id, account_number, name, contact_number, email, address, date_applied))
             mysql.connection.commit()
             # Return success response
             return jsonify({"success": True}), 200
@@ -224,12 +265,61 @@ def members():
             mysql.connection.rollback()  # In case of an error, rollback
             return jsonify({"success": False, "error": str(e)}), 500
 
-    cur.execute("SELECT * FROM members")
-    members_data = cur.fetchall() #fetch from sql db when this route is called
+    # Fetch members for this cooperative
+    cur.execute("SELECT * FROM members WHERE cooperative_id = %s", (coop_id,))
+    members_data = cur.fetchall()
     cur.close()
 
-    # return render_template('members.html')
     return render_template('members.html', members=members_data)
+
+# # Members route
+# @app.route('/members', methods=['GET', 'POST'])
+# def members():
+#     cur = mysql.connection.cursor() # Save the member to the database
+
+#     if request.method == 'POST':
+#         # Retrieve form data
+#         account_number = request.form['account-number']
+#         name = request.form['name']
+#         contact_number = request.form['contact-number']
+#         email = request.form['email-address']
+#         address = request.form['address']
+#         date_applied = request.form['date-applied']
+
+#         # Validate if account number or email already exists in the database
+#         cur.execute("SELECT * FROM members WHERE account_number = %s OR email = %s", (account_number, email))
+#         existing_member = cur.fetchone()
+
+#         if existing_member:
+#             # Check which one exists and send the appropriate error
+#             if existing_member[1] == account_number:
+#                 error_message = "Account number already exists."
+#             elif existing_member[3] == email:
+#                 error_message = "Email address already exists."
+#             else:
+#                 error_message = "There was an error processing your request."
+
+#             # Render the page with the error message and form data
+#             return render_template('members.html', error_message=error_message, 
+#                                    account_number=account_number, name=name,
+#                                    contact_number=contact_number, email=email,
+#                                    address=address, date_applied=date_applied)
+
+#         try:
+#             cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Pending')", (account_number, name, contact_number, email, address, date_applied))
+#             mysql.connection.commit()
+#             # Return success response
+#             return jsonify({"success": True}), 200
+#         except Exception as e:
+#             mysql.connection.rollback()  # In case of an error, rollback
+#             return jsonify({"success": False, "error": str(e)}), 500
+
+#     cur.execute("SELECT * FROM members")
+#     members_data = cur.fetchall() #fetch from sql db when this route is called
+#     cur.close()
+
+#     # return render_template('members.html')
+#     return render_template('members.html', members=members_data)
 
 # Check if the member account number and email exists (Add Member Form Modal)
 # @app.route('/check_member', methods=['POST'])
@@ -256,31 +346,32 @@ def members():
 # Declined  members route
 @app.route('/decline_member', methods=['POST'])
 def decline_member():
-    # decline using account number
+    # Decline using account number
     account_number = request.json.get('account_number')
 
     if not account_number:
         return jsonify({"error": "Account number not provided"}), 400
 
-    cur = mysql.connection.cursor() 
+    coop_id = session.get('cooperative_id')  # Get cooperative_id from session
+    cur = mysql.connection.cursor()
 
     try:
-        # Retrieve the member details didto sa members table gamit ang account number gikan html
-        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+        # Retrieve the member details from members table using account number and cooperative_id
+        cur.execute("SELECT * FROM members WHERE account_number = %s AND cooperative_id = %s", (account_number, coop_id))
         member = cur.fetchone()
 
         if not member:
             return jsonify({"error": "Member not found"}), 404
 
-         # Update the member's status to 'Declined' in members table
-        cur.execute("UPDATE members SET status = 'Declined' WHERE account_number = %s", (account_number,))
+        # Update the member's status to 'Declined' in members table
+        cur.execute("UPDATE members SET status = 'Declined' WHERE account_number = %s AND cooperative_id = %s", (account_number, coop_id))
 
         # Insert the declined member into declined_members table
-        cur.execute("INSERT INTO declined_members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Declined')",
-                    (member['account_number'], member['name'], member['contact_number'], member['email'], member['address'], member['date_applied']))
+        cur.execute("INSERT INTO declined_members (account_number, name, contact_number, email, address, date_applied, status, cooperative_id) VALUES (%s, %s, %s, %s, %s, %s, 'Declined', %s)",
+                    (member['account_number'], member['name'], member['contact_number'], member['email'], member['address'], member['date_applied'], coop_id))
 
-        # Delete the member from the members table pero no need for now since we want to countnumber of rows in members para display in dashboard
-        # cur.execute("DELETE FROM members WHERE account_number = %s", (account_number,))
+        # Delete the member from the members table, but keep it for now for dashboard display
+        # cur.execute("DELETE FROM members WHERE account_number = %s AND cooperative_id = %s", (account_number, coop_id))
         mysql.connection.commit()
         
         return jsonify({"message": "Member declined successfully!"}), 200
@@ -289,6 +380,42 @@ def decline_member():
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
+
+# @app.route('/decline_member', methods=['POST'])
+# def decline_member():
+#     # decline using account number
+#     account_number = request.json.get('account_number')
+
+#     if not account_number:
+#         return jsonify({"error": "Account number not provided"}), 400
+
+#     cur = mysql.connection.cursor() 
+
+#     try:
+#         # Retrieve the member details didto sa members table gamit ang account number gikan html
+#         cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+#         member = cur.fetchone()
+
+#         if not member:
+#             return jsonify({"error": "Member not found"}), 404
+
+#          # Update the member's status to 'Declined' in members table
+#         cur.execute("UPDATE members SET status = 'Declined' WHERE account_number = %s", (account_number,))
+
+#         # Insert the declined member into declined_members table
+#         cur.execute("INSERT INTO declined_members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Declined')",
+#                     (member['account_number'], member['name'], member['contact_number'], member['email'], member['address'], member['date_applied']))
+
+#         # Delete the member from the members table pero no need for now since we want to countnumber of rows in members para display in dashboard
+#         # cur.execute("DELETE FROM members WHERE account_number = %s", (account_number,))
+#         mysql.connection.commit()
+        
+#         return jsonify({"message": "Member declined successfully!"}), 200
+#     except Exception as e:
+#         mysql.connection.rollback()  # Rollback in case of error
+#         return jsonify({"error": str(e)}), 500
+#     finally:
+#         cur.close()
 
 # Route for sending the approval notification thru email
 @app.route('/send_approval_email', methods=['POST'])
@@ -337,25 +464,26 @@ def send_approval_email_route():
 @app.route('/update_member_status', methods=['POST'])
 def update_member_status():
     data = request.json
-    account_number = data.get('account_number') #account number is read only
+    account_number = data.get('account_number')  # Account number is read-only
     status = data.get('status')
-    email = data.get('email') #include this in checking
+    email = data.get('email')  # Include this in checking
 
     if not account_number or not status:
         return jsonify({"error": "Account number or status not provided"}), 400
 
+    coop_id = session.get('cooperative_id')  # Get cooperative_id from session
     cur = mysql.connection.cursor()
 
     try:
-        # Check if email exists (excluding the current member)
-        cur.execute("SELECT * FROM members WHERE email = %s AND account_number != %s", (email, account_number))
+        # Check if email exists (excluding the current member and within the same cooperative)
+        cur.execute("SELECT * FROM members WHERE email = %s AND account_number != %s AND cooperative_id = %s", (email, account_number, coop_id))
         email_exists = cur.fetchone()
 
         if email_exists:
-            return jsonify({"error": "Email already exists for another account"}), 409
+            return jsonify({"error": "Email already exists for another account within the same cooperative"}), 409
 
-        # Update the member's status
-        cur.execute("UPDATE members SET status = %s WHERE account_number = %s", (status, account_number))
+        # Update the member's status (within the same cooperative)
+        cur.execute("UPDATE members SET status = %s WHERE account_number = %s AND cooperative_id = %s", (status, account_number, coop_id))
         mysql.connection.commit()
 
         return jsonify({"success": True}), 200
@@ -364,6 +492,37 @@ def update_member_status():
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
+
+# @app.route('/update_member_status', methods=['POST'])
+# def update_member_status():
+#     data = request.json
+#     account_number = data.get('account_number') #account number is read only
+#     status = data.get('status')
+#     email = data.get('email') #include this in checking
+
+#     if not account_number or not status:
+#         return jsonify({"error": "Account number or status not provided"}), 400
+
+#     cur = mysql.connection.cursor()
+
+#     try:
+#         # Check if email exists (excluding the current member)
+#         cur.execute("SELECT * FROM members WHERE email = %s AND account_number != %s", (email, account_number))
+#         email_exists = cur.fetchone()
+
+#         if email_exists:
+#             return jsonify({"error": "Email already exists for another account"}), 409
+
+#         # Update the member's status
+#         cur.execute("UPDATE members SET status = %s WHERE account_number = %s", (status, account_number))
+#         mysql.connection.commit()
+
+#         return jsonify({"success": True}), 200
+#     except Exception as e:
+#         mysql.connection.rollback()  # Rollback in case of error
+#         return jsonify({"error": str(e)}), 500
+#     finally:
+#         cur.close()
 
 # Profile route
 @app.route('/settings', methods=['POST'])
@@ -478,14 +637,15 @@ def update_member():
         email = request.form['email']
         address = request.form['address']
 
+        coop_id = session.get('cooperative_id')  # Get cooperative_id from session
         cur = mysql.connection.cursor()
 
-        # Update member details in the database
+        # Update member details in the database for the specific cooperative
         cur.execute("""
             UPDATE members
             SET name = %s, contact_number = %s, email = %s, address = %s
-            WHERE account_number = %s
-        """, (name, contact_number, email, address, account_number))
+            WHERE account_number = %s AND cooperative_id = %s
+        """, (name, contact_number, email, address, account_number, coop_id))
         
         mysql.connection.commit()
         cur.close()
@@ -498,6 +658,36 @@ def update_member():
         return jsonify({"error": f"Missing form field: {str(e)}"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# @app.route('/update-member', methods=['POST'])
+# def update_member():
+#     try:
+#         account_number = request.form['account_number']
+#         name = request.form['name']
+#         contact_number = request.form['contact_number']
+#         email = request.form['email']
+#         address = request.form['address']
+
+#         cur = mysql.connection.cursor()
+
+#         # Update member details in the database
+#         cur.execute("""
+#             UPDATE members
+#             SET name = %s, contact_number = %s, email = %s, address = %s
+#             WHERE account_number = %s
+#         """, (name, contact_number, email, address, account_number))
+        
+#         mysql.connection.commit()
+#         cur.close()
+        
+#         # Set success message in session
+#         session['success'] = 'Member information updated successfully.'
+
+#         return redirect(url_for('member_profile', account_number=account_number))
+#     except KeyError as e:
+#         return jsonify({"error": f"Missing form field: {str(e)}"}), 400
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
 
 # display 404 html
 @app.errorhandler(404)

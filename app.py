@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for
 from werkzeug.security import generate_password_hash
-import bcrypt
+# import bcrypt
 from flask_mysqldb import MySQL 
 # from flask_mail import Mail
 from flask_mysqldb import MySQL

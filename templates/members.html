@@ -97,7 +97,7 @@
         <div class="modal-content">
             <span class="close-btn">&times;</span>
             <h2>Add New Member</h2>
-            <form id="addMemberForm" method="POST" action="/members" onsubmit="return validateForm(event)">
+            <form id="addMemberForm" method="POST" action="/members">
 
                 <!-- Display error message if any -->
                 {% if error_message %}
@@ -156,10 +156,10 @@
                 </div>
 
                 <button type="submit" class="save-btn">Save</button>
-                <button type="reset" class="clear-btn">Clear</button>
+                <button type="reset" class="clear-btn" id="clearBtn">Clear</button>
             </form>
 
-            <!-- <script src="{{ url_for('static', filename='js/addMemberValidation.js') }}"></script> -->
+            <script src="{{ url_for('static', filename='js/addMemberValidation.js') }}"></script>
 
         </div>
     </div>

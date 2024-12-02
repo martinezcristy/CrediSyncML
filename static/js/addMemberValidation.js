@@ -65,40 +65,30 @@ function validateForm(event) {
     return isValid;
 }
 
-// // Handle form validation
-// function validateForm(event) {
-//     event.preventDefault(); // Prevent the form from submitting immediately
+// Listen for the "Clear" button click event
+document.getElementById("clearBtn").addEventListener("click", function() {
+    // Reset all error messages and styles
+    resetValidationState();
+});
 
-//     const accountNumber = document.getElementById('account-number').value;
-//     const emailAddress = document.getElementById('email-address').value;
-//     const errorMessage = document.getElementById('error-message');
+function resetValidationState() {
+    // Reset error messages and hide them
+    document.getElementById("account_number_error").style.display = "none";
+    document.getElementById("name_error").style.display = "none";
+    document.getElementById("contact_number_error").style.display = "none";
+    document.getElementById("email_address_error").style.display = "none";
+    document.getElementById("address_error").style.display = "none";
+    document.getElementById("date_applied_error").style.display = "none";
 
-//     // Clear any previous error messages
-//     errorMessage.style.display = 'none';
-//     errorMessage.textContent = '';
-
-//     // Submit form data via AJAX
-//     const formData = new FormData(document.getElementById('addMemberForm'));
+    // Reset the borders of the input fields
+    document.getElementById("account-number").style.borderColor = "";
+    document.getElementById("name").style.borderColor = "";
+    document.getElementById("contact-number").style.borderColor = "";
+    document.getElementById("email-address").style.borderColor = "";
+    document.getElementById("address").style.borderColor = "";
+    document.getElementById("date-applied").style.borderColor = "";
     
-//     fetch('/members', {
-//         method: 'POST',
-//         body: formData
-//     })
-//     .then(response => response.json())
-//     .then(data => {
-//         if (data.success) {
-//             // Success: close the modal or show a success message
-//             alert('Member added successfully!');
-//             location.reload();  // Reload the page to see the updated list
-//         } else {
-//             // Error: Show validation error message
-//             errorMessage.style.display = 'block';
-//             errorMessage.textContent = data.error;  // Display the error message from the backend
-//         }
-//     })
-//     .catch(error => {
-//         console.error('Error:', error);
-//         errorMessage.style.display = 'block';
-//         errorMessage.textContent = 'An error occurred while adding the member. Please try again.';
-//     });
-// }
+    // Optionally, reset the form inputs to empty or their default values
+    // document.getElementById("addMemberForm").reset(); // This already resets the form inputs, so not necessary here unless you want extra control
+}
+

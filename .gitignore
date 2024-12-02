@@ -177,5 +177,5 @@ pyrightconfig.json
 .vercel
 
 # Ignore Flask session files
-flask_sessions/
+flask_session/
 

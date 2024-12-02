@@ -59,10 +59,24 @@ function validateForm(event) {
         document.getElementById("date_applied_error").style.display = "block";
         isValid = false;
     } else {
-        document.getElementById("date_applied_error").style.display = "none";
+        var today = new Date();
+        var selectedDate = new Date(dateApplied);
+
+        // Resetting the time component for both dates
+        today.setHours(0, 0, 0, 0);
+        selectedDate.setHours(0, 0, 0, 0);
+
+        if (selectedDate > today) {
+            document.getElementById("date_applied_error").textContent = "Date Applied cannot be a future date.";
+            document.getElementById("date_applied_error").style.display = "block";
+            isValid = false;
+        } else {
+            document.getElementById("date_applied_error").style.display = "none";
+        }
     }
 
-    return isValid;
+return isValid;
+
 }
 
 // Listen for the "Clear" button click event

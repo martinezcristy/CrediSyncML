@@ -89,7 +89,7 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
             })
             .catch(error => {
                 console.error("Error adding member:", error);
-                alert("There was an error processing your request.");
+                alert("A member with the same credentials already exist!");
             });
         }
     } else {

@@ -17,13 +17,12 @@ load_dotenv()
 
 # Create Flask app instance
 app = Flask(__name__)
+# Initialize Bcrypt
+bcrypt = Bcrypt(app)
 
 app.secret_key = os.getenv('SECRET_KEY')
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
-
-# Initialize Bcrypt
-bcrypt = Bcrypt(app)
 
 # SQL values from env
 MYSQL_HOST = os.getenv('SQL_HOSTNAME')
@@ -97,6 +96,7 @@ def login():
                 session.pop('error', None)  # Clear any previous error messages
                 session['logged_in'] = True
                 session['cooperative_id'] = user['cooperative_id']  # Store cooperative_id in session
+                session['cooperative_name'] = user['cooperative_name']  # Store cooperative_name in session
                 return redirect(url_for('dashboard'))
             else:
                 session['error'] = 'Invalid credentials. Please try again.'
@@ -109,6 +109,8 @@ def login():
     success_message = session.pop('success', None)  # Get success message if available
     error_message = session.pop('error', None)  # if entered wrong credentials
     return render_template('login.html', success=success_message, error=error_message)
+
+
 
 # @app.route('/login', methods=['GET', 'POST'])
 # def login():
@@ -167,11 +169,14 @@ def signup():
             cursor.close()
             return redirect(url_for('signup'))
 
-        hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        # hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
         try:
+            # cursor.execute('INSERT INTO user (cooperative_id, password, cooperative_name, address, contact_number) VALUES (%s, %s, %s, %s, %s)',
+            #                (cooperative_id, hashed_password.decode('utf-8'), cooperative_name, address, contact_number))
             cursor.execute('INSERT INTO user (cooperative_id, password, cooperative_name, address, contact_number) VALUES (%s, %s, %s, %s, %s)',
-                           (cooperative_id, hashed_password.decode('utf-8'), cooperative_name, address, contact_number))
+                        (cooperative_id, hashed_password, cooperative_name, address, contact_number))
             mysql.connection.commit()
             session.pop('error', None)  # Clear any previous error messages
             session['success'] = 'User account successfully created!'
@@ -181,16 +186,18 @@ def signup():
             session['error'] = str(e)
             cursor.close()
             return redirect(url_for('signup'))
-
-    return render_template('signup.html')
+    
+    error_message = session.pop('error', None)
+    return render_template('signup.html', error_message=error_message)
 
 # Dashboard route
 @app.route('/', methods=['GET'])
 def dashboard():
     if not g.user:
         return redirect(url_for('login'))
+    cooperative_name = session.get('cooperative_name')
     subscriptions = load_subscriptions()
-    return render_template('dashboard.html', subscriptions=subscriptions)
+    return render_template('dashboard.html', subscriptions=subscriptions, cooperative_name=cooperative_name)
 
 # @app.route('/', methods=['GET'])
 # def dashboard():
@@ -226,8 +233,9 @@ def dashboard():
 
 @app.route('/members', methods=['GET', 'POST'])
 def members():
-    cur = mysql.connection.cursor()
+    
     coop_id = session.get('cooperative_id')  # Get cooperative_id from session
+    cooperative_name = session.get('cooperative_name') # Get cooperative_name from session
     print(f"Cooperative ID from session: {coop_id}")  # Debugging log
 
     if request.method == 'POST':
@@ -240,39 +248,52 @@ def members():
         date_applied = request.form['date-applied']
 
         # Validate if account number or email already exists in the database for this cooperative
+        cur = mysql.connection.cursor()
         cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s)", (coop_id, account_number, email))
         existing_member = cur.fetchone()
 
         if existing_member:
-            # Check which one exists and send the appropriate error
+            # send appropriate error messages according to form inputs
             if existing_member[2] == account_number:
-                error_message = "Account number already exists."
+                session['error'] = "A member with this account number already exists."
             elif existing_member[4] == email:
-                error_message = "Email address already exists."
+                session['error'] = "Email address already exists."
             else:
-                error_message = "There was an error processing your request."
+                session['error'] = "A member with same credentials already exist!"
 
             # Render the page with the error message and form data
-            return render_template('members.html', error_message=error_message, 
-                                   account_number=account_number, name=name,
-                                   contact_number=contact_number, email=email,
-                                   address=address, date_applied=date_applied)
+            # return render_template('members.html', error_message=error_message, 
+            #                        account_number=account_number, name=name,
+            #                        contact_number=contact_number, email=email,
+            #                        address=address, date_applied=date_applied)
+              # Close cursor and redirect to members page
+            cur.close()
+            return redirect(url_for('members'))
 
         try:
             cur.execute("INSERT INTO members (cooperative_id, account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')", (coop_id, account_number, name, contact_number, email, address, date_applied))
             mysql.connection.commit()
-            # Return success response
-            return jsonify({"success": True}), 200
+            session.pop('error', None)  # Clear any previous error messages
+            session['success'] = 'Member successfully added!'
+            cur.close()
+            return redirect(url_for('members'))
         except Exception as e:
             mysql.connection.rollback()  # In case of an error, rollback
-            return jsonify({"success": False, "error": str(e)}), 500
+            session['error'] = str(e)
+            cur.close()
+            return redirect(url_for('members'))
 
-    # Fetch members for this cooperative
+   # Fetch members for this cooperative
+    cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM members WHERE cooperative_id = %s", (coop_id,))
     members_data = cur.fetchall()
     cur.close()
 
-    return render_template('members.html', members=members_data)
+    # Get success or error messages from session
+    error_message = session.pop('error', None)
+    success_message = session.pop('success', None)
+
+    return render_template('members.html', members=members_data, error_message=error_message, success_message=success_message, cooperative_name=cooperative_name)
 
 # # Members route
 # @app.route('/members', methods=['GET', 'POST'])
@@ -578,6 +599,7 @@ def get_user():
 
 @app.route('/evaluation', methods=['GET', 'POST'])
 def evaluation():
+    cooperative_name = session.get('cooperative_name')
     try:
         if request.method == 'GET':
             account_number = request.args.get('account_number')
@@ -594,7 +616,7 @@ def evaluation():
                 if not member:
                     return jsonify({"error": "Member not found"}), 404
 
-                return render_template('evaluation.html', member=member)
+                return render_template('evaluation.html', member=member, cooperative_name=cooperative_name)
 
             except Exception as e:
                 app.logger.error(f"Database error: {str(e)}")
@@ -677,6 +699,7 @@ def evaluation():
 # Member profile page 
 @app.route('/member-profile/<account_number>')
 def member_profile(account_number):
+    cooperative_name = session.get('cooperative_name')
     cur = mysql.connection.cursor()
     try:
         # Fetch member details based on account number
@@ -689,7 +712,7 @@ def member_profile(account_number):
         success_message = session.pop('success', None) # Get success message if available
 
         if member:
-            return render_template('member-profile.html', member=member, success=success_message)
+            return render_template('member-profile.html', member=member, success=success_message, cooperative_name=cooperative_name)
         else:
             return "Member not found", 404
 

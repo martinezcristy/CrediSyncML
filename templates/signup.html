@@ -16,7 +16,9 @@
                 <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Cooperative Icon">
             </div>
             
-            <div id="error-message" style="display: none; color: red;"></div>
+            {% if error %}
+                <div id="error-message" style="color: red;">{{ error }}</div>
+            {% endif %}
 
             <div class="form-row">
                 <div class="input-field">

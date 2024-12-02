@@ -13,21 +13,18 @@
             <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="CrediSync Logo">
         </div>
         <div class="profile-section">
-            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
+            <img src="{{ url_for('static', filename='images/mavenco.png') }}" alt="Coop Profile" class="profile-pic">
             <h2>MAVENCO</h2>
             <p class="admin-role">Mandaue City Public Market Vendors</p>
         </div>
        <!-- Sidebar Navigation -->
        <nav class="menu">
-            <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
-                <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
-            </ul>
-        </nav>
-        <div class="logout-section"> 
-            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
-        </div>
+        <ul>
+            <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+            <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+            <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
+        </ul>
+    </nav>
     </div>
 
     <!-- Main Content -->
@@ -35,160 +32,112 @@
         <h1>Member Evaluation</h1>
         <div class="header">
             <div class="header-right"> 
-                
             </div>
-           
-    
         </div>
         <div class="evaluation-results">
             <div class="prediction">
                 <h2>Prediction</h2>
-                <p>{{ member.name }} is eligible</p> 
+                <div id="result-container" style="display: none;">
+                    <h3>Result: <span id="eligibility-result"></span></h3>
+                    
+                </div>
             </div>
         </div>
         <div class="evaluation-results">
             <div class="credit-score">
                 <h2>Credit Score</h2>
-                <p>500</p> 
+                <p style="display: none;">500</p>
             </div>
         </div>
 
-        <!-- <form class="evaluation-form" method="POST" action="/evaluation">
-            <label for="payment_history_score">Payment History Score:</label>
-            <input type="text" name="payment_history_score" required><br>
-        
-            <label for="monthly_salary_score">Monthly Salary Score:</label>
-            <input type="text" name="monthly_salary_score" required><br>
-        
-            <label for="loan_term_score">Loan Term Score:</label>
-            <input type="text" name="loan_term_score" required><br>
-        
-            <label for="co_maker_score">Co-Maker Score:</label>
-            <input type="text" name="co_maker_score" required><br>
-        
-            <label for="savings_account_score">Savings Account Score:</label>
-            <input type="text" name="savings_account_score" required><br>
-        
-            <label for="asset_owner_score">Asset Owner Score:</label>
-            <input type="text" name="asset_owner_score" required><br>
-        
-            <label for="payment_method_score">Payment Method Score:</label>
-            <input type="text" name="payment_method_score" required><br>
-        
-            <label for="repayment_schedule_score">Repayment Schedule Score:</label>
-            <input type="text" name="repayment_schedule_score" required><br>
-        
-            <label for="credit_score">Credit Score:</label>
-            <input type="text" name="credit_score" required><br>
-        
-            <button type="submit">Evaluate</button>
-        </form> -->
-        
-    
-        <form class="evaluation-form" method="POST" action="/evaluation">
-
+        <form id="evaluation-form" class="evaluation-form" method="POST" action="/evaluation">
             <div class="form-group">
-                <label>Payment_History</label>
+                <label>Payment History</label>
                 <select name="currently_employed" required>
                     <option value="">Please select</option>
-                    <option value="after_due_date">After the due date</option>
-                    <option value="within_due_date">Within the due date</option>
-                    <option value="before_due_date">Before the due date</option>
+                    <option value="50">After the due date </option>
+                    <option value="80">Within the due date </option>
+                    <option value="100">Before the due date </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Monthly Salary</label>
-                <select name="monthly_salary" required>
+                <select name="Monthly_Salary" required>
                     <option value="">Please select</option>
-                    <option value="low_salary">P11,300 below</option>
-                    <option value="med_salary">P11,301 to P41,299</option>
-                    <option value="high_salary">P41,300 above</option>
+                    <option value="50">P11,300 below </option>
+                    <option value="80">P11,301 to P41,299 </option>
+                    <option value="100">P41,300 above </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Loan Term</label>
-                <select name="loan_term" required>
+                <select name="Loan_Term" required>
                     <option value="">Please select</option>
-                    <option value="low_term">85 months above (Mortgage)</option>
-                    <option value="med_term">60 to 84 months (Auto Loans)</option>
-                    <option value="high_term">12 to 60 months (Personal)</option>
+                    <option value="50">85 months above (Mortgage) </option>
+                    <option value="80">60 to 84 months (Auto Loans) </option>
+                    <option value="100">12 to 60 months (Personal) </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Co-Maker</label>
-                <select name="have_co_maker" required>
+                <select name="Co_Maker" required>
                     <option value="">Please select</option>
-                    <option value="no_co_maker">No co-maker</option>
-                    <option value="moderate_reliability">Co-maker with moderate reliability</option>
-                    <option value="strong_reliability">Co-maker with strong reliability</option>
+                    <option value="50">No co-maker </option>
+                    <option value="80">Co-maker with moderate reliability </option>
+                    <option value="100">Co-maker with strong reliability </option>
                 </select>
             </div>
     
             <div class="form-group">
                 <label>Savings Account Status</label>
-                <select name="savings_account_status" required>
+                <select name="Savings_Account" required>
                     <option value="">Please select</option>
-                    <option value="no_savings">No Savings Account</option>
-                    <option value="not_active">Not Active</option>
-                    <option value="active">Active</option>
+                    <option value="50">No Savings Account </option>
+                    <option value="80">Not Active </option>
+                    <option value="100">Active </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Asset Owner</label>
-                <select name="asset_owner" required>
+                <select name="Asset_Owner" required>
                     <option value="">Please select</option>
-                    <option value="no_assets">No assets</option>
-                    <option value="owns_properties_vehicle">Owns properties/vehicle</option>
-                    <option value="owns_both">Owns both properties and vehicle</option>
+                    <option value="50">No assets </option>
+                    <option value="80">Owns properties/vehicle </option>
+                    <option value="100">Owns both properties and vehicle </option>
                 </select>
             </div>
             <div class="form-group">
                 <label>Payment Method</label>
-                <select name="payment_method" required>
+                <select name="Payment_Method" required>
                     <option value="">Please select</option>
-                    <option value="cash">Cash</option>
-                    <option value="post_dated_check">Post-dated Check</option>
-                    <option value="debit_to_savings">Debit to Savings Account</option>
+                    <option value="50">Cash </option>
+                    <option value="80">Post-dated Check </option>
+                    <option value="100">Debit to Savings Account </option>
                 </select>
             </div>                      
             <div class="form-group">
                 <label>Repayment Schedule</label>
-                <select name="repayment_sched" required>
+                <select name="Repayment_Schedule" required>
                     <option value="">Please select</option>
-                    <option value="quarterly">Quarterly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="weekly">Weekly</option>
+                    <option value="50">Quarterly </option>
+                    <option value="80">Monthly </option>
+                    <option value="100">Weekly </option>
                 </select>
             </div>
             
             <div class="form-group">
-                <button type="button" class="evaluate-btn" disabled>Evaluate</button>
-               
+                <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button>
             </div>
             <div class="form-group">
                 <button type="button" class="evaluate-btn" disabled>Save Evaluation</button>
-               
             </div>
         </form>
-
-        
-        <!-- <div class="evaluation-results">
-            <div class="prediction">
-                <h2>Prediction</h2>
-                <p>Rae Collins is eligible for loan</p>
-            </div>
-            <div class="credit-score">
-                <h2>Credit Score</h2>
-                <p>500</p>
-            </div>
-        </div>  -->
-        
-        
     </div>
 
     <!-- Toast Message -->
     <div id="toast" class="toast" style="display: none;">Please fill out all required fields.</div>
 
     <script src="{{ url_for('static', filename='js/evaluation.js') }}"></script>
+
 </body>
 </html>

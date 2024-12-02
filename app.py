@@ -10,6 +10,8 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 import json
+import joblib
+import numpy  as np
 
 load_dotenv()
 
@@ -58,6 +60,9 @@ app.config.update(
 )
 
 mail = Mail(app)
+
+#Load the model
+ELIGIBILITY_MODEL = joblib.load('decision_tree_model.pkl')
 
 # Check if user is logged in, allowed access to signup
 @app.before_request 
@@ -571,35 +576,103 @@ def get_user():
     finally:
         cur.close()
 
-
-# Evaluation route
-@app.route('/evaluation', methods=['GET'])
+@app.route('/evaluation', methods=['GET', 'POST'])
 def evaluation():
-    # Get the account_number from the query parameters
-    account_number = request.args.get('account_number')
-
-    if not account_number:
-        return "Account number not provided", 400  # Handle the case where no account_number is passed
-
-    # Create a cursor and try to fetch the member data by account_number
-    cur = mysql.connection.cursor()
     try:
-        # Query to get the member data by account_number
-        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
-        member = cur.fetchone()
+        if request.method == 'GET':
+            account_number = request.args.get('account_number')
 
-        # If member doesn't exist, return a 404 or similar error
-        if not member:
-            return "Member not found", 404
+            if not account_number:
+                return jsonify({"error": "Account number not provided"}), 400
 
-        # Render the evaluation page with member data
-        return render_template('evaluation.html', member=member)
+            cur = mysql.connection.cursor()
+
+            try:
+                cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+                member = cur.fetchone()
+
+                if not member:
+                    return jsonify({"error": "Member not found"}), 404
+
+                return render_template('evaluation.html', member=member)
+
+            except Exception as e:
+                app.logger.error(f"Database error: {str(e)}")
+                return jsonify({"error": "Error fetching member data"}), 500
+            finally:
+                cur.close()
+
+        elif request.method == 'POST':
+            form_data = request.form
+
+            # Log the form data to inspect the values
+            app.logger.info("Received form data:")
+            for key, value in form_data.items():
+                app.logger.info(f"{key}: {value}")
+
+            required_fields = [
+                'Monthly_Salary', 'Loan_Term',
+                'Co_Maker', 'Savings_Account', 'Asset_Owner',
+                'Payment_Method', 'Repayment_Schedule', 'Credit_Score'
+            ]
+            missing_fields = [field for field in required_fields if not form_data.get(field)]
+            if missing_fields:
+                return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
+
+            features = [
+                float(form_data.get('Monthly_Salary')),
+                float(form_data.get('Loan_Term')),
+                float(form_data.get('Co_Maker')),
+                float(form_data.get('Savings_Account')),
+                float(form_data.get('Asset_Owner')),
+                float(form_data.get('Payment_Method')),
+                float(form_data.get('Repayment_Schedule')),
+                float(form_data.get('Credit_Score', 0))
+            ]
+
+            features_array = np.array([features])
+
+            # Assuming you have a pre-loaded model
+            eligibility_prediction = ELIGIBILITY_MODEL.predict(features_array)[0]
+            eligibility_text = 'Eligible' if eligibility_prediction == 1 else 'Not eligible'
+
+            app.logger.info(f"Prediction result - Eligibility: {eligibility_text}")
+
+            # Return the result as JSON
+            return jsonify({'eligibility': eligibility_text})
 
     except Exception as e:
-        print(f"Error fetching member: {e}")
-        return "Error fetching member data", 500
-    finally:
-        cur.close()
+        app.logger.error(f"Unexpected error: {str(e)}")
+        return jsonify({"error": "Internal server error"}), 500
+    
+# Evaluation route
+# @app.route('/evaluation', methods=['GET'])
+# def evaluation():
+#     # Get the account_number from the query parameters
+#     account_number = request.args.get('account_number')
+
+#     if not account_number:
+#         return "Account number not provided", 400  # Handle the case where no account_number is passed
+
+#     # Create a cursor and try to fetch the member data by account_number
+#     cur = mysql.connection.cursor()
+#     try:
+#         # Query to get the member data by account_number
+#         cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+#         member = cur.fetchone()
+
+#         # If member doesn't exist, return a 404 or similar error
+#         if not member:
+#             return "Member not found", 404
+
+#         # Render the evaluation page with member data
+#         return render_template('evaluation.html', member=member)
+
+#     except Exception as e:
+#         print(f"Error fetching member: {e}")
+#         return "Error fetching member data", 500
+#     finally:
+#         cur.close()
 
 # Member profile page 
 @app.route('/member-profile/<account_number>')

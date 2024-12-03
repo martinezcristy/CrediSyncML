@@ -652,7 +652,7 @@ hr {
     cursor: pointer;
     transition: background-color 0.3s ease, transform 0.2s ease;
     margin-top: 10px;
-    width: 300px; /* Adjust the width */
+    width: 100%; /* Adjust the width */
     grid-column: 1 / span 2; /* Ensure the button spans both columns */
     justify-self: center; /* This centers the button horizontally */
 }

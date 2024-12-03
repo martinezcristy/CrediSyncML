@@ -18,12 +18,15 @@
         </div>
        <!-- Sidebar Navigation -->
        <nav class="menu">
-        <ul>
-            <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
-            <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-            <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
-        </ul>
-    </nav>
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
+            </ul>
+        </nav>
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
     </div>
 
     <!-- Main Content -->
@@ -50,6 +53,15 @@
         </div>
 
         <form id="evaluation-form" class="evaluation-form" method="POST" action="/evaluation">
+
+            <!-- details of the member being evaluated that are not in form but needs to be included to save in evaluated members -->
+            <input type="hidden" name="account_number" value="{{ member.account_number }}">
+            <input type="hidden" name="name" value="{{ member.name }}">
+            <input type="hidden" name="contact_number" value="{{ member.contact_number }}">
+            <input type="hidden" name="email" value="{{ member.email }}">
+            <input type="hidden" name="address" value="{{ member.address }}">
+
+
             <div class="form-group">
                 <label>Payment History</label>
                 <select name="currently_employed" required>
@@ -123,13 +135,15 @@
                     <option value="100">Weekly </option>
                 </select>
             </div>
+
+            <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button>
             
-            <div class="form-group">
+            <!-- <div class="form-group">
                 <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button>
             </div>
             <div class="form-group">
-                <button type="button" class="evaluate-btn" disabled>Save Evaluation</button>
-            </div>
+                <button type="button" class="evaluate-btn" id="save-evaluation-btn" disabled>Save Evaluation</button>
+            </div> -->
         </form>
     </div>
 

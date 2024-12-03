@@ -75,18 +75,20 @@
                             <td>{{ member.date_applied }}</td>
                             <td class="status-cell">{{ member.status }}</td>
                             <td class="actions">
-                                {% if member.status == 'Pending' %}
+                                {% if member.status == 'Evaluated' %}
                                     <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approve</button>
                                     <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                                    <button class="evaluate" onclick="evaluateMember()" disabled>Evaluated</button>
                                 {% else %}
                                     <button class="approve" style="display:none;">Approve</button>
                                     <button class="decline" style="display:none;">Decline</button>
+                                    <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
                                 {% endif %}
-                                <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
+                                <!-- <button class="evaluate" onclick="evaluateMember()">Evaluate</button> -->
                             </td>
                         </tr>
                     {% endfor %}
-                </tbody>
+                </tbody>                
             </table>
         {% endif %}
     </div>
@@ -97,6 +99,10 @@
             <span class="close-btn">&times;</span>
             <h2>Add New Member</h2>
             <form id="addMemberForm" method="POST" action="{{ url_for('members') }}">
+
+                <div class="member-profile-image">
+                    <img src="{{ url_for('static', filename='icons/user-add-svgrepo-com.svg') }}" alt="Profile Picture" class="profile-pic">
+                </div>
 
                 <!-- Display error message if any -->
                 {% if error_message %}
@@ -111,10 +117,6 @@
                         {{ success_message }}
                     </div>
                 {% endif %}
-
-                <div class="member-profile-image">
-                    <img src="{{ url_for('static', filename='icons/user-add-svgrepo-com.svg') }}" alt="Profile Picture" class="profile-pic">
-                </div>
 
                 <div class="form-row-member">
                     <div class="form-group-member">

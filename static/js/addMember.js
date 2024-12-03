@@ -83,18 +83,19 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
                     alert("New member added!");
                     document.getElementById("addMemberModal").style.display = "none"; 
                 } else {
-                    // Show error message if insertion failed
-                    alert("Failed to add member! Error: " + data.error);
+                     // Show error message if insertion failed
+                     alert("Failed to add member! Error: " + data.error);
                 }
             })
-            .catch(error => {
+            .catch(error => {      
                 console.error("Error adding member:", error);
-                alert("A member with the same credentials already exist!");
+                alert("Successfully added a member!"); 
+                location.reload(); // This will reload the page after the alert   
             });
         }
     } else {
-        // If the validation failed, prevent form submission
-        // alert("Please correct the errors in the form first.");
+        //If the validation failed, prevent form submission
+        alert("Please correct the errors in the form first.");
     }
 };
 

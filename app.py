@@ -5,13 +5,15 @@ import bcrypt
 from flask_mysqldb import MySQL 
 from flask_mail import Mail
 from dotenv import load_dotenv
-import os
-import smtplib
+from datetime import datetime
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import os
+import smtplib
 import json
 import joblib
 import numpy  as np
+
 
 load_dotenv()
 
@@ -253,35 +255,30 @@ def members():
         existing_member = cur.fetchone()
 
         if existing_member:
-            # send appropriate error messages according to form inputs
+            # If a duplicate is found, return an error message in JSON format
+            error_message = "A member with the same credentials already exists!"
             if existing_member[2] == account_number:
-                session['error'] = "A member with this account number already exists."
+                error_message = "A member with this account number already exists."
             elif existing_member[4] == email:
-                session['error'] = "Email address already exists."
-            else:
-                session['error'] = "A member with same credentials already exist!"
+                error_message = "Email address already exists."
 
-            # Render the page with the error message and form data
-            # return render_template('members.html', error_message=error_message, 
-            #                        account_number=account_number, name=name,
-            #                        contact_number=contact_number, email=email,
-            #                        address=address, date_applied=date_applied)
-              # Close cursor and redirect to members page
             cur.close()
-            return redirect(url_for('members'))
+            return jsonify({"success": False, "error": error_message})
 
         try:
             cur.execute("INSERT INTO members (cooperative_id, account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')", (coop_id, account_number, name, contact_number, email, address, date_applied))
             mysql.connection.commit()
-            session.pop('error', None)  # Clear any previous error messages
-            session['success'] = 'Member successfully added!'
+            # session.pop('error', None)  # Clear any previous error messages
+            # session['success'] = 'Member successfully added!'
             cur.close()
-            return redirect(url_for('members'))
+            # return redirect(url_for('members'))
+            return jsonify({"success": True})
         except Exception as e:
             mysql.connection.rollback()  # In case of an error, rollback
-            session['error'] = str(e)
+            # session['error'] = str(e)
             cur.close()
-            return redirect(url_for('members'))
+            # return redirect(url_for('members'))
+            return jsonify({"success": False, "error": str(e)})
 
    # Fetch members for this cooperative
     cur = mysql.connection.cursor()
@@ -600,6 +597,7 @@ def get_user():
 @app.route('/evaluation', methods=['GET', 'POST'])
 def evaluation():
     cooperative_name = session.get('cooperative_name')
+    cooperative_id = session.get('cooperative_id')
     try:
         if request.method == 'GET':
             account_number = request.args.get('account_number')
@@ -625,7 +623,15 @@ def evaluation():
                 cur.close()
 
         elif request.method == 'POST':
+        
             form_data = request.form
+            account_number = form_data.get('account_number')
+
+            app.logger.info(f"Received Account Number: {account_number}")
+
+            # If account_number is missing or invalid, return an error
+            if not account_number:
+                return jsonify({"error": "Account number is missing or invalid."}), 400
 
             # Log the form data to inspect the values
             app.logger.info("Received form data:")
@@ -660,41 +666,44 @@ def evaluation():
 
             app.logger.info(f"Prediction result - Eligibility: {eligibility_text}")
 
-            # Return the result as JSON
+             # Get the current date as the evaluation date
+            evaluation_date = datetime.now().strftime('%Y-%m-%d')
+
+             # Save evaluation details to the evaluated_members table
+            name = form_data.get('name')
+            contact_number = form_data.get('contact_number')
+            email = form_data.get('email')
+            address = form_data.get('address')
+
+            cur = mysql.connection.cursor()
+
+            try:
+                # Insert the evaluation details into the evaluated_members table
+                cur.execute("""
+                    INSERT INTO evaluated_members (account_number, name, contact_number, email, address, evaluation_date, status, cooperative_id, eligibility_result, credit_score)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (account_number, name, contact_number, email, address, evaluation_date, 'Evaluated', cooperative_id, eligibility_text, features[7]))
+
+                # Commit the changes
+                mysql.connection.commit()
+
+                # Now, update the member's status in the original members table
+                cur.execute("UPDATE members SET status = 'Evaluated' WHERE account_number = %s", (account_number,))
+                mysql.connection.commit()
+
+            except Exception as e:
+                app.logger.error(f"Error saving evaluation data: {str(e)}")
+                return jsonify({"error": "Error saving evaluation data"}), 500
+            finally:
+                cur.close()
+
+            # # Return the result as JSON
             return jsonify({'eligibility': eligibility_text})
 
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
     
-# Evaluation route
-# @app.route('/evaluation', methods=['GET'])
-# def evaluation():
-#     # Get the account_number from the query parameters
-#     account_number = request.args.get('account_number')
-
-#     if not account_number:
-#         return "Account number not provided", 400  # Handle the case where no account_number is passed
-
-#     # Create a cursor and try to fetch the member data by account_number
-#     cur = mysql.connection.cursor()
-#     try:
-#         # Query to get the member data by account_number
-#         cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
-#         member = cur.fetchone()
-
-#         # If member doesn't exist, return a 404 or similar error
-#         if not member:
-#             return "Member not found", 404
-
-#         # Render the evaluation page with member data
-#         return render_template('evaluation.html', member=member)
-
-#     except Exception as e:
-#         print(f"Error fetching member: {e}")
-#         return "Error fetching member data", 500
-#     finally:
-#         cur.close()
 
 # Member profile page 
 @app.route('/member-profile/<account_number>')

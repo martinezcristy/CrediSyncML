@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
     const resultContainer = document.getElementById('result-container');
     const eligibilityResult = document.getElementById('eligibility-result');
-    const evaluateBtn = document.getElementById('evaluate-btn');
+    const evaluateBtn = document.getElementById('evaluate-btn'); //start the evaluation
+    const saveEvaluationBtn = document.getElementById('save-evaluation-btn'); //save evaluation 
     const form = document.getElementById('evaluation-form');
     const creditScoreElement = document.querySelector('.credit-score p'); // The element where the score will be displayed
 
@@ -38,6 +39,12 @@ document.addEventListener('DOMContentLoaded', function () {
         element.addEventListener('change', function() {
             // Recalculate score on form field change, but don’t display yet
             calculateCreditScore();
+            // Enable the "Save Evaluation" button once the form is filled out and evaluation is ready
+            if (isFormComplete() && calculateCreditScore() > 0) {
+                saveEvaluationBtn.disabled = false;  // Enable the button
+            } else {
+                saveEvaluationBtn.disabled = true;  // Keep the button disabled if form is incomplete
+            }
         });
     });
 
@@ -94,4 +101,46 @@ document.addEventListener('DOMContentLoaded', function () {
             evaluateBtn.disabled = false;
         });
     });
+
+    // // Handle the "Save Evaluation" button click event
+    // saveEvaluationBtn.addEventListener('click', function() {
+    //     // Before saving, calculate the credit score
+    //     const creditScore = calculateCreditScore();
+
+    //     // Get the form data
+    //     const formData = new FormData(form);
+   
+    //     const accountNumber = "{{ member.account_number }}"; // Add the account_number dynamically if it's not part of the form
+    //     formData.append('account_number', accountNumber); 
+
+    //     formData.append('Credit_Score', creditScore);
+
+    //     // Send the form data to the server for saving
+    //     fetch('/evaluation', {
+    //         method: 'POST',
+    //         body: formData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         if (data.eligibility) {
+    //             eligibilityResult.textContent = data.eligibility;
+    //             resultContainer.style.display = 'block';
+    //             // Show the credit score along with the eligibility result
+    //             creditScoreElement.textContent = creditScore; // Display the credit score
+    //             creditScoreElement.style.display = 'block'; // Ensure the credit score is visible
+    //         } else {
+    //             eligibilityResult.textContent = 'An error occurred. Please try again.';
+    //             resultContainer.style.display = 'block';
+    //             creditScoreElement.style.display = 'none';
+    //         }
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //         eligibilityResult.textContent = 'An error occurred. Please try again.';
+    //         resultContainer.style.display = 'block';
+    //         creditScoreElement.style.display = 'none';
+    //     });
+    // });
+
+
 });

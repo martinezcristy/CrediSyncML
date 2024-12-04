@@ -76,15 +76,18 @@
                             <td class="status-cell">{{ member.status }}</td>
                             <td class="actions">
                                 {% if member.status == 'Evaluated' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approve</button>
-                                    <button class="decline" onclick="openDeclineModal(this)">Decline</button>
-                                    <button class="evaluate" onclick="evaluateMember()" disabled>Evaluated</button>
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approved</button>
+                                    <button class="decline"onclick="openDeclineModal(this)">Decline</button>
+                                {% elif member.status == 'Approved' %}
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}" disabled>Approved</button>
+                                    <!-- <button class="decline" style="display:none;">Decline</button>
+                                    <button class="evaluate" onclick="evaluateMember()" disabled>Evaluated (Approved)</button> -->
+                                {% elif member.status == 'Declined' %}
+                                    <button class="decline" onclick="openDeclineModal(this)" disabled>Declined</button>
                                 {% else %}
-                                    <button class="approve" style="display:none;">Approve</button>
-                                    <button class="decline" style="display:none;">Decline</button>
+                                    <!-- currently pending member -->
                                     <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
                                 {% endif %}
-                                <!-- <button class="evaluate" onclick="evaluateMember()">Evaluate</button> -->
                             </td>
                         </tr>
                     {% endfor %}

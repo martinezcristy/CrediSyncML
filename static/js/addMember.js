@@ -81,7 +81,8 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
                     // Clear the form and close the modal
                     document.getElementById("addMemberForm").reset();
                     alert("New member added!");
-                    document.getElementById("addMemberModal").style.display = "none"; 
+                    document.getElementById("addMemberModal").style.display = "none";
+                    location.reload();
                 } else {
                      // Show error message if insertion failed
                      alert("Failed to add member! Error: " + data.error);
@@ -95,7 +96,7 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
         }
     } else {
         //If the validation failed, prevent form submission
-        alert("Please correct the errors in the form first.");
+        // alert("Please correct the errors in the form first.");
     }
 };
 

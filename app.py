@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for
+from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for, render_template_string
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -440,13 +440,29 @@ def decline_member():
 # Route for sending the approval notification thru email
 @app.route('/send_approval_email', methods=['POST'])
 def send_approval_email_route():
-    recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
-    applicant_name = request.json.get('applicantName')  # Get the applicant's name
+    data = request.json
+    recipient = data.get('recipient')
+    applicant_name = data.get('applicantName')
+    account_number = data.get('accountNumber')
+    
+    # Fetch evaluation details from evaluated_members table
+    try:
+        conn = mysql.connection
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM evaluated_members WHERE account_number = %s", (account_number,))
+        evaluation_details = cur.fetchone()
+        cur.close()
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch evaluation details: {str(e)}"}), 500
+
+    if not evaluation_details:
+        return jsonify({"error": "No evaluation details found for the member."}), 404
+
     if recipient:
         subject = "Credisync - Loan Application Approved"
         app_name = "CREDISYNC"
-
-         # Get the path sa html email content mao ni ma display sa email 
+        
+        # Get the path to the email template
         html_file_path = os.path.join('templates', 'email.html')
 
         # Read the HTML content
@@ -455,8 +471,17 @@ def send_approval_email_route():
                 html_content = file.read()
                 # Replace placeholders with actual values
                 html_content = html_content.replace("[SUBJECT HERE]", subject)
-                html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are pleased to inform you that your credisync loan application has been approved.")
+                html_content = html_content.replace("[APPLICANT NAME]", str(evaluation_details.get('name', 'N/A')))
+                html_content = html_content.replace("[LOAN AMOUNT]", str(evaluation_details.get('loan_amount', 'N/A')))
+                html_content = html_content.replace("[LOAN TERM]", str(evaluation_details.get('loan_term', 'N/A')))
+                html_content = html_content.replace("[CO-MAKER]", str(evaluation_details.get('co_maker', 'N/A')))
+                html_content = html_content.replace("[MONTHLY SALARY]", str(evaluation_details.get('monthly_salary', 'N/A')))
+                html_content = html_content.replace("[ASSET OWNER]", str(evaluation_details.get('asset_owner', 'N/A')))
+                html_content = html_content.replace("[REPAYMENT SCHEDULE]", str(evaluation_details.get('repayment_schedule', 'N/A')))
+                html_content = html_content.replace("[PAYMENT METHOD]", str(evaluation_details.get('payment_method', 'N/A')))
+                html_content = html_content.replace("[CREDIT SCORE]", str(evaluation_details.get('credit_score', 'N/A')))
                 html_content = html_content.replace("[APPNAME HERE]", app_name)
+
         except Exception as e:
             return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
 
@@ -478,6 +503,49 @@ def send_approval_email_route():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Recipient not provided."}), 400
+
+
+# @app.route('/send_approval_email', methods=['POST'])
+# def send_approval_email_route():
+#     recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
+#     applicant_name = request.json.get('applicantName')  # Get the applicant's name
+#     if recipient:
+#         subject = "Credisync - Loan Application Approved"
+#         app_name = "CREDISYNC"
+
+#          # Get the path sa html email content mao ni ma display sa email 
+#         html_file_path = os.path.join('templates', 'email.html')
+
+#         # Read the HTML content
+#         try:
+#             with open(html_file_path, 'r') as file:
+#                 html_content = file.read()
+#                 # Replace placeholders with actual values
+#                 html_content = html_content.replace("[SUBJECT HERE]", subject)
+#                 html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are pleased to inform you that your credisync loan application has been approved.")
+#                 html_content = html_content.replace("[APPNAME HERE]", app_name)
+
+#         except Exception as e:
+#             return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
+
+#         # Create the email
+#         msg = MIMEMultipart()
+#         msg['From'] = EMAIL_USERNAME
+#         msg['To'] = recipient
+#         msg['Subject'] = subject
+
+#         # Attach the HTML content to the email
+#         msg.attach(MIMEText(html_content, 'html'))
+
+#         try:
+#             with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
+#                 server.starttls()
+#                 server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+#                 server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
+#             return jsonify({"message": "Email sent successfully!"}), 200
+#         except Exception as e:
+#             return jsonify({"error": str(e)}), 500
+#     return jsonify({"error": "Recipient not provided."}), 400
 
 
 # Route to update member information
@@ -632,6 +700,60 @@ def evaluation():
             # If account_number is missing or invalid, return an error
             if not account_number:
                 return jsonify({"error": "Account number is missing or invalid."}), 400
+            
+            # map values to store plain text
+            currently_employed_map = {
+                "50": "After the due date",
+                "80": "Within the due date",
+                "100": "Before the due date"
+            }
+            monthly_salary_map = {
+                "50": "P11,300 below",
+                "80": "P11,301 to P41,299",
+                "100": "P41,300 above"
+            }
+            loan_term_map = {
+                "50": "85 months above (Mortgage)",
+                "80": "60 to 84 months (Auto Loans)",
+                "100": "12 to 60 months (Personal)"
+            }
+            co_maker_map = {
+                "50": "No co-maker",
+                "80": "Co-maker with moderate reliability",
+                "100": "Co-maker with strong reliability"
+            }
+            savings_account_map = {
+                "50": "No Savings Account",
+                "80": "Not Active",
+                "100": "Active"
+            }
+            asset_owner_map = {
+                "50": "No assets",
+                "80": "Owns properties/vehicle",
+                "100": "Owns both properties and vehicle"
+            }
+            payment_method_map = {
+                "50": "Cash",
+                "80": "Post-dated Check",
+                "100": "Debit to Savings Account"
+            }
+            repayment_schedule_map = {
+                "50": "Quarterly",
+                "80": "Monthly",
+                "100": "Weekly"
+            }
+
+            currently_employed = currently_employed_map.get(form_data.get('currently_employed'), '')
+            monthly_salary = monthly_salary_map.get(form_data.get('Monthly_Salary'), '')
+            loan_term = loan_term_map.get(form_data.get('Loan_Term'), '')
+            co_maker = co_maker_map.get(form_data.get('Co_Maker'), '')
+            savings_account = savings_account_map.get(form_data.get('Savings_Account'), '')
+            asset_owner = asset_owner_map.get(form_data.get('Asset_Owner'), '')
+            payment_method = payment_method_map.get(form_data.get('Payment_Method'), '')
+            repayment_schedule = repayment_schedule_map.get(form_data.get('Repayment_Schedule'), '')
+
+            # Get the credit score
+            credit_score = int(form_data.get('Credit_Score', 0))
 
             # Log the form data to inspect the values
             app.logger.info("Received form data:")
@@ -643,6 +765,7 @@ def evaluation():
                 'Co_Maker', 'Savings_Account', 'Asset_Owner',
                 'Payment_Method', 'Repayment_Schedule', 'Credit_Score'
             ]
+
             missing_fields = [field for field in required_fields if not form_data.get(field)]
             if missing_fields:
                 return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
@@ -675,14 +798,37 @@ def evaluation():
             email = form_data.get('email')
             address = form_data.get('address')
 
+            # evaluation details
+            # currently_employed = form_data.get('currently_employed')
+            # monthly_salary = form_data.get('Monthly_Salary')
+            # loan_term = form_data.get('Loan_Term')
+            # co_maker = form_data.get('Co_Maker')
+            # savings_account = form_data.get('Savings_Account')
+            # asset_owner = form_data.get('Asset_Owner')
+            # payment_method = form_data.get('Payment_Method')
+            # repayment_schedule = form_data.get('Repayment_Schedule')
+
             cur = mysql.connection.cursor()
 
             try:
                 # Insert the evaluation details into the evaluated_members table
+                # cur.execute("""
+                #     INSERT INTO evaluated_members (account_number, name, contact_number, email, address, evaluation_date, status, cooperative_id, eligibility_result, credit_score)
+                #     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                # """, (account_number, name, contact_number, email, address, evaluation_date, 'Evaluated', cooperative_id, eligibility_text, features[7]))
+                
                 cur.execute("""
-                    INSERT INTO evaluated_members (account_number, name, contact_number, email, address, evaluation_date, status, cooperative_id, eligibility_result, credit_score)
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                """, (account_number, name, contact_number, email, address, evaluation_date, 'Evaluated', cooperative_id, eligibility_text, features[7]))
+                INSERT INTO evaluated_members (
+                    account_number, name, contact_number, email, address, 
+                    evaluation_date, status, cooperative_id, eligibility_result, 
+                    credit_score, currently_employed, monthly_salary, loan_term, 
+                    co_maker, savings_account, asset_owner, payment_method, repayment_schedule
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, (account_number, form_data.get('name'), form_data.get('contact_number'), form_data.get('email'),
+                    form_data.get('address'), datetime.now().strftime('%Y-%m-%d'), 'Evaluated', cooperative_id, 
+                    eligibility_text, credit_score, currently_employed, monthly_salary, loan_term, 
+                    co_maker, savings_account, asset_owner, payment_method, repayment_schedule))
 
                 # Commit the changes
                 mysql.connection.commit()
@@ -761,40 +907,116 @@ def update_member():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# @app.route('/update-member', methods=['POST'])
-# def update_member():
-#     try:
-#         account_number = request.form['account_number']
-#         name = request.form['name']
-#         contact_number = request.form['contact_number']
-#         email = request.form['email']
-#         address = request.form['address']
 
-#         cur = mysql.connection.cursor()
-
-#         # Update member details in the database
-#         cur.execute("""
-#             UPDATE members
-#             SET name = %s, contact_number = %s, email = %s, address = %s
-#             WHERE account_number = %s
-#         """, (name, contact_number, email, address, account_number))
-        
-#         mysql.connection.commit()
-#         cur.close()
-        
-#         # Set success message in session
-#         session['success'] = 'Member information updated successfully.'
-
-#         return redirect(url_for('member_profile', account_number=account_number))
-#     except KeyError as e:
-#         return jsonify({"error": f"Missing form field: {str(e)}"}), 400
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-
-# display 404 html
+# 404 error handler
 @app.errorhandler(404)
 def page_not_found(error):
     return render_template('404.html'), 404
+
+# 400 error handler
+@app.errorhandler(400)
+def bad_request(error):
+    return render_template('404.html'), 400
+
+@app.route('/test_email')
+def test_email_route():
+    # Sample test data to simulate sending an email
+    recipient = "testrecipient@example.com"
+    applicant_name = "John Doe"
+    loan_amount = "100,000 USD"
+    loan_term = "5 years"
+    co_maker = "Jane Doe"
+    monthly_salary = "50,000 USD"
+    asset_owner = "John Doe"
+    repayment_schedule = "Monthly"
+    payment_method = "Bank Transfer"
+    credit_score = "750"
+    app_name = "CREDISYNC"
+    subject = "Credisync - Loan Application Approved"
+
+    # Prepare the HTML email content
+    html_content = """
+    <html>
+    <body>
+        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+            Dear {{ applicant_name }},
+        </p>
+        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+            We are pleased to inform you that your Credisync loan application has been approved. Below are the details of your application:
+        </p>
+
+        <table style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; border-collapse: collapse; width: 100%; margin-top: 20px;">
+            <thead>
+                <tr style="background-color: #f4f4f9; color: #333;">
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Field</th>
+                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Details</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Applicant Name</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ applicant_name }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Loan Amount</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ loan_amount }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Loan Term</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ loan_term }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Co-Maker</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ co_maker }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Monthly Salary</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ monthly_salary }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Asset Ownership</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ asset_owner }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Repayment Schedule</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ repayment_schedule }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Payment Method</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ payment_method }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; border: 1px solid #ddd;">Credit Score</td>
+                    <td style="padding: 10px; border: 1px solid #ddd;">{{ credit_score }}</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
+            Regards,<br>
+            {{ app_name }}
+        </p>
+    </body>
+    </html>
+    """
+    
+    # Use Flask's render_template_string to render the HTML content
+    rendered_content = render_template_string(
+        html_content, 
+        applicant_name=applicant_name,
+        loan_amount=loan_amount,
+        loan_term=loan_term,
+        co_maker=co_maker,
+        monthly_salary=monthly_salary,
+        asset_owner=asset_owner,
+        repayment_schedule=repayment_schedule,
+        payment_method=payment_method,
+        credit_score=credit_score,
+        app_name=app_name
+    )
+
+    # Return the email content as response for preview
+    return rendered_content
 
 if __name__ == "__main__":
     app.run(debug=True)

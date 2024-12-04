@@ -117,6 +117,8 @@ function confirmApprove() {
     const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
     const declineButton = approveButton.nextElementSibling;
     const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
+    const accountNumber = approveButton.closest('tr').cells[0].textContent;
+
     if (currentApproveEmail) {
         fetch('/send_approval_email', {
             method: 'POST',
@@ -125,7 +127,8 @@ function confirmApprove() {
             },
             body: JSON.stringify({ 
                 recipient: currentApproveEmail,
-                applicantName: applicantName // Send the applicant's name
+                applicantName: applicantName, // Send the applicant's name
+                accountNumber: accountNumber
              }),
         })
         .then(response => response.json())
@@ -137,7 +140,8 @@ function confirmApprove() {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ 
-                        account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
+                        // account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
+                        account_number: accountNumber,
                         status: 'Approved' // Set status to "Approved"
                      }),
                 });
@@ -149,9 +153,7 @@ function confirmApprove() {
         .then(data => {
             if (data.success) {
                 alert(`You have approved ${applicantName}. A notification has been sent to: ${currentApproveEmail}`);
-                approveButton.style.display = "none"; 
-                declineButton.style.display = "none"; 
-                approveButton.closest('tr').querySelector('.status-cell').textContent = 'Approved';
+                location.reload();
             } else {
                 alert('Error: ' + (data.error || 'Unknown error'));
             } 

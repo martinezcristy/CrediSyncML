@@ -76,7 +76,7 @@
                             <td class="status-cell">{{ member.status }}</td>
                             <td class="actions">
                                 {% if member.status == 'Evaluated' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approved</button>
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approve</button>
                                     <button class="decline"onclick="openDeclineModal(this)">Decline</button>
                                 {% elif member.status == 'Approved' %}
                                     <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}" disabled>Approved</button>

@@ -38,12 +38,3 @@ function confirmDecline() {
     }
     closeDeclineModal();
 }
-
-// function confirmDecline() {
-//     if (currentDeclineRow) {
-//         currentDeclineRow.remove(); // Remove the row from the table
-//         alert("Member declined!");
-//     }
-//     closeDeclineModal();
-// }
-

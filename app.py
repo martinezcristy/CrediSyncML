@@ -613,54 +613,89 @@ def update_member_status():
 #         cur.close()
 
 # Profile route
-@app.route('/settings', methods=['POST'])
+@app.route('/settings', methods=['GET', 'POST'])
 def settings():
-    try:
-        data = request.get_json()
-        cooperative_id = data['cooperative_id']
-        coop_name = data['coop_name']
-        address = data['address']
-        contact_number = data['contact_number']
-        email = data['email']
+    coop_id = session.get('cooperative_id')
+    if not coop_id:
+        return redirect(url_for('login'))
 
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            coop_name = data['coop_name']
+            address = data['address']
+            contact_number = data['contact_number']
+
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE user
+                SET cooperative_name = %s, address = %s, contact_number = %s
+                WHERE cooperative_id = %s
+            """, (coop_name, address, contact_number, coop_id))
+            mysql.connection.commit()
+            cur.close()
+
+            return jsonify({"message": "User updated successfully!"}), 200
+        except Exception as e:
+            mysql.connection.rollback()
+            return jsonify({"error": str(e)}), 500
+    else:
         cur = mysql.connection.cursor()
-        cur.execute("""
-            UPDATE user
-            SET cooperative_name = %s, address = %s, contact_number = %s, email = %s
-            WHERE cooperative_id = %s
-        """, (coop_name, address, contact_number, email, cooperative_id))
-        mysql.connection.commit()
-        cur.close()
-
-        return jsonify({"message": "User updated successfully!"}), 200
-    except Exception as e:
-        mysql.connection.rollback()
-        return jsonify({"error": str(e)}), 500
-
-
-# Route to fetch user details
-@app.route('/get_user', methods=['GET'])
-def get_user():
-    cur = mysql.connection.cursor()
-    try:
-        cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number, email FROM user LIMIT 1")
+        cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number FROM user WHERE cooperative_id = %s", (coop_id,))
         user = cur.fetchone()
-
-        if not user:
-            return jsonify({"error": "User not found"}), 404
-
-        user_data = {
-            "cooperative_id": user[0],
-            "cooperative_name": user[1],
-            "address": user[2],
-            "contact_number": user[3],
-            "email": user[4]
-        }
-        return jsonify(user_data), 200
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
-    finally:
         cur.close()
+        if user:
+            return render_template('settings.html', user=user)
+        return jsonify({"error": "User not found"}), 404
+    
+# @app.route('/settings', methods=['POST'])
+# def settings():
+#     try:
+#         data = request.get_json()
+#         cooperative_id = data['cooperative_id']
+#         coop_name = data['coop_name']
+#         address = data['address']
+#         contact_number = data['contact_number']
+#         email = data['email']
+
+#         cur = mysql.connection.cursor()
+#         cur.execute("""
+#             UPDATE user
+#             SET cooperative_name = %s, address = %s, contact_number = %s, email = %s
+#             WHERE cooperative_id = %s
+#         """, (coop_name, address, contact_number, email, cooperative_id))
+#         mysql.connection.commit()
+#         cur.close()
+
+#         return jsonify({"message": "User updated successfully!"}), 200
+#     except Exception as e:
+#         mysql.connection.rollback()
+#         return jsonify({"error": str(e)}), 500
+
+
+# # Route to fetch user details
+# @app.route('/get_user', methods=['GET'])
+# def get_user():
+#     cur = mysql.connection.cursor()
+#     try:
+#         cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number, email FROM user LIMIT 1")
+#         user = cur.fetchone()
+
+#         if not user:
+#             return jsonify({"error": "User not found"}), 404
+
+#         user_data = {
+#             "cooperative_id": user['cooperative_id'], 
+#             "cooperative_name": user['cooperative_name'], 
+#             "address": user['address'], 
+#             "contact_number": user['contact_number'], 
+#             "email": user['email']
+#         }
+#         return jsonify(user_data), 200
+#     except Exception as e:
+#         return jsonify({"error": str(e)}), 500
+#     finally:
+#         cur.close()
 
 @app.route('/evaluation', methods=['GET', 'POST'])
 def evaluation():
@@ -906,7 +941,16 @@ def update_member():
         return jsonify({"error": f"Missing form field: {str(e)}"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+# 500 error handler
+@app.errorhandler(500)
+def page_not_found(error):
+    return render_template('404.html'), 500
 
+# 405 error handler
+@app.errorhandler(405)
+def page_not_found(error):
+    return render_template('404.html'), 405
 
 # 404 error handler
 @app.errorhandler(404)

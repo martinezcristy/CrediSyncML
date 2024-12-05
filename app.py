@@ -292,76 +292,6 @@ def members():
 
     return render_template('members.html', members=members_data, error_message=error_message, success_message=success_message, cooperative_name=cooperative_name)
 
-# # Members route
-# @app.route('/members', methods=['GET', 'POST'])
-# def members():
-#     cur = mysql.connection.cursor() # Save the member to the database
-
-#     if request.method == 'POST':
-#         # Retrieve form data
-#         account_number = request.form['account-number']
-#         name = request.form['name']
-#         contact_number = request.form['contact-number']
-#         email = request.form['email-address']
-#         address = request.form['address']
-#         date_applied = request.form['date-applied']
-
-#         # Validate if account number or email already exists in the database
-#         cur.execute("SELECT * FROM members WHERE account_number = %s OR email = %s", (account_number, email))
-#         existing_member = cur.fetchone()
-
-#         if existing_member:
-#             # Check which one exists and send the appropriate error
-#             if existing_member[1] == account_number:
-#                 error_message = "Account number already exists."
-#             elif existing_member[3] == email:
-#                 error_message = "Email address already exists."
-#             else:
-#                 error_message = "There was an error processing your request."
-
-#             # Render the page with the error message and form data
-#             return render_template('members.html', error_message=error_message, 
-#                                    account_number=account_number, name=name,
-#                                    contact_number=contact_number, email=email,
-#                                    address=address, date_applied=date_applied)
-
-#         try:
-#             cur.execute("INSERT INTO members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Pending')", (account_number, name, contact_number, email, address, date_applied))
-#             mysql.connection.commit()
-#             # Return success response
-#             return jsonify({"success": True}), 200
-#         except Exception as e:
-#             mysql.connection.rollback()  # In case of an error, rollback
-#             return jsonify({"success": False, "error": str(e)}), 500
-
-#     cur.execute("SELECT * FROM members")
-#     members_data = cur.fetchall() #fetch from sql db when this route is called
-#     cur.close()
-
-#     # return render_template('members.html')
-#     return render_template('members.html', members=members_data)
-
-# Check if the member account number and email exists (Add Member Form Modal)
-# @app.route('/check_member', methods=['POST'])
-# def check_member():
-#     account_number = request.form['account_number']
-#     email = request.form['email']
-
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT * FROM members WHERE account_number = %s OR email = %s", (account_number, email))
-#     member = cur.fetchone()
-#     cur.close()
-
-#     if member:
-#         error_message = ""
-#         if member['account_number'] == account_number:
-#             error_message += "Account number already exists. "
-#         if member['email'] == email:
-#             error_message += "Email already exists. "
-#         return jsonify({"exists": True, "message": error_message.strip()}), 200
-#     else:
-#         return jsonify({"exists": False}), 200
-
 
 # Declined  members route
 @app.route('/decline_member', methods=['POST'])
@@ -401,41 +331,6 @@ def decline_member():
     finally:
         cur.close()
 
-# @app.route('/decline_member', methods=['POST'])
-# def decline_member():
-#     # decline using account number
-#     account_number = request.json.get('account_number')
-
-#     if not account_number:
-#         return jsonify({"error": "Account number not provided"}), 400
-
-#     cur = mysql.connection.cursor() 
-
-#     try:
-#         # Retrieve the member details didto sa members table gamit ang account number gikan html
-#         cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
-#         member = cur.fetchone()
-
-#         if not member:
-#             return jsonify({"error": "Member not found"}), 404
-
-#          # Update the member's status to 'Declined' in members table
-#         cur.execute("UPDATE members SET status = 'Declined' WHERE account_number = %s", (account_number,))
-
-#         # Insert the declined member into declined_members table
-#         cur.execute("INSERT INTO declined_members (account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, 'Declined')",
-#                     (member['account_number'], member['name'], member['contact_number'], member['email'], member['address'], member['date_applied']))
-
-#         # Delete the member from the members table pero no need for now since we want to countnumber of rows in members para display in dashboard
-#         # cur.execute("DELETE FROM members WHERE account_number = %s", (account_number,))
-#         mysql.connection.commit()
-        
-#         return jsonify({"message": "Member declined successfully!"}), 200
-#     except Exception as e:
-#         mysql.connection.rollback()  # Rollback in case of error
-#         return jsonify({"error": str(e)}), 500
-#     finally:
-#         cur.close()
 
 # Route for sending the approval notification thru email
 @app.route('/send_approval_email', methods=['POST'])
@@ -465,14 +360,23 @@ def send_approval_email_route():
         # Get the path to the email template
         html_file_path = os.path.join('templates', 'email.html')
 
+        # Get the current date and time 
+        current_date = datetime.now().strftime('%Y-%m-%d')
+
         # Read the HTML content
         try:
             with open(html_file_path, 'r') as file:
                 html_content = file.read()
-                # Replace placeholders with actual values
+
+                # Replace placeholders with actual values from database
                 html_content = html_content.replace("[SUBJECT HERE]", subject)
+                html_content = html_content.replace("[DATE_APPROVED]", current_date)
                 html_content = html_content.replace("[APPLICANT NAME]", str(evaluation_details.get('name', 'N/A')))
-                html_content = html_content.replace("[LOAN AMOUNT]", str(evaluation_details.get('loan_amount', 'N/A')))
+                html_content = html_content.replace("[ACCOUNT NUMBER]", str(evaluation_details.get('account_number', 'N/A')))
+                html_content = html_content.replace("[APPLICATION DATE]", str(evaluation_details.get('date_applied', 'N/A')))
+                # html_content = html_content.replace("[LOAN AMOUNT]", str(evaluation_details.get('loan_amount', 'N/A')))
+                html_content = html_content.replace("[EVALUATION DATE]", str(evaluation_details.get('date_evaluated', 'N/A')))
+                html_content = html_content.replace("[CURRENTLY EMPLOYED]", str(evaluation_details.get('payment_history', 'N/A')))
                 html_content = html_content.replace("[LOAN TERM]", str(evaluation_details.get('loan_term', 'N/A')))
                 html_content = html_content.replace("[CO-MAKER]", str(evaluation_details.get('co_maker', 'N/A')))
                 html_content = html_content.replace("[MONTHLY SALARY]", str(evaluation_details.get('monthly_salary', 'N/A')))
@@ -480,6 +384,7 @@ def send_approval_email_route():
                 html_content = html_content.replace("[REPAYMENT SCHEDULE]", str(evaluation_details.get('repayment_schedule', 'N/A')))
                 html_content = html_content.replace("[PAYMENT METHOD]", str(evaluation_details.get('payment_method', 'N/A')))
                 html_content = html_content.replace("[CREDIT SCORE]", str(evaluation_details.get('credit_score', 'N/A')))
+                html_content = html_content.replace("[ELIGIBILITY RESULT]", str(evaluation_details.get('prediction', 'N/A')))
                 html_content = html_content.replace("[APPNAME HERE]", app_name)
 
         except Exception as e:
@@ -615,6 +520,7 @@ def update_member_status():
 # Profile route
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
+    cooperative_name = session.get('cooperative_name')
     coop_id = session.get('cooperative_id')
     if not coop_id:
         return redirect(url_for('login'))
@@ -645,7 +551,7 @@ def settings():
         user = cur.fetchone()
         cur.close()
         if user:
-            return render_template('settings.html', user=user)
+            return render_template('settings.html', user=user, cooperative_name=cooperative_name)
         return jsonify({"error": "User not found"}), 404
     
 # @app.route('/settings', methods=['POST'])
@@ -820,7 +726,7 @@ def evaluation():
 
             # Assuming you have a pre-loaded model
             eligibility_prediction = ELIGIBILITY_MODEL.predict(features_array)[0]
-            eligibility_text = 'Eligible' if eligibility_prediction == 1 else 'Not eligible'
+            eligibility_text = 'Eligible for a loan' if eligibility_prediction == 1 else 'Not eligible for a loan'
 
             app.logger.info(f"Prediction result - Eligibility: {eligibility_text}")
 
@@ -833,8 +739,8 @@ def evaluation():
             email = form_data.get('email')
             address = form_data.get('address')
 
-            # evaluation details
-            # currently_employed = form_data.get('currently_employed')
+            #  # evaluation details
+            # currently_employed = form_data.get('currently_employed') #this is Payment History field in the eval form
             # monthly_salary = form_data.get('Monthly_Salary')
             # loan_term = form_data.get('Loan_Term')
             # co_maker = form_data.get('Co_Maker')
@@ -846,24 +752,22 @@ def evaluation():
             cur = mysql.connection.cursor()
 
             try:
-                # Insert the evaluation details into the evaluated_members table
-                # cur.execute("""
-                #     INSERT INTO evaluated_members (account_number, name, contact_number, email, address, evaluation_date, status, cooperative_id, eligibility_result, credit_score)
-                #     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                # """, (account_number, name, contact_number, email, address, evaluation_date, 'Evaluated', cooperative_id, eligibility_text, features[7]))
-                
+                # save to evaluated_members table
                 cur.execute("""
-                INSERT INTO evaluated_members (
-                    account_number, name, contact_number, email, address, 
-                    evaluation_date, status, cooperative_id, eligibility_result, 
-                    credit_score, currently_employed, monthly_salary, loan_term, 
-                    co_maker, savings_account, asset_owner, payment_method, repayment_schedule
-                )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (account_number, form_data.get('name'), form_data.get('contact_number'), form_data.get('email'),
-                    form_data.get('address'), datetime.now().strftime('%Y-%m-%d'), 'Evaluated', cooperative_id, 
-                    eligibility_text, credit_score, currently_employed, monthly_salary, loan_term, 
-                    co_maker, savings_account, asset_owner, payment_method, repayment_schedule))
+                    INSERT INTO evaluated_members (
+                        account_number, name, contact_number, email, address, date_applied, status, credit_score, 
+                        prediction, date_evaluated, payment_history, monthly_salary, loan_term, co_maker, 
+                        savings_account, asset_owner, payment_method, repayment_schedule, cooperative_id
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """, (
+                    account_number, form_data.get('name'), form_data.get('contact_number'), form_data.get('email'),
+                    form_data.get('address'), form_data.get('dateapplied'), 'Evaluated', 
+                    credit_score, eligibility_text, datetime.now().strftime('%Y-%m-%d'), 
+                    currently_employed, monthly_salary, loan_term, 
+                    co_maker, savings_account, asset_owner, 
+                    payment_method, repayment_schedule, cooperative_id
+                ))
 
                 # Commit the changes
                 mysql.connection.commit()

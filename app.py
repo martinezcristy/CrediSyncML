@@ -358,7 +358,7 @@ def send_approval_email_route():
         app_name = "CREDISYNC"
         
         # Get the path to the email template
-        html_file_path = os.path.join('templates', 'email.html')
+        html_file_path = os.path.join('templates', 'approved-email.html')
 
         # Get the current date and time 
         current_date = datetime.now().strftime('%Y-%m-%d')
@@ -408,6 +408,52 @@ def send_approval_email_route():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Recipient not provided."}), 400
+
+
+# Route for sending the decline notification thru email
+@app.route('/send_declined_email', methods=['POST'])
+def send_declined_email_route():
+    data = request.json
+    recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
+    applicant_name = request.json.get('applicantName')  # Get the applicant's name
+    if recipient:
+        subject = "Credisync - Loan Application Declined"
+
+         # Get the path sa html email content mao ni ma display sa email 
+        html_file_path = os.path.join('templates', 'declined-email.html')
+
+        # Read the HTML content
+        try:
+            with open(html_file_path, 'r') as file:
+                html_content = file.read()
+                # Replace placeholders with actual values
+                html_content = html_content.replace("[SUBJECT HERE]", subject)
+                html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are sad to inform you that your credisync loan application has been declined.")
+                html_content = html_content.replace("[APPNAME HERE]", "CREDISYNC")
+        except Exception as e:
+            return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
+
+        # Create the email
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USERNAME
+        msg['To'] = recipient
+        msg['Subject'] = subject
+
+        # Attach the HTML content to the email
+        msg.attach(MIMEText(html_content, 'html'))
+        
+        # text = f"Subject: {subject}\n\n{message}"
+
+        try:
+            with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
+                server.starttls()
+                server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+                server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
+            return jsonify({"message": "Email sent successfully!"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    return jsonify({"error": "Recipient not provided."}), 400
+    
 
 
 # @app.route('/send_approval_email', methods=['POST'])
@@ -486,36 +532,6 @@ def update_member_status():
     finally:
         cur.close()
 
-# @app.route('/update_member_status', methods=['POST'])
-# def update_member_status():
-#     data = request.json
-#     account_number = data.get('account_number') #account number is read only
-#     status = data.get('status')
-#     email = data.get('email') #include this in checking
-
-#     if not account_number or not status:
-#         return jsonify({"error": "Account number or status not provided"}), 400
-
-#     cur = mysql.connection.cursor()
-
-#     try:
-#         # Check if email exists (excluding the current member)
-#         cur.execute("SELECT * FROM members WHERE email = %s AND account_number != %s", (email, account_number))
-#         email_exists = cur.fetchone()
-
-#         if email_exists:
-#             return jsonify({"error": "Email already exists for another account"}), 409
-
-#         # Update the member's status
-#         cur.execute("UPDATE members SET status = %s WHERE account_number = %s", (status, account_number))
-#         mysql.connection.commit()
-
-#         return jsonify({"success": True}), 200
-#     except Exception as e:
-#         mysql.connection.rollback()  # Rollback in case of error
-#         return jsonify({"error": str(e)}), 500
-#     finally:
-#         cur.close()
 
 # Profile route
 @app.route('/settings', methods=['GET', 'POST'])
@@ -866,105 +882,6 @@ def page_not_found(error):
 def bad_request(error):
     return render_template('404.html'), 400
 
-@app.route('/test_email')
-def test_email_route():
-    # Sample test data to simulate sending an email
-    recipient = "testrecipient@example.com"
-    applicant_name = "John Doe"
-    loan_amount = "100,000 USD"
-    loan_term = "5 years"
-    co_maker = "Jane Doe"
-    monthly_salary = "50,000 USD"
-    asset_owner = "John Doe"
-    repayment_schedule = "Monthly"
-    payment_method = "Bank Transfer"
-    credit_score = "750"
-    app_name = "CREDISYNC"
-    subject = "Credisync - Loan Application Approved"
-
-    # Prepare the HTML email content
-    html_content = """
-    <html>
-    <body>
-        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
-            Dear {{ applicant_name }},
-        </p>
-        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
-            We are pleased to inform you that your Credisync loan application has been approved. Below are the details of your application:
-        </p>
-
-        <table style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; border-collapse: collapse; width: 100%; margin-top: 20px;">
-            <thead>
-                <tr style="background-color: #f4f4f9; color: #333;">
-                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Field</th>
-                    <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Details</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Applicant Name</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ applicant_name }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Loan Amount</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ loan_amount }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Loan Term</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ loan_term }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Co-Maker</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ co_maker }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Monthly Salary</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ monthly_salary }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Asset Ownership</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ asset_owner }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Repayment Schedule</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ repayment_schedule }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Payment Method</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ payment_method }}</td>
-                </tr>
-                <tr>
-                    <td style="padding: 10px; border: 1px solid #ddd;">Credit Score</td>
-                    <td style="padding: 10px; border: 1px solid #ddd;">{{ credit_score }}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <p style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; box-sizing: border-box; color: #3d4852; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">
-            Regards,<br>
-            {{ app_name }}
-        </p>
-    </body>
-    </html>
-    """
-    
-    # Use Flask's render_template_string to render the HTML content
-    rendered_content = render_template_string(
-        html_content, 
-        applicant_name=applicant_name,
-        loan_amount=loan_amount,
-        loan_term=loan_term,
-        co_maker=co_maker,
-        monthly_salary=monthly_salary,
-        asset_owner=asset_owner,
-        repayment_schedule=repayment_schedule,
-        payment_method=payment_method,
-        credit_score=credit_score,
-        app_name=app_name
-    )
-
-    # Return the email content as response for preview
-    return rendered_content
 
 if __name__ == "__main__":
     app.run(debug=True)

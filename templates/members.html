@@ -39,13 +39,14 @@
         <div class="header">
             <h1>Members</h1>
             <div class="header-right">
-                <input type="text" placeholder="Search..." class="search-bar">
+                <!-- <input type="text" placeholder="Search..." class="search-bar"> -->
+                <input type="text" placeholder="Search..." class="search-bar" id="searchBar">
                 <button class="add-member-btn">ADD NEW MEMBER</button>
             </div>
         </div>
 
         {% if not members or members|length == 0 %}
-        <div class="no-member-yet">
+        <div class="no-member-yet" id="noMembers">
             <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
             <div class="message">No members have been added yet.</div>
         </div>
@@ -64,7 +65,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody method="GET">
+                <tbody method="GET" id="membersTableBody">
                     {% for member in members %}
                         <tr data-url="{{ url_for('member_profile', account_number=member['account_number']) }}">
                             <td>{{ member.account_number }}</td>
@@ -95,6 +96,32 @@
             </table>
         {% endif %}
     </div>
+
+    <script>
+        document.getElementById('searchBar').addEventListener('input', function() {
+            let filter = this.value.toUpperCase();
+            let rows = document.getElementById('membersTableBody').getElementsByTagName('tr');
+            let found = false;
+    
+            for (let i = 0; i < rows.length; i++) {
+                let accountNumber = rows[i].getElementsByTagName('td')[0].innerText.toUpperCase();
+                let name = rows[i].getElementsByTagName('td')[1].innerText.toUpperCase();
+                if (accountNumber.indexOf(filter) > -1 || name.indexOf(filter) > -1) {
+                    rows[i].style.display = '';
+                    found = true;
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+    
+            if (found) {
+                document.getElementById('noMembers').style.display = 'none';
+            } else {
+                document.getElementById('noMembers').style.display = 'block';
+                document.getElementById('noMembersMessage').innerText = 'Member not found';
+            }
+        });
+    </script>
 
     <!-- Add New Member Modal -->
     <div id="addMemberModal" class="modal">

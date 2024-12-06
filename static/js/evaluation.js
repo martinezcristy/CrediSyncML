@@ -16,18 +16,19 @@ document.addEventListener('DOMContentLoaded', function () {
         let totalScore = 0;
 
         // Get values from the form fields
-        const currentlyEmployed = parseInt(document.querySelector('[name="currently_employed"]').value) || 0;
-        const monthlySalary = parseInt(document.querySelector('[name="Monthly_Salary"]').value) || 0;
+        const monthlySalary = parseInt(document.querySelector('[name="Monthly_Earnings"]').value) || 0;
+        const loanType = parseInt(document.querySelector('[name="Loan_Type"]').value) || 0;
         const loanTerm = parseInt(document.querySelector('[name="Loan_Term"]').value) || 0;
         const haveCoMaker = parseInt(document.querySelector('[name="Co_Maker"]').value) || 0;
         const savingsAccountStatus = parseInt(document.querySelector('[name="Savings_Account"]').value) || 0;
         const assetOwner = parseInt(document.querySelector('[name="Asset_Owner"]').value) || 0;
         const paymentMethod = parseInt(document.querySelector('[name="Payment_Method"]').value) || 0;
         const repaymentSched = parseInt(document.querySelector('[name="Repayment_Schedule"]').value) || 0;
+        const paymentHistory = parseInt(document.querySelector('[name="Payment_History"]').value) || 0;
 
-        // Sum up the selected values to calculate total score
-        totalScore = currentlyEmployed + monthlySalary + loanTerm + haveCoMaker + savingsAccountStatus +
-                     assetOwner + paymentMethod + repaymentSched;
+        // Sum up the selected values to calculate total credit score
+        totalScore = monthlySalary + loanType + loanTerm + haveCoMaker + savingsAccountStatus +
+                     assetOwner + paymentMethod + repaymentSched + paymentHistory;
 
         return totalScore; // Return the computed credit score
     }

@@ -62,23 +62,23 @@
             <input type="hidden" name="address" value="{{ member.address }}">
             <input type="hidden" name="dateapplied" value="{{ member.date_applied }}">
 
-
-            <div class="form-group">
-                <label>Payment History</label>
-                <select name="currently_employed" required>
-                    <option value="">Please select</option>
-                    <option value="50">After the due date </option>
-                    <option value="80">Within the due date </option>
-                    <option value="100">Before the due date </option>
-                </select>
-            </div>
+            
             <div class="form-group">
                 <label>Monthly Earnings</label>
-                <select name="Monthly_Salary" required>
+                <select name="Monthly_Earnings" required>
                     <option value="">Please select</option>
                     <option value="50">P11,300 below </option>
                     <option value="80">P11,301 to P41,299 </option>
                     <option value="100">P41,300 above </option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Loan Type</label>
+                <select name="Loan_Type" required>
+                    <option value="">Please select</option>
+                    <option value="50">Personal Loans/Home Equity Loans</option>
+                    <option value="80">Auto Loans/Student Loans</option>
+                    <option value="100">Mortgages/Small Business Loans</option>
                 </select>
             </div>
             <div class="form-group">
@@ -95,11 +95,10 @@
                 <select name="Co_Maker" required>
                     <option value="">Please select</option>
                     <option value="50">No co-maker </option>
-                    <option value="80">Co-maker with moderate reliability </option>
-                    <option value="100">Co-maker with strong reliability </option>
+                    <option value="80">Co-maker with moderate reliability</option>
+                    <option value="100">Co-maker with strong reliability</option>
                 </select>
             </div>
-    
             <div class="form-group">
                 <label>Savings Account Status</label>
                 <select name="Savings_Account" required>
@@ -136,7 +135,16 @@
                     <option value="100">Weekly </option>
                 </select>
             </div>
-
+            <div class="form-group">
+                <label>Payment History</label>
+                <select name="Payment_History" required>
+                    <option value="">Please select</option>
+                    <option value="50">No History</option>
+                    <option value="80">After the due date </option>
+                    <option value="100">On or before the due date </option>
+                </select>
+            </div>
+            
             <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button>
             
             <!-- <div class="form-group">

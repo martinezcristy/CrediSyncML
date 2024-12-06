@@ -370,19 +370,23 @@ def send_approval_email_route():
 
                 # Replace placeholders with actual values from database
                 html_content = html_content.replace("[SUBJECT HERE]", subject)
+                html_content = html_content.replace("[COOPERATIVE NAME]", str(evaluation_details.get('cooperative_name', 'N/A')))
                 html_content = html_content.replace("[DATE_APPROVED]", current_date)
-                html_content = html_content.replace("[APPLICANT NAME]", str(evaluation_details.get('name', 'N/A')))
                 html_content = html_content.replace("[ACCOUNT NUMBER]", str(evaluation_details.get('account_number', 'N/A')))
+                html_content = html_content.replace("[APPLICANT NAME]", str(evaluation_details.get('name', 'N/A')))
                 html_content = html_content.replace("[APPLICATION DATE]", str(evaluation_details.get('date_applied', 'N/A')))
-                # html_content = html_content.replace("[LOAN AMOUNT]", str(evaluation_details.get('loan_amount', 'N/A')))
                 html_content = html_content.replace("[EVALUATION DATE]", str(evaluation_details.get('date_evaluated', 'N/A')))
-                html_content = html_content.replace("[CURRENTLY EMPLOYED]", str(evaluation_details.get('payment_history', 'N/A')))
+                # loan applicant details
+                html_content = html_content.replace("[MONTHLY EARNINGS]", str(evaluation_details.get('monthly_earnings', 'N/A')))
+                html_content = html_content.replace("[LOAN TYPE]", str(evaluation_details.get('loan_type', 'N/A')))
                 html_content = html_content.replace("[LOAN TERM]", str(evaluation_details.get('loan_term', 'N/A')))
                 html_content = html_content.replace("[CO-MAKER]", str(evaluation_details.get('co_maker', 'N/A')))
-                html_content = html_content.replace("[MONTHLY SALARY]", str(evaluation_details.get('monthly_salary', 'N/A')))
+                html_content = html_content.replace("[SAVINGS ACCOUNT]", str(evaluation_details.get('savings_account', 'N/A')))
                 html_content = html_content.replace("[ASSET OWNER]", str(evaluation_details.get('asset_owner', 'N/A')))
-                html_content = html_content.replace("[REPAYMENT SCHEDULE]", str(evaluation_details.get('repayment_schedule', 'N/A')))
                 html_content = html_content.replace("[PAYMENT METHOD]", str(evaluation_details.get('payment_method', 'N/A')))
+                html_content = html_content.replace("[REPAYMENT SCHEDULE]", str(evaluation_details.get('repayment_schedule', 'N/A')))
+                html_content = html_content.replace("[PAYMENT HISTORY]", str(evaluation_details.get('payment_history', 'N/A')))
+                #results of evaluation
                 html_content = html_content.replace("[CREDIT SCORE]", str(evaluation_details.get('credit_score', 'N/A')))
                 html_content = html_content.replace("[ELIGIBILITY RESULT]", str(evaluation_details.get('prediction', 'N/A')))
                 html_content = html_content.replace("[APPNAME HERE]", app_name)
@@ -614,16 +618,16 @@ def evaluation():
             if not account_number:
                 return jsonify({"error": "Account number is missing or invalid."}), 400
             
-            # map values to store plain text
-            currently_employed_map = {
-                "50": "After the due date",
-                "80": "Within the due date",
-                "100": "Before the due date"
-            }
-            monthly_salary_map = {
+            # map values to store plain text in database (evaluated_members table)
+            monthly_earnings_map = {
                 "50": "P11,300 below",
                 "80": "P11,301 to P41,299",
                 "100": "P41,300 above"
+            }
+            loan_type_map = {
+                "50": "Personal Loans/Home Equity Loans",
+                "80": "Auto Loans/Student Loans",
+                "100": "Mortgages/Small Business Loans"
             }
             loan_term_map = {
                 "50": "85 months above (Mortgage)",
@@ -655,15 +659,21 @@ def evaluation():
                 "80": "Monthly",
                 "100": "Weekly"
             }
+            payment_history_map = {
+                "50": "No History",
+                "80": "After the due date",
+                "100": "On or before e the due date"
+            }
 
-            currently_employed = currently_employed_map.get(form_data.get('currently_employed'), '')
-            monthly_salary = monthly_salary_map.get(form_data.get('Monthly_Salary'), '')
+            monthly_earnings = monthly_earnings_map.get(form_data.get('Monthly_Earnings'), '')
+            loan_type = loan_type_map.get(form_data.get('Loan_Type'), '')
             loan_term = loan_term_map.get(form_data.get('Loan_Term'), '')
             co_maker = co_maker_map.get(form_data.get('Co_Maker'), '')
             savings_account = savings_account_map.get(form_data.get('Savings_Account'), '')
             asset_owner = asset_owner_map.get(form_data.get('Asset_Owner'), '')
             payment_method = payment_method_map.get(form_data.get('Payment_Method'), '')
             repayment_schedule = repayment_schedule_map.get(form_data.get('Repayment_Schedule'), '')
+            payment_history = payment_history_map.get(form_data.get('Payment_History'), '')
 
             # Get the credit score
             credit_score = int(form_data.get('Credit_Score', 0))
@@ -674,9 +684,9 @@ def evaluation():
                 app.logger.info(f"{key}: {value}")
 
             required_fields = [
-                'Monthly_Salary', 'Loan_Term',
+                'Monthly_Earnings', 'Loan_Type', 'Loan_Term',
                 'Co_Maker', 'Savings_Account', 'Asset_Owner',
-                'Payment_Method', 'Repayment_Schedule', 'Credit_Score'
+                'Payment_Method', 'Repayment_Schedule', 'Payment_History','Credit_Score'
             ]
 
             missing_fields = [field for field in required_fields if not form_data.get(field)]
@@ -684,13 +694,15 @@ def evaluation():
                 return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
             features = [
-                float(form_data.get('Monthly_Salary')),
+                float(form_data.get('Monthly_Earnings')),
+                float(form_data.get('Loan_Type')),
                 float(form_data.get('Loan_Term')),
                 float(form_data.get('Co_Maker')),
                 float(form_data.get('Savings_Account')),
                 float(form_data.get('Asset_Owner')),
                 float(form_data.get('Payment_Method')),
                 float(form_data.get('Repayment_Schedule')),
+                float(form_data.get('Payment_History')),
                 float(form_data.get('Credit_Score', 0))
             ]
 
@@ -712,14 +724,16 @@ def evaluation():
             address = form_data.get('address')
 
             #  # evaluation details
-            # currently_employed = form_data.get('currently_employed') #this is Payment History field in the eval form
-            # monthly_salary = form_data.get('Monthly_Salary')
+           
+            # monthly_earnings = form_data.get('Monthly_Earnings')
+            # loan_type = form_data.get('Loan_Type')
             # loan_term = form_data.get('Loan_Term')
             # co_maker = form_data.get('Co_Maker')
             # savings_account = form_data.get('Savings_Account')
             # asset_owner = form_data.get('Asset_Owner')
             # payment_method = form_data.get('Payment_Method')
             # repayment_schedule = form_data.get('Repayment_Schedule')
+             # payment_history = form_data.get('Payment_History') #this is Payment History field in the eval form
 
             cur = mysql.connection.cursor()
 
@@ -728,17 +742,17 @@ def evaluation():
                 cur.execute("""
                     INSERT INTO evaluated_members (
                         account_number, name, contact_number, email, address, date_applied, status, credit_score, 
-                        prediction, date_evaluated, payment_history, monthly_salary, loan_term, co_maker, 
-                        savings_account, asset_owner, payment_method, repayment_schedule, cooperative_id
+                        prediction, date_evaluated, monthly_earnings, loan_type, loan_term, co_maker, 
+                        savings_account, asset_owner, payment_method, repayment_schedule, payment_history, cooperative_id, cooperative_name
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
                     account_number, form_data.get('name'), form_data.get('contact_number'), form_data.get('email'),
                     form_data.get('address'), form_data.get('dateapplied'), 'Evaluated', 
                     credit_score, eligibility_text, datetime.now().strftime('%Y-%m-%d'), 
-                    currently_employed, monthly_salary, loan_term, 
+                    monthly_earnings, loan_type, loan_term, 
                     co_maker, savings_account, asset_owner, 
-                    payment_method, repayment_schedule, cooperative_id
+                    payment_method, repayment_schedule, payment_history, cooperative_id, cooperative_name
                 ))
 
                 # Commit the changes

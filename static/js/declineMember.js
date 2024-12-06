@@ -1,7 +1,7 @@
-var currentDeclineRow; // To store the row to be deleted
 
 function openDeclineModal(button) {
-    currentDeclineRow = button.closest("tr"); // Get the row of the clicked decline button
+    // currentDeclineRow = button.closest("tr"); // Get the row of the clicked decline button
+    currentDeclineEmail = button.getAttribute('data-email'); 
     document.getElementById("declineMemberModal").style.display = "block";
 }
 
@@ -10,97 +10,55 @@ function closeDeclineModal() {
 }
 
 function confirmDecline() {
-    if (currentDeclineRow) {
-        // Get account number, email, and applicant name from the current row
-        const accountNumber = currentDeclineRow.cells[0].textContent; // Assuming account number is in the first cell (td)
-        const recipientEmail = currentDeclineRow.cells[1].textContent; // Assuming email is in the second cell (td)
-        const applicantName = currentDeclineRow.cells[2].textContent; // Assuming applicant name is in the third cell (td)
+ 
+    const declineButton = document.querySelector(`.approve[data-email="${currentDeclineEmail}"]`);
+    const applicantName = declineButton.getAttribute("data-name"); // Get the name from the button
+    const accountNumber = declineButton.closest('tr').cells[0].textContent;
 
-        // Decline member
-        fetch('/decline_member', {
+    if (currentDeclineEmail) {
+        fetch('/send_declined_email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ account_number: accountNumber }), // Sending account number to backend
+            body: JSON.stringify({ 
+                recipient: currentDeclineEmail,
+                applicantName: applicantName, // Send the applicant's name
+                accountNumber: accountNumber
+             }),
         })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            alert(data.message);
-
-            // Send declined email
-            return fetch('/send_declined_email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    recipient: recipientEmail,
-                    applicantName: applicantName
-                }), // Sending email and applicant name to backend
-            });
-        })
-        .then(emailResponse => {
-            if (!emailResponse.ok) {
-                throw new Error('Network response was not ok ' + emailResponse.statusText);
+            if (data.message) {
+                return fetch('/update_member_status', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        account_number: accountNumber,
+                        status: 'Declined' // Set status to "Declined"
+                     }),
+                });
+            } else {
+                alert('Error: ' + data.error);
             }
-            return emailResponse.json();
         })
-        .then(emailData => {
-            alert(emailData.message);
-            location.reload();
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`You have declined ${applicantName}. A notification has been sent to: ${currentDeclineEmail}`);
+                location.reload();
+            } else {
+                alert('Error: ' + (data.error || 'Unknown error'));
+            } 
         })
         .catch(error => {
-            console.error('There was a problem with the fetch operation:', error);
-            alert('Failed to decline the member or send the email. Please try again.');
+            console.error('Error sending email:', error);
+            alert('Failed to send email.');
         });
     }
     closeDeclineModal();
+
+        
 }
-
-
-// var currentDeclineRow; // To store the row to be deleted
-
-// function openDeclineModal(button) {
-//     currentDeclineRow = button.closest("tr"); // Get the row of the clicked decline button
-//     document.getElementById("declineMemberModal").style.display = "block";
-// }
-
-// function closeDeclineModal() {
-//     document.getElementById("declineMemberModal").style.display = "none";
-// }
-
-// function confirmDecline() {
-//     if (currentDeclineRow) {
-//         // Get account number from the current row
-//         const accountNumber = currentDeclineRow.cells[0].textContent; // Assuming account number is in the first cell (td)
-
-//         fetch('/decline_member', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ account_number: accountNumber }), // Sending account number to backend
-//         })
-//         .then(response => {
-//             if (!response.ok) {
-//                 throw new Error('Network response was not ok ' + response.statusText);
-//             }
-//             return response.json();
-//         })
-//         .then(data => {
-//             alert(data.message);
-//             location.reload();
-//         })
-//         .catch(error => {
-//             console.error('There was a problem with the fetch operation:', error);
-//             alert('Failed to decline the member. Please try again.');
-//         });
-//     }
-//     closeDeclineModal();
-// }

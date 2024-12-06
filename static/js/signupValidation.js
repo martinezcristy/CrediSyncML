@@ -1,5 +1,6 @@
 function validateForm() {
     var coopIDPattern = /^[A-Za-z0-9]+$/;
+    var contactNumberPattern = /^(09|\+639)\d{9}$/;
     var cooperativeId = document.getElementById("cooperative_id").value;
     var contactNumber = document.getElementById("contact_number").value;
     var password = document.getElementById("password").value;
@@ -29,6 +30,15 @@ function validateForm() {
     //contact number
     if (contactNumber.length !== 11) {
         document.getElementById("contact_number_error").textContent = "Contact number must be exactly 11 digits.";
+        document.getElementById("contact_number_error").style.display = "block";
+        isValid = false;
+    } else {
+        document.getElementById("contact_number_error").style.display = "none";
+    }
+
+    // contact number pattern
+    if (!contactNumber.match(contactNumberPattern)) {
+        document.getElementById("contact_number_error").textContent = "format e.g. 0917XXXXXXX";
         document.getElementById("contact_number_error").style.display = "block";
         isValid = false;
     } else {

@@ -23,7 +23,7 @@
             <div class="form-row">
                 <div class="input-field">
                     <label for="cooperative_id">Cooperative ID</label><br>
-                    <input type="text" id="cooperative_id" name="cooperative_id" placeholder="Enter your cooperative ID" required pattern="[A-Za-z0-9]+" title="Cooperative ID must contain letters and numbers only."/>
+                    <input type="text" id="cooperative_id" name="cooperative_id" placeholder="Enter your cooperative ID" required pattern="[A-Za-z0-9]+" title="Cooperative ID must contain letters and numbers only." maxlength="8"/>
                     <div class="error-message" id="cooperative_id_error" style="color: red; display: none;"></div>
                 </div>
                 <div class="input-field">
@@ -41,7 +41,7 @@
                 </div>
                 <div class="input-field">
                     <label for="contact_number">Contact Number</label><br>
-                    <input type="text" id="contact_number" name="contact_number" placeholder="Enter your contact number" required maxlength="12"/>
+                    <input type="text" id="contact_number" name="contact_number" placeholder="Enter your contact number" required maxlength="11"/>
                     <div class="error-message" id="contact_number_error" style="color: red; display: none;"></div>
                 </div>
             </div>

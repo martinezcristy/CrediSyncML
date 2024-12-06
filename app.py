@@ -453,50 +453,6 @@ def send_declined_email_route():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
     return jsonify({"error": "Recipient not provided."}), 400
-    
-
-
-# @app.route('/send_approval_email', methods=['POST'])
-# def send_approval_email_route():
-#     recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
-#     applicant_name = request.json.get('applicantName')  # Get the applicant's name
-#     if recipient:
-#         subject = "Credisync - Loan Application Approved"
-#         app_name = "CREDISYNC"
-
-#          # Get the path sa html email content mao ni ma display sa email 
-#         html_file_path = os.path.join('templates', 'email.html')
-
-#         # Read the HTML content
-#         try:
-#             with open(html_file_path, 'r') as file:
-#                 html_content = file.read()
-#                 # Replace placeholders with actual values
-#                 html_content = html_content.replace("[SUBJECT HERE]", subject)
-#                 html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are pleased to inform you that your credisync loan application has been approved.")
-#                 html_content = html_content.replace("[APPNAME HERE]", app_name)
-
-#         except Exception as e:
-#             return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
-
-#         # Create the email
-#         msg = MIMEMultipart()
-#         msg['From'] = EMAIL_USERNAME
-#         msg['To'] = recipient
-#         msg['Subject'] = subject
-
-#         # Attach the HTML content to the email
-#         msg.attach(MIMEText(html_content, 'html'))
-
-#         try:
-#             with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
-#                 server.starttls()
-#                 server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
-#                 server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
-#             return jsonify({"message": "Email sent successfully!"}), 200
-#         except Exception as e:
-#             return jsonify({"error": str(e)}), 500
-#     return jsonify({"error": "Recipient not provided."}), 400
 
 
 # Route to update member information

@@ -18,8 +18,8 @@ function validateForm(event) {
     }
 
     // Name validation
-    if (name.length > 15) {
-        document.getElementById("name_error").textContent = "Name should not exceed to 15 characters";
+    if (name.length < 5) {
+        document.getElementById("name_error").textContent = "Name must be at least 5 characters long";
         document.getElementById("name_error").style.display = "block";
         isValid = false;
     } else {

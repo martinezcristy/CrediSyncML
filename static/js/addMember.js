@@ -2,7 +2,6 @@ var modal = document.getElementById("addMemberModal");
 var btn = document.querySelector(".add-member-btn");
 var span = document.querySelector(".close-btn");
 var membersTableBody = document.querySelector(".members-table tbody");
-var currentDeclineRow; // To store the row to be deleted
 
 // Open the "Add New Member" modal
 btn.onclick = function() {
@@ -20,6 +19,8 @@ window.onclick = function(event) {
         modal.style.display = "none";
     }
 }
+
+// table row javascript logic
 
 document.getElementById("addMemberForm").onsubmit = function(e) {
     e.preventDefault();  // Prevent form submission to manually handle the process
@@ -66,7 +67,8 @@ document.getElementById("addMemberForm").onsubmit = function(e) {
                         <td class="actions">
                             <button class="approve" 
                                 data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
-                            <button class="decline" onclick="openDeclineModal(this)">Decline</button>
+                            <button class="decline"
+                                data-email="${document.getElementById("email-address").value}" data-name="${applicantName}" onclick="openDeclineModal(this)">Decline</button>
                             <button class="evaluate">Evaluate</button>
                         </td>
                     `;
@@ -173,22 +175,68 @@ membersTableBody.addEventListener('click', function(e) {
     } 
 });
 
-// Open the decline modal and store the row to be deleted
-function openDeclineModal(button) {
-    currentDeclineRow = button.closest("tr"); // Store the row to be deleted
-    document.getElementById("declineMemberModal").style.display = "block";
-}
+// decline member javascript logic
 
-// Close the decline modal
-function closeDeclineModal() {
-    document.getElementById("declineMemberModal").style.display = "none";
-}
+// function openDeclineModal(button) {
+//     // currentDeclineRow = button.closest("tr"); // Get the row of the clicked decline button
+//     currentDeclineEmail = button.getAttribute('data-email'); 
+//     document.getElementById("declineMemberModal").style.display = "block";
+// }
 
-// Confirm the decline and remove the row from the table
-function confirmDecline() {
-    if (currentDeclineRow) {
-        currentDeclineRow.remove(); // Remove the row from the table
-        alert("Member declined!");
-    }
-    closeDeclineModal();
-}
+// function closeDeclineModal() {
+//     document.getElementById("declineMemberModal").style.display = "none";
+// }
+
+// function confirmDecline() {
+ 
+//     const declineButton = document.querySelector(`.approve[data-email="${currentDeclineEmail}"]`);
+//     const applicantName = declineButton.getAttribute("data-name"); // Get the name from the button
+//     const accountNumber = declineButton.closest('tr').cells[0].textContent;
+
+//     if (currentDeclineEmail) {
+//         fetch('/send_declined_email', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ 
+//                 recipient: currentDeclineEmail,
+//                 applicantName: applicantName, // Send the applicant's name
+//                 accountNumber: accountNumber
+//              }),
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.message) {
+//                 return fetch('/update_member_status', {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                     },
+//                     body: JSON.stringify({ 
+//                         account_number: accountNumber,
+//                         status: 'Declined' // Set status to "Declined"
+//                      }),
+//                 });
+//             } else {
+//                 alert('Error: ' + data.error);
+//             }
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.success) {
+//                 alert(`You have declined ${applicantName}. A notification has been sent to: ${currentDeclineEmail}`);
+//                 location.reload();
+//             } else {
+//                 alert('Error: ' + (data.error || 'Unknown error'));
+//             } 
+//         })
+//         .catch(error => {
+//             console.error('Error sending email:', error);
+//             alert('Failed to send email.');
+//         });
+//     }
+//     closeDeclineModal();
+
+        
+// }

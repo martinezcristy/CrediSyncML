@@ -326,7 +326,6 @@ def decline_member():
     finally:
         cur.close()
 
-
 # Route for sending the approval notification thru email
 @app.route('/send_approval_email', methods=['POST'])
 def send_approval_email_route():
@@ -397,51 +396,6 @@ def send_approval_email_route():
 
         # Attach the HTML content to the email
         msg.attach(MIMEText(html_content, 'html'))
-
-        try:
-            with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
-                server.starttls()
-                server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
-                server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
-            return jsonify({"message": "Email sent successfully!"}), 200
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
-    return jsonify({"error": "Recipient not provided."}), 400
-
-
-# Route for sending the decline notification thru email
-@app.route('/send_declined_email', methods=['POST'])
-def send_declined_email_route():
-    data = request.json
-    recipient = request.json.get('recipient')  # Extract the recipient gikan sa members html
-    applicant_name = request.json.get('applicantName')  # Get the applicant's name
-    if recipient:
-        subject = "Credisync - Loan Application Declined"
-
-         # Get the path sa html email content mao ni ma display sa email 
-        html_file_path = os.path.join('templates', 'declined-email.html')
-
-        # Read the HTML content
-        try:
-            with open(html_file_path, 'r') as file:
-                html_content = file.read()
-                # Replace placeholders with actual values
-                html_content = html_content.replace("[SUBJECT HERE]", subject)
-                html_content = html_content.replace("[BODY HERE]", f"Dear {applicant_name}, we are sad to inform you that your credisync loan application has been declined.")
-                html_content = html_content.replace("[APPNAME HERE]", "CREDISYNC")
-        except Exception as e:
-            return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
-
-        # Create the email
-        msg = MIMEMultipart()
-        msg['From'] = EMAIL_USERNAME
-        msg['To'] = recipient
-        msg['Subject'] = subject
-
-        # Attach the HTML content to the email
-        msg.attach(MIMEText(html_content, 'html'))
-        
-        # text = f"Subject: {subject}\n\n{message}"
 
         try:
             with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
@@ -600,9 +554,9 @@ def evaluation():
                 "100": "Mortgages/Small Business Loans"
             }
             loan_term_map = {
-                "50": "85 months above (Mortgage)",
-                "80": "60 to 84 months (Auto Loans)",
-                "100": "12 to 60 months (Personal)"
+                "50": "85 months above",
+                "80": "60 to 84 months",
+                "100": "12 to 60 months"
             }
             co_maker_map = {
                 "50": "No co-maker",
@@ -625,7 +579,7 @@ def evaluation():
                 "100": "Debit to Savings Account"
             }
             repayment_schedule_map = {
-                "50": "Quarterly",
+                "50": "Quarterly/Semi-Anually/Anually",
                 "80": "Monthly",
                 "100": "Weekly"
             }

@@ -529,31 +529,6 @@ def settings():
         if user:
             return render_template('settings.html', user=user, cooperative_name=cooperative_name)
         return jsonify({"error": "User not found"}), 404
-    
-# @app.route('/settings', methods=['POST'])
-# def settings():
-#     try:
-#         data = request.get_json()
-#         cooperative_id = data['cooperative_id']
-#         coop_name = data['coop_name']
-#         address = data['address']
-#         contact_number = data['contact_number']
-#         email = data['email']
-
-#         cur = mysql.connection.cursor()
-#         cur.execute("""
-#             UPDATE user
-#             SET cooperative_name = %s, address = %s, contact_number = %s, email = %s
-#             WHERE cooperative_id = %s
-#         """, (coop_name, address, contact_number, email, cooperative_id))
-#         mysql.connection.commit()
-#         cur.close()
-
-#         return jsonify({"message": "User updated successfully!"}), 200
-#     except Exception as e:
-#         mysql.connection.rollback()
-#         return jsonify({"error": str(e)}), 500
-
 
 # # Route to fetch user details
 # @app.route('/get_user', methods=['GET'])

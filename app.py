@@ -318,6 +318,9 @@ def decline_member():
         # Delete the member from the members table, but keep it for now for dashboard display
         # cur.execute("DELETE FROM members WHERE account_number = %s AND cooperative_id = %s", (account_number, coop_id))
         mysql.connection.commit()
+
+        # # Send the decline email
+        # send_decline_email(member)
         
         return jsonify({"message": "Member declined successfully!"}), 200
     except Exception as e:
@@ -325,6 +328,108 @@ def decline_member():
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
+
+# def send_decline_email(member):
+#     recipient = member['email']
+#     applicant_name = member['name']
+#     account_number = member['account_number']
+
+#     # Get the path to the declined-email.html template
+#     html_file_path = os.path.join('templates', 'declined-email.html')
+
+#     try:
+#         with open(html_file_path, 'r') as file:
+#             html_content = file.read()
+
+#             # Replace placeholders with actual values
+#             html_content = html_content.replace("[APPLICANT NAME]", applicant_name)
+#             html_content = html_content.replace("[ACCOUNT NUMBER]", account_number)
+#             html_content = html_content.replace("[COOPERATIVE NAME]", session.get('cooperative_name', 'Your Cooperative'))
+#             html_content = html_content.replace("[APPLICATION DATE]", member['date_applied'].strftime('%Y-%m-%d'))
+
+#         # Create and send the email
+#         msg = MIMEMultipart()
+#         msg['From'] = EMAIL_USERNAME
+#         msg['To'] = recipient
+#         msg['Subject'] = "Credisync - Loan Application Approved"
+
+#         msg.attach(MIMEText(html_content, 'html'))
+
+#         with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
+#             server.starttls()
+#             server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+#             server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
+
+#     except Exception as e:
+#         print(f"Error sending decline email: {str(e)}")
+
+
+@app.route('/send_decline_email', methods=['POST'])
+def send_decline_email_route():
+    data = request.json
+    recipient = data.get('recipient')
+    applicant_name = data.get('applicantName')
+    account_number = data.get('accountNumber')
+    
+    # Fetch member details from members table
+    try:
+        conn = mysql.connection
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+        member_details = cur.fetchone()
+        cur.close()
+    except Exception as e:
+        return jsonify({"error": f"Failed to fetch member details: {str(e)}"}), 500
+
+    if not member_details:
+        return jsonify({"error": "No member details found."}), 404
+
+    if recipient:
+        subject = "Credisync - Loan Application Declined"
+        app_name = "CREDISYNC"
+        
+        # Get the path to the email template
+        html_file_path = os.path.join('templates', 'declined-email.html')
+
+        # Get the current date and time 
+        current_date = datetime.now().strftime('%Y-%m-%d')
+
+        # Read the HTML content
+        try:
+            with open(html_file_path, 'r') as file:
+                html_content = file.read()
+
+                # Replace placeholders with actual values from database
+                html_content = html_content.replace("[SUBJECT HERE]", subject)
+                html_content = html_content.replace("[COOPERATIVE NAME]", str(member_details.get('cooperative_name', 'N/A')))
+                html_content = html_content.replace("[DATE_DECLINED]", current_date)
+                html_content = html_content.replace("[ACCOUNT NUMBER]", str(member_details.get('account_number', 'N/A')))
+                html_content = html_content.replace("[APPLICANT NAME]", str(member_details.get('name', 'N/A')))
+                html_content = html_content.replace("[APPLICATION DATE]", str(member_details.get('date_applied', 'N/A')))
+                html_content = html_content.replace("[APPNAME HERE]", app_name)
+
+        except Exception as e:
+            return jsonify({"error": f"Failed to read email template: {str(e)}"}), 500
+
+        # Create the email
+        msg = MIMEMultipart()
+        msg['From'] = EMAIL_USERNAME
+        msg['To'] = recipient
+        msg['Subject'] = subject
+
+        # Attach the HTML content to the email
+        msg.attach(MIMEText(html_content, 'html'))
+
+        try:
+            with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
+                server.starttls()
+                server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+                server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
+            return jsonify({"message": "Email sent successfully!"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    return jsonify({"error": "Recipient not provided."}), 400
+
 
 # Route for sending the approval notification thru email
 @app.route('/send_approval_email', methods=['POST'])

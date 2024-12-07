@@ -13,6 +13,7 @@ function confirmDecline() {
     if (currentDeclineRow) {
         // Get account number from the current row
         const accountNumber = currentDeclineRow.cells[0].textContent; // Assuming account number is in the first cell (td)
+        const recipientEmail = currentDeclineRow.cells[3].textContent; // Assuming email is in the fourth cell (td)
 
         fetch('/decline_member', {
             method: 'POST',
@@ -29,7 +30,33 @@ function confirmDecline() {
         })
         .then(data => {
             alert(data.message);
-            location.reload();
+
+            // Send decline email
+            fetch('/send_decline_email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ 
+                    recipient: recipientEmail, 
+                    applicantName: currentDeclineRow.cells[1].textContent, // Assuming name is in the second cell (td)
+                    accountNumber: accountNumber 
+                }),
+            })
+            .then(emailResponse => {
+                if (!emailResponse.ok) {
+                    throw new Error('Network response was not ok ' + emailResponse.statusText);
+                }
+                return emailResponse.json();
+            })
+            .then(emailData => {
+                alert(emailData.message);
+                location.reload();
+            })
+            .catch(emailError => {
+                console.error('There was a problem with the fetch operation:', emailError);
+                alert('Failed to send decline email. Please try again.');
+            });
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
@@ -38,6 +65,36 @@ function confirmDecline() {
     }
     closeDeclineModal();
 }
+
+// function confirmDecline() {
+//     if (currentDeclineRow) {
+//         // Get account number from the current row
+//         const accountNumber = currentDeclineRow.cells[0].textContent; // Assuming account number is in the first cell (td)
+
+//         fetch('/decline_member', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ account_number: accountNumber }), // Sending account number to backend
+//         })
+//         .then(response => {
+//             if (!response.ok) {
+//                 throw new Error('Network response was not ok ' + response.statusText);
+//             }
+//             return response.json();
+//         })
+//         .then(data => {
+//             alert(data.message);
+//             location.reload();
+//         })
+//         .catch(error => {
+//             console.error('There was a problem with the fetch operation:', error);
+//             alert('Failed to decline the member. Please try again.');
+//         });
+//     }
+//     closeDeclineModal();
+// }
 
 // function openDeclineModal(button) {
 //     // currentDeclineRow = button.closest("tr"); // Get the row of the clicked decline button

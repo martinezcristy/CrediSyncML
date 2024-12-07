@@ -21,86 +21,157 @@ window.onclick = function(event) {
 }
 
 // table row javascript logic
+document.getElementById("addMemberForm").onsubmit = function (e) {
+    e.preventDefault(); // Prevent default form submission
 
-document.getElementById("addMemberForm").onsubmit = function(e) {
-    e.preventDefault();  // Prevent form submission to manually handle the process
-
-    // Validate the form before proceeding
+    // Validate the form
     if (validateForm(e)) {
-        // Form is valid, proceed with form submission
         let requiredFields = document.querySelectorAll("#addMemberForm input[required]");
         let allValid = true;
 
-        requiredFields.forEach(function(field) {
+        requiredFields.forEach(function (field) {
             if (!field.value) {
-                field.style.borderColor = "red"; 
+                field.style.borderColor = "red";
                 allValid = false;
             } else {
-                field.style.borderColor = ""; 
+                field.style.borderColor = "";
             }
         });
 
         if (allValid) {
-            // Gather form data
             const formData = new FormData(document.getElementById("addMemberForm"));
 
-            // Use fetch to send the data to the server
             fetch("/members", {
                 method: "POST",
                 body: formData
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Dynamically create the new table row
-                    let newRow = document.createElement("tr");
-                    let applicantName = document.getElementById("name").value;
-                    let status = "Pending"; 
-                    newRow.innerHTML = `
-                        <td>${document.getElementById("account-number").value}</td>
-                        <td>${applicantName}</td>
-                        <td>${document.getElementById("contact-number").value}</td>
-                        <td>${document.getElementById("email-address").value}</td>
-                        <td>${document.getElementById("address").value}</td>
-                        <td>${document.getElementById("date-applied").value}</td>
-                        <td>${status}</td>
-                        <td class="actions">
-                            <button class="approve" 
-                                data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
-                            <button class="decline"
-                                data-email="${document.getElementById("email-address").value}" data-name="${applicantName}" onclick="openDeclineModal(this)">Decline</button>
-                            <button class="evaluate">Evaluate</button>
-                        </td>
-                    `;
-                    // Add the new row to the table in the UI
-                    document.querySelector(".members-table tbody").appendChild(newRow);
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Handle successful submission
+                        let newRow = document.createElement("tr");
+                        let applicantName = document.getElementById("name").value;
+                        let status = "Pending";
+                        newRow.innerHTML = `
+                            <td>${document.getElementById("account-number").value}</td>
+                            <td>${applicantName}</td>
+                            <td>${document.getElementById("contact-number").value}</td>
+                            <td>${document.getElementById("email-address").value}</td>
+                            <td>${document.getElementById("address").value}</td>
+                            <td>${document.getElementById("date-applied").value}</td>
+                            <td>${status}</td>
+                            <td class="actions">
+                                <button class="approve" 
+                                    data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
+                                <button class="decline"
+                                    data-email="${document.getElementById("email-address").value}" data-name="${applicantName}" onclick="openDeclineModal(this)">Decline</button>
+                                <button class="evaluate">Evaluate</button>
+                            </td>
+                        `;
+                        document.querySelector(".members-table tbody").appendChild(newRow);
 
-                    // Event listener for "Evaluate" button to redirect to evaluation page
-                    newRow.querySelector(".evaluate").addEventListener("click", function() {
-                        window.location.href = "/evaluation";  
-                    });
+                        newRow.querySelector(".evaluate").addEventListener("click", function () {
+                            window.location.href = "/evaluation";
+                        });
 
-                    // Clear the form and close the modal
-                    document.getElementById("addMemberForm").reset();
-                    alert("New member added!");
-                    document.getElementById("addMemberModal").style.display = "none";
-                    location.reload();
-                } else {
-                     // Show error message if insertion failed
-                     alert("Failed to add member! Error: " + data.error);
-                }
-            })
-            .catch(error => {      
-                console.error("Error adding member:", error);
-                alert("Successfully added a member!"); 
-                location.reload(); // This will reload the page after the alert   
-            });
+                        document.getElementById("addMemberForm").reset();
+                        alert("New member added successfully!");
+                        document.getElementById("addMemberModal").style.display = "none";
+                        location.reload();
+                    } else {
+                        // Handle error from server response
+                        alert("Failed to add member! Error: " + data.error);
+                    }
+                })
+                .catch(error => {
+                    // Handle network or unexpected errors
+                    console.error("Error:", error);
+                    alert("A member with the same account number or email address already exists.");
+                });
         }
-    } else {
-        //If the validation failed, prevent form submission
-        // alert("Please correct the errors in the form first.");
     }
 };
+
+
+// document.getElementById("addMemberForm").onsubmit = function(e) {
+//     e.preventDefault();  // Prevent form submission to manually handle the process
+
+//     // Validate the form before proceeding
+//     if (validateForm(e)) {
+//         // Form is valid, proceed with form submission
+//         let requiredFields = document.querySelectorAll("#addMemberForm input[required]");
+//         let allValid = true;
+
+//         requiredFields.forEach(function(field) {
+//             if (!field.value) {
+//                 field.style.borderColor = "red"; 
+//                 allValid = false;
+//             } else {
+//                 field.style.borderColor = ""; 
+//             }
+//         });
+
+//         if (allValid) {
+//             // Gather form data
+//             const formData = new FormData(document.getElementById("addMemberForm"));
+
+//             // Use fetch to send the data to the server
+//             fetch("/members", {
+//                 method: "POST",
+//                 body: formData
+//             })
+//             .then(response => response.json())
+//             .then(data => {
+//                 if (data.success) {
+//                     // Dynamically create the new table row
+//                     let newRow = document.createElement("tr");
+//                     let applicantName = document.getElementById("name").value;
+//                     let status = "Pending"; 
+//                     newRow.innerHTML = `
+//                         <td>${document.getElementById("account-number").value}</td>
+//                         <td>${applicantName}</td>
+//                         <td>${document.getElementById("contact-number").value}</td>
+//                         <td>${document.getElementById("email-address").value}</td>
+//                         <td>${document.getElementById("address").value}</td>
+//                         <td>${document.getElementById("date-applied").value}</td>
+//                         <td>${status}</td>
+//                         <td class="actions">
+//                             <button class="approve" 
+//                                 data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
+//                             <button class="decline"
+//                                 data-email="${document.getElementById("email-address").value}" data-name="${applicantName}" onclick="openDeclineModal(this)">Decline</button>
+//                             <button class="evaluate">Evaluate</button>
+//                         </td>
+//                     `;
+//                     // Add the new row to the table in the UI
+//                     document.querySelector(".members-table tbody").appendChild(newRow);
+
+//                     // Event listener for "Evaluate" button to redirect to evaluation page
+//                     newRow.querySelector(".evaluate").addEventListener("click", function() {
+//                         window.location.href = "/evaluation";  
+//                     });
+
+//                     // Clear the form and close the modal
+//                     document.getElementById("addMemberForm").reset();
+//                     alert("New member added!");
+//                     document.getElementById("addMemberModal").style.display = "none";
+//                     location.reload();
+//                 } else {
+//                      // Show error message if insertion failed
+//                      alert("Failed to add member! Error: " + data.error);
+//                 }
+//             })
+//             .catch(error => {      
+//                 console.error("Error adding member:", error);
+//                 alert("Successfully added a member!"); 
+//                 location.reload(); // This will reload the page after the alert   
+//             });
+//         }
+//     } else {
+//         //If the validation failed, prevent form submission
+//         // alert("Please correct the errors in the form first.");
+//     }
+// };
 
 
 // Open the approval modal

@@ -251,17 +251,12 @@ def members():
 
         # Validate if account number or email already exists in the database for this cooperative
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s)", (coop_id, account_number, email))
+        cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s OR name = %s)", (coop_id, account_number, email, name))
         existing_member = cur.fetchone()
 
         if existing_member:
-            # If a duplicate is found, return an error message in JSON format
-            error_message = "A member with the same credentials already exists!"
-            if existing_member[2] == account_number:
-                error_message = "A member with this account number already exists."
-            elif existing_member[4] == email:
-                error_message = "Email address already exists."
-
+            # Generic error message for duplicates
+            error_message = "A member with the same credentials already exists."
             cur.close()
             return jsonify({"success": False, "error": error_message})
 

@@ -46,9 +46,14 @@
         </div>
 
         {% if not members or members|length == 0 %}
-        <div class="no-member-yet" id="noMembers">
+        <div class="no-member-yet">
             <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
             <div class="message">No members have been added yet.</div>
+        </div>
+
+        <div class="no-member-yet" id="noMembersFound" style="display: none;">
+            <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
+            <div class="message">No search result</div>
         </div>
         
         {% else %}
@@ -98,29 +103,30 @@
     </div>
 
     <script>
-        document.getElementById('searchBar').addEventListener('input', function() {
-            let filter = this.value.toUpperCase();
-            let rows = document.getElementById('membersTableBody').getElementsByTagName('tr');
-            let found = false;
-    
-            for (let i = 0; i < rows.length; i++) {
-                let accountNumber = rows[i].getElementsByTagName('td')[0].innerText.toUpperCase();
-                let name = rows[i].getElementsByTagName('td')[1].innerText.toUpperCase();
-                if (accountNumber.indexOf(filter) > -1 || name.indexOf(filter) > -1) {
-                    rows[i].style.display = '';
-                    found = true;
+        document.getElementById("searchBar").addEventListener("input", function() {
+            const searchTerm = this.value.trim().toLowerCase();
+            const rows = document.querySelectorAll(".members-table tbody tr");
+            let hasVisibleMembers = false;
+        
+            rows.forEach(row => {
+                const name = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
+                const email = row.querySelector("td:nth-child(4)").textContent.toLowerCase();
+        
+                if (name.includes(searchTerm) || email.includes(searchTerm)) {
+                    row.style.display = ""; // Show row
+                    hasVisibleMembers = true;
                 } else {
-                    rows[i].style.display = 'none';
+                    row.style.display = "none"; // Hide row
                 }
-            }
-    
-            if (found) {
-                document.getElementById('noMembers').style.display = 'none';
+            });
+        
+            // Show or hide the "No members yet" message based on visibility
+            if (!hasVisibleMembers) {
+                document.getElementById("noMembersFound").style.display = "block";
             } else {
-                document.getElementById('noMembers').style.display = 'block';
-                document.getElementById('noMembersMessage').innerText = 'Member not found';
+                document.getElementById("noMembersFound").style.display = "none";
             }
-        });
+        });        
     </script>
 
     <!-- Add New Member Modal -->

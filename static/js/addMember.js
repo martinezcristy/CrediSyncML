@@ -67,7 +67,14 @@ document.getElementById("addMemberForm").onsubmit = function (e) {
                             <button class="evaluate">Evaluate</button>
                         </td>
                     `;
-                    document.querySelector(".members-table tbody").appendChild(newRow);
+                    // document.querySelector(".members-table tbody").appendChild(newRow);
+                     // Check if the table body exists before appending
+                     var tableBody = document.querySelector(".members-table tbody");
+                     if (tableBody) {
+                         tableBody.appendChild(newRow);
+                     } else {
+                         console.error("Table body element not found!");
+                     }
 
                     newRow.querySelector(".evaluate").addEventListener("click", function () {
                         window.location.href = "/evaluation";
@@ -85,7 +92,7 @@ document.getElementById("addMemberForm").onsubmit = function (e) {
             .catch(error => {
                 // Handle network or unexpected errors
                 console.error("Error:", error);
-                alert("A member with the same account number or email address already exists.");
+                alert("A network error occurred. Please try again later.");
             });
         }
     }

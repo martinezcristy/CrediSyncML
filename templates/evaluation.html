@@ -145,14 +145,16 @@
                 </select>
             </div>
             
-            <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button>
+            <!-- <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button> -->
+
+            <br>
             
-            <!-- <div class="form-group">
+            <div class="form-group">
                 <button type="submit" class="evaluate-btn" id="evaluate-btn">Evaluate</button>
             </div>
             <div class="form-group">
-                <button type="button" class="evaluate-btn" id="save-evaluation-btn" disabled>Save Evaluation</button>
-            </div> -->
+                <button type="button" class="evaluate-btn" id="save-evaluation-btn">Go back</button>
+            </div>
         </form>
     </div>
 
@@ -160,6 +162,15 @@
     <div id="toast" class="toast" style="display: none;">Please fill out all required fields.</div>
 
     <script src="{{ url_for('static', filename='js/evaluation.js') }}"></script>
+
+    <script type="text/javascript">
+        document.getElementById("save-evaluation-btn").addEventListener("click", function() {
+            // You can include your logic to save the evaluation here
+            
+            // After saving, redirect the user to the members page
+            window.location.href = "/members";  // Replace "/members" with the actual URL for the members page
+        });
+    </script>
 
 </body>
 </html>

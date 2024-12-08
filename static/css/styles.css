@@ -867,3 +867,44 @@ textarea {
     color: #333; /* Darker text color */
 }
 
+/* Member profile tabs */
+
+.tabs-nav {
+    display: flex;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 20px;
+    padding: 10px 0;
+    font-family: Arial, sans-serif;
+}
+
+.tab-link {
+    padding: 10px 20px;
+    cursor: pointer;
+    color: #666;
+    text-decoration: none;
+    font-size: 16px;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s;
+}
+
+.tab-link.active {
+    color: #333;
+    border-bottom: 2px solid #007bff;
+    font-weight: bold;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Example content box styling */
+.content-box {
+    border: 1px solid #ddd;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 5px;
+}

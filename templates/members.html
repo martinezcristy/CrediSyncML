@@ -23,9 +23,10 @@
         <!-- Sidebar Navigation -->
         <nav class="menu">
             <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
-                <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/users-group-rounded-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/receipt-1-svgrepo-com.svg') }}" alt="Report Icon">Evaluation Report</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
             </ul>
         </nav>
 
@@ -37,11 +38,11 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
-            <h1>Members</h1>
+            <h1>Loan Applicants</h1>
             <div class="header-right">
                 <!-- <input type="text" placeholder="Search..." class="search-bar"> -->
                 <input type="text" placeholder="Search..." class="search-bar" id="searchBar">
-                <button class="add-member-btn">ADD NEW MEMBER</button>
+                <!-- <button class="add-member-btn">ADD NEW MEMBER</button> -->
             </div>
         </div>
 
@@ -61,31 +62,31 @@
                 <thead>
                     <tr>
                         <th>Account Number</th>
-                        <th>Name</th>
+                        <th>Lastname</th>
+                        <th>Firstname</th>
                         <th>Contact Number</th>
                         <th>Email Address</th>
-                        <th>Address</th>
                         <th>Date Applied</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
-                <tbody method="GET" id="membersTableBody">
+                <tbody id="membersTableBody">
                     {% for member in members %}
                         <tr data-url="{{ url_for('member_profile', account_number=member['account_number']) }}">
                             <td>{{ member.account_number }}</td>
-                            <td>{{ member.name }}</td>
+                            <td>{{ member.lastname }}</td>
+                            <td>{{ member.firstname }}</td>
                             <td>{{ member.contact_number }}</td>
                             <td>{{ member.email }}</td>
-                            <td>{{ member.address }}</td>
                             <td>{{ member.date_applied }}</td>
                             <td class="status-cell">{{ member.status }}</td>
                             <td class="actions">
                                 {% if member.status == 'Evaluated' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}">Approve</button>
-                                    <button class="decline"onclick="openDeclineModal(this)">Decline</button>
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.lastname }}">Approve</button>
+                                    <button class="decline" onclick="openDeclineModal(this)">Decline</button>
                                 {% elif member.status == 'Approved' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.name }}" disabled>Approved</button>
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.lastname }}" disabled>Approved</button>
                                 {% elif member.status == 'Declined' %}
                                     <button class="decline" onclick="openDeclineModal(this)" disabled>Declined</button>
                                 {% else %}

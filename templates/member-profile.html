@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="{{ url_for('static', filename='js/memberProfileTabs.js') }}"></script>
 </head>
 
 <body>
@@ -21,9 +22,10 @@
         <!-- Sidebar Navigation -->
         <nav class="menu">
             <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/home-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
-                <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/group-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
-                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/settings-svgrepo-com.svg') }}" alt="Settings Icon">Settings</a></li>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/users-group-rounded-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/receipt-1-svgrepo-com.svg') }}" alt="Report Icon">Evaluation Report</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
             </ul>
         </nav>
 
@@ -34,54 +36,169 @@
 
 
     <div class="coop-main-content">
-
-        <form action="{{ url_for('update_member') }}" method="post">
-
-            <div class="member-profile-image">
-                <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
-            </div>
-
-            {% if success %} 
-                <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
-            {% endif %}
-
-            <div id="error-message" style="display: none; color: red; text-align: center;"></div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="accountNumber">Account Number</label>
-                    <input type="text" id="accountNumber" name="account_number" class="form-control" value="{{ member.account_number }}" disabled>
-                </div>
-                <div class="form-group">
-                    <label for="name">Name</label>
-                    <input type="text" id="name" name="name" class="form-control" value="{{ member.name }}">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="contactNumber">Contact Number</label>
-                    <input type="text" id="contactNumber" name="contact_number" class="form-control" value="{{ member.contact_number }}">
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" value="{{ member.email }}">
-                </div>
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" name="address" class="form-control" value="{{ member.address }}">
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="contactNumber">Loan Application Status</label>
-                    <input type="text" id="contactNumber" class="form-control" value="{{member.status}}" disabled>
-                </div>
-            </div>
-            <button type="submit" class="btn">Save</button>
-        </form>
         
+         <!-- Tabs Navigation -->
+         <div class="tabs-nav">
+            <a href="javascript:void(0)" class="tab-link active" data-tab="applicant-info">Applicant Information</a>
+            <a href="javascript:void(0)" class="tab-link" data-tab="applications">Applications</a>
+            <a href="javascript:void(0)" class="tab-link" data-tab="payments">Payments</a>
+        </div>
+
+        <div id="applicant-info" class="tab-content active">
+
+            <div class="content-box">
+                <form action="{{ url_for('update_member') }}" method="post">
+
+                    <div class="member-profile-image">
+                        <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
+                    </div>
+        
+                    {% if success %} 
+                        <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
+                    {% endif %}
+        
+                    <div id="error-message" style="display: none; color: red; text-align: center;"></div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="accountNumber">Account Number</label>
+                            <input type="text" id="accountNumber" name="account_number" class="form-control" value="{{ member.account_number }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input type="text" id="lastname" name="lastname" class="form-control" value="{{ member.lastname }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input type="text" id="firstname" name="firstname" class="form-control" value="{{ member.firstname }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="middlename">Middle Name</label>
+                            <input type="text" id="middlename" name="middlename" class="form-control" value="{{ member.middlename }}" disabled>
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="presentAddress">Present Address</label>
+                            <input type="text" id="presentAddress" name="present_address" class="form-control" value="{{ member.present_address }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="civilStatus">Civil Status</label>
+                            <input type="text" id="civilStatus" name="civil_status" class="form-control" value="{{ member.civil_status }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="sex">Sex</label>
+                            <input type="text" id="sex" name="sex" class="form-control" value="{{ member.sex }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <input type="number" id="age" name="age" class="form-control" value="{{ member.age }}" disabled>
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employmentStatus">Employment Status</label>
+                            <input type="text" id="employmentStatus" name="employment_status" class="form-control" value="{{ member.employment_status }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="employerName">Employer Name</label>
+                            <input type="text" id="employerName" name="employer_name" class="form-control" value="{{ member.employer_name }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="employerAddress">Employer Address</label>
+                            <input type="text" id="employerAddress" name="employer_address" class="form-control" value="{{ member.employer_address }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="telephoneNumber">Telephone Number</label>
+                            <input type="text" id="telephoneNumber" name="telephone_number" class="form-control" value="{{ member.telephone_number }}" disabled>
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="position">Position</label>
+                            <input type="text" id="position" name="position" class="form-control" value="{{ member.position }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="spouseName">Spouse Name</label>
+                            <input type="text" id="spouseName" name="spouse_name" class="form-control" value="{{ member.spouse_name }}" disabled>
+                        </div>
+                    </div>
+
+                    <!-- <button type="submit" class="btn">Save</button> -->
+                </form>
+
+            </div>
+
+            <!-- Applications Tab Content -->
+            <div id="applications" class="tab-content" style="display: none;">
+                <h3>Loan Applications for Account: {{ member.account_number }}</h3>
+                {% if applications %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Loan Application ID</th>
+                            <th>Loan Type</th>
+                            <th>Loan Term</th>
+                            <th>Date Applied</th>
+                            <th>Monthly Earnings</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for app in applications %}
+                            <tr>
+                                <td>{{ app['loan_application_id'] }}</td> 
+                                <td>{{ app['loan_type'] }}</td>
+                                <td>{{ app['loan_term'] }}</td>
+                                <td>{{ app['date_applied'] }}</td>
+                                <td>{{ app['monthly_earnings'] }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                    <p>No loan applications found for this member.</p>
+                {% endif %}
+            </div>
+
+            
+    
+            <div id="payments" class="tab-content">
+               
+            </div>
+        
+        </div>
+
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabs = document.querySelectorAll(".tab-link");
+            const contents = document.querySelectorAll(".tab-content");
+        
+            tabs.forEach(tab => {
+                tab.addEventListener("click", function () {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove("active"));
+        
+                    // Hide all tab contents by setting display: none
+                    contents.forEach(content => {
+                        content.classList.remove("active");
+                        content.style.display = 'none';
+                    });
+        
+                    // Add active class to the clicked tab and corresponding content
+                    tab.classList.add("active");
+        
+                    const activeContent = document.getElementById(tab.dataset.tab);
+                    activeContent.classList.add("active");
+                    activeContent.style.display = 'block';  // Explicitly show the clicked content
+                });
+            });
+        });
+    </script>
 </body>
 </html>
 

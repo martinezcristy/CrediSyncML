@@ -235,57 +235,49 @@ def dashboard():
 
 @app.route('/members', methods=['GET', 'POST'])
 def members():
-    
     coop_id = session.get('cooperative_id')  # Get cooperative_id from session
-    cooperative_name = session.get('cooperative_name') # Get cooperative_name from session
-    print(f"Cooperative ID from session: {coop_id}")  # Debugging log
+    cooperative_name = session.get('cooperative_name')  # Get cooperative_name from session
 
     if request.method == 'POST':
-        # Retrieve form data
+        # Extract member data from form
         account_number = request.form['account-number']
-        name = request.form['name']
+        lastname = request.form['lastname']
+        firstname = request.form['firstname']
         contact_number = request.form['contact-number']
         email = request.form['email-address']
-        address = request.form['address']
+        present_address = request.form['present_address']
         date_applied = request.form['date-applied']
 
-        # Validate if account number or email already exists in the database for this cooperative
+        # Validate if account number or email already exists in the database
         cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s OR name = %s)", (coop_id, account_number, email, name))
+        cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s)", 
+                    (coop_id, account_number, email))
         existing_member = cur.fetchone()
 
         if existing_member:
-            # Generic error message for duplicates
             error_message = "A member with the same credentials already exists."
-            cur.close()
             return jsonify({"success": False, "error": error_message})
 
         try:
-            cur.execute("INSERT INTO members (cooperative_id, account_number, name, contact_number, email, address, date_applied, status) VALUES (%s, %s, %s, %s, %s, %s, %s, 'Pending')", (coop_id, account_number, name, contact_number, email, address, date_applied))
+            cur.execute("""
+                INSERT INTO members (cooperative_id, account_number, lastname, firstname, contact_number, email, present_address, date_applied, status) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'Pending')
+            """, (coop_id, account_number, lastname, firstname, contact_number, email, present_address, date_applied))
             mysql.connection.commit()
-            # session.pop('error', None)  # Clear any previous error messages
-            # session['success'] = 'Member successfully added!'
             cur.close()
-            # return redirect(url_for('members'))
             return jsonify({"success": True})
         except Exception as e:
-            mysql.connection.rollback()  # In case of an error, rollback
-            # session['error'] = str(e)
+            mysql.connection.rollback()
             cur.close()
-            # return redirect(url_for('members'))
             return jsonify({"success": False, "error": str(e)})
 
-   # Fetch members for this cooperative
+    # Fetch members for this cooperative
     cur = mysql.connection.cursor()
     cur.execute("SELECT * FROM members WHERE cooperative_id = %s", (coop_id,))
     members_data = cur.fetchall()
     cur.close()
 
-    # Get success or error messages from session
-    error_message = session.pop('error', None)
-    success_message = session.pop('success', None)
-
-    return render_template('members.html', members=members_data, error_message=error_message, success_message=success_message, cooperative_name=cooperative_name)
+    return render_template('members.html', members=members_data, cooperative_name=cooperative_name)
 
 
 # Declined  members route
@@ -472,7 +464,7 @@ def send_approval_email_route():
                 html_content = html_content.replace("[COOPERATIVE NAME]", str(evaluation_details.get('cooperative_name', 'N/A')))
                 html_content = html_content.replace("[DATE_APPROVED]", current_date)
                 html_content = html_content.replace("[ACCOUNT NUMBER]", str(evaluation_details.get('account_number', 'N/A')))
-                html_content = html_content.replace("[APPLICANT NAME]", str(evaluation_details.get('name', 'N/A')))
+                html_content = html_content.replace("[APPLICANT NAME]", f"{evaluation_details.get('firstname', 'N/A')} {evaluation_details.get('lastname', 'N/A')}")
                 html_content = html_content.replace("[APPLICATION DATE]", str(evaluation_details.get('date_applied', 'N/A')))
                 html_content = html_content.replace("[EVALUATION DATE]", str(evaluation_details.get('date_evaluated', 'N/A')))
                 # loan applicant details
@@ -812,22 +804,62 @@ def member_profile(account_number):
     cur = mysql.connection.cursor()
     try:
         # Fetch member details based on account number
-        cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+        cur.execute("""
+            SELECT * FROM members WHERE account_number = %s
+        """, (account_number,))
         member = cur.fetchone()
+
+        # Fetch applications associated with the member
+        cur.execute("""
+            SELECT * FROM loan_applications WHERE account_number = %s
+        """, (account_number,))
+        applications = cur.fetchall()
+
+        # Debugging purpose
+        print(applications)  # Add this line to confirm the data is being retrieved
 
         # Close cursor
         cur.close()
 
-        success_message = session.pop('success', None) # Get success message if available
+        success_message = session.pop('success', None)  # Get success message if available
 
         if member:
-            return render_template('member-profile.html', member=member, success=success_message, cooperative_name=cooperative_name)
+            return render_template(
+                'member-profile.html', 
+                member=member, 
+                success=success_message, 
+                cooperative_name=cooperative_name, 
+                applications=applications
+            )
         else:
             return "Member not found", 404
 
     except Exception as e:
         cur.close()
         return jsonify({"error": str(e)}), 500
+
+# @app.route('/member-profile/<account_number>')
+# def member_profile(account_number):
+#     cooperative_name = session.get('cooperative_name')
+#     cur = mysql.connection.cursor()
+#     try:
+#         # Fetch member details based on account number
+#         cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
+#         member = cur.fetchone()
+
+#         # Close cursor
+#         cur.close()
+
+#         success_message = session.pop('success', None) # Get success message if available
+
+#         if member:
+#             return render_template('member-profile.html', member=member, success=success_message, cooperative_name=cooperative_name)
+#         else:
+#             return "Member not found", 404
+
+#     except Exception as e:
+#         cur.close()
+#         return jsonify({"error": str(e)}), 500
 
 # Edit member route  
 @app.route('/update-member', methods=['POST'])

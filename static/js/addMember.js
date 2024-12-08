@@ -20,7 +20,6 @@ window.onclick = function(event) {
     }
 }
 
-// table row javascript logic
 document.getElementById("addMemberForm").onsubmit = function (e) {
     e.preventDefault(); // Prevent default form submission
 
@@ -48,49 +47,48 @@ document.getElementById("addMemberForm").onsubmit = function (e) {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    // Handle successful submission
+                    // Dynamically create the new row
                     let newRow = document.createElement("tr");
-                    let applicantName = document.getElementById("name").value;
+                    let applicantName = document.getElementById("lastname").value + " " + document.getElementById("firstname").value;
                     let status = "Pending";
                     newRow.innerHTML = `
                         <td>${document.getElementById("account-number").value}</td>
-                        <td>${applicantName}</td>
+                        <td>${document.getElementById("lastname").value}</td>
+                        <td>${document.getElementById("firstname").value}</td>
                         <td>${document.getElementById("contact-number").value}</td>
                         <td>${document.getElementById("email-address").value}</td>
-                        <td>${document.getElementById("address").value}</td>
                         <td>${document.getElementById("date-applied").value}</td>
                         <td>${status}</td>
                         <td class="actions">
                             <button class="approve" 
-                                data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
-                            <button class="decline"onclick="openDeclineModal(this)">Decline</button>
+                                data-email="${document.getElementById("email-address").value}" 
+                                data-name="${applicantName}">Approve</button>
+                            <button class="decline" onclick="openDeclineModal(this)">Decline</button>
                             <button class="evaluate">Evaluate</button>
                         </td>
                     `;
-                    // document.querySelector(".members-table tbody").appendChild(newRow);
-                     // Check if the table body exists before appending
-                     var tableBody = document.querySelector(".members-table tbody");
-                     if (tableBody) {
-                         tableBody.appendChild(newRow);
-                     } else {
-                         console.error("Table body element not found!");
-                     }
 
-                    newRow.querySelector(".evaluate").addEventListener("click", function () {
-                        window.location.href = "/evaluation";
-                    });
+                    // Append the new row to the table
+                    let tableBody = document.querySelector(".members-table tbody");
+                    if (tableBody) {
+                        tableBody.appendChild(newRow);
+                    } else {
+                        console.error("Table body not found!");
+                    }
 
+                    // Reset the form and close the modal
                     document.getElementById("addMemberForm").reset();
                     alert("New member added successfully!");
                     document.getElementById("addMemberModal").style.display = "none";
-                    location.reload();
+
+                    // Optional: Reload the table or fetch updated members
+                    // location.reload();  // Uncomment if you want to reload
                 } else {
                     // Handle error from server response
                     alert("Failed to add member! Error: " + data.error);
                 }
             })
             .catch(error => {
-                // Handle network or unexpected errors
                 console.error("Error:", error);
                 alert("A network error occurred. Please try again later.");
             });

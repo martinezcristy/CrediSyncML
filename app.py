@@ -13,6 +13,7 @@ import smtplib
 import json
 import joblib
 import numpy  as np
+import random
 
 
 load_dotenv()
@@ -79,7 +80,7 @@ def load_subscriptions():
     with open('subscriptions.json') as f:
         return json.load(f)
     
-# Login route 
+# Cooperative Login route 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -101,7 +102,7 @@ def login():
                 session['cooperative_name'] = user['cooperative_name']  # Store cooperative_name in session
                 return redirect(url_for('dashboard'))
             else:
-                session['error'] = 'Invalid credentials. Please try again.'
+                session['error'] = 'Invalid credentials. Please try again.' 
                 return redirect(url_for('login'))
         else:
             session['error'] = 'Invalid credentials. Please try again.'
@@ -112,6 +113,47 @@ def login():
     error_message = session.pop('error', None)  # if entered wrong credentials
     return render_template('login.html', success=success_message, error=error_message)
 
+
+@app.route('/memberlogin', methods=['GET', 'POST'])
+def memberlogin():
+    if request.method == 'POST':
+        account_number = request.form['account_number']
+        lastname = request.form['lastname']
+        firstname = request.form['firstname']
+        password = request.form['password']  # Get entered password
+
+        # Construct expected password from lastname + firstname
+        expected_password = lastname + firstname
+
+        cursor = mysql.connection.cursor()
+        # Verify account number, lastname, firstname, and check if password matches
+        cursor.execute(
+            "SELECT * FROM members WHERE account_number = %s AND lastname = %s AND firstname = %s",
+            (account_number, lastname, firstname)
+        )
+        user = cursor.fetchone()
+        cursor.close()
+
+        if user and password == expected_password:  # Validate the password
+            session['logged_in'] = True
+            return redirect(url_for('member_dashboard'))
+        else:
+            session['error'] = "Invalid credentials or password. Please try again."
+            return redirect(url_for('memberlogin'))
+
+    # Handle both success and error messages
+    success_message = session.pop('success', None)  # Get and remove 'success' from session
+    error_message = session.pop('error', None)      # Get and remove 'error' from session
+    return render_template('member-login.html', success=success_message, error=error_message)
+
+
+
+@app.route('/member-dashboard')
+def member_dashboard():
+    if session.get('logged_in'):
+        return render_template('member-dashboard.html')
+    else:
+        return redirect(url_for('memberlogin'))
 
 
 # @app.route('/login', methods=['GET', 'POST'])
@@ -191,6 +233,107 @@ def signup():
     
     error_message = session.pop('error', None)
     return render_template('signup.html', error_message=error_message)
+
+# Generate random 8-digit account number
+def generate_account_number():
+    return random.randint(10000000, 99999999)
+
+
+# Send login credentials via email
+def send_credentials_email(recipient_email, account_number, firstname, lastname):
+    subject = "Credisync - Login Credentials"
+    html_content = f"""
+    <html>
+      <body>
+        <p>Dear {firstname} {lastname},</p>
+        <p>Your account number and login credentials for CREDISYNC are as follows:</p>
+        <ul>
+          <li>Account Number: {account_number}</li>
+          <li>Password: Your password is your lastname+firstname</li>
+        </ul>
+        <p>Thank you for applying!</p>
+      </body>
+    </html>
+    """
+
+    msg = MIMEMultipart()
+    msg['From'] = EMAIL_USERNAME
+    msg['To'] = recipient_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(html_content, 'html'))
+
+    try:
+        with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
+            server.starttls()
+            server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
+            server.sendmail(EMAIL_USERNAME, recipient_email, msg.as_string())
+            return True
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        return False
+
+@app.route('/applicantsignup', methods=['GET', 'POST'])
+def applicantsignup():
+    if request.method == 'POST':
+        # Extract form data
+        lastname = request.form['lastname']
+        firstname = request.form['firstname']
+        middlename = request.form['middlename']
+        present_address = request.form['present_address']
+        previous_address = request.form['previous_address']
+        provincial_address = request.form['provincial_address']
+        civil_status = request.form['civil_status']
+        sex = request.form['sex']
+        age = request.form['age']
+        employment_status = request.form['employment_status']
+        employer_name = request.form['employer_name']
+        employer_address = request.form['employer_address']
+        telephone_number = request.form['telephone_number']
+        position = request.form['position']
+        spouse_name = request.form['spouse_name']
+        contact_number = request.form['contact_number']
+        email = request.form['email']
+        date_applied = request.form['date_applied']
+
+        # Generate account number
+        account_number = generate_account_number()
+
+        # Database connection
+        cursor = mysql.connection.cursor()
+
+        try:
+            # Insert user signup data into database
+            cursor.execute(
+                '''INSERT INTO members (account_number, lastname, firstname, middlename, present_address, 
+                previous_address, provincial_address, civil_status, sex, age, employment_status, employer_name, 
+                employer_address, telephone_number, position, spouse_name, contact_number, email, date_applied, cooperative_id) 
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                (
+                    account_number, lastname, firstname, middlename, present_address,
+                    previous_address, provincial_address, civil_status, sex, age, employment_status,
+                    employer_name, employer_address, telephone_number, position, spouse_name,
+                    contact_number, email, date_applied, 'MVI001'  # Default cooperative_id
+                )
+            )
+            mysql.connection.commit()
+
+            # Send login credentials email
+            if send_credentials_email(email, account_number, firstname, lastname):
+                session['success'] = 'Your account has been created successfully. Please check your email for your credentials.'
+            else:
+                session['error'] = 'Account created, but failed to send email.'
+
+        except Exception as e:
+            session['error'] = str(e)
+        finally:
+            cursor.close()
+
+        return redirect(url_for('memberlogin'))
+    
+    # Handle error messages for rendering in the frontend
+    error_message = session.pop('error', None)
+    return render_template('applicant-signup.html', error=error_message)
+
 
 # Dashboard route
 @app.route('/', methods=['GET'])
@@ -810,13 +953,34 @@ def member_profile(account_number):
         member = cur.fetchone()
 
         # Fetch applications associated with the member
-        cur.execute("""
-            SELECT * FROM loan_applications WHERE account_number = %s
-        """, (account_number,))
-        applications = cur.fetchall()
+        # cur.execute("""
+        #     SELECT * FROM loan_applications WHERE account_number = %s
+        # """, (account_number,))
+        # applications = cur.fetchall()
 
-        # Debugging purpose
-        print(applications)  # Add this line to confirm the data is being retrieved
+        # Fetch loan applications with resolved data
+        # cur.execute("""
+        #     SELECT 
+        #         la.id AS loan_application_id,
+        #         lt.loan_type,
+        #         ltm.loan_term,
+        #         la.date_applied,
+        #         me.monthly_earning_category
+        #     FROM 
+        #         loan_applications la
+        #     JOIN 
+        #         loan_type lt ON la.loan_type_id = lt.loan_type_id
+        #     JOIN 
+        #         loan_term ltm ON la.loan_term_id = ltm.loan_term_id
+        #     JOIN 
+        #         monthly_earnings me ON la.monthly_earnings_id = me.monthly_earnings_id
+        #     WHERE 
+        #         la.account_number = %s
+        # """, (account_number,))
+        # applications = cur.fetchall()
+
+        # # Debugging purpose
+        # print(applications)  # Add this line to confirm the data is being retrieved
 
         # Close cursor
         cur.close()
@@ -829,8 +993,7 @@ def member_profile(account_number):
                 member=member, 
                 success=success_message, 
                 cooperative_name=cooperative_name, 
-                applications=applications
-            )
+             )
         else:
             return "Member not found", 404
 

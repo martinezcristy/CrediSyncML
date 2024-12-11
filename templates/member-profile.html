@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Member Profile</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
-    <script src="{{ url_for('static', filename='js/memberProfileTabs.js') }}"></script>
 </head>
 
 <body>
@@ -129,10 +128,10 @@
 
                     <!-- <button type="submit" class="btn">Save</button> -->
                 </form>
+               
 
             </div>
 
-            <!-- Applications Tab Content -->
             <div id="applications" class="tab-content" style="display: none;">
                 <h3>Loan Applications for Account: {{ member.account_number }}</h3>
                 {% if applications %}
@@ -149,11 +148,11 @@
                     <tbody>
                         {% for app in applications %}
                             <tr>
-                                <td>{{ app['loan_application_id'] }}</td> 
-                                <td>{{ app['loan_type'] }}</td>
-                                <td>{{ app['loan_term'] }}</td>
-                                <td>{{ app['date_applied'] }}</td>
-                                <td>{{ app['monthly_earnings'] }}</td>
+                                <td>{{ app.loan_application_id }}</td> 
+                                <td>{{ app.loan_type }}</td>
+                                <td>{{ app.loan_term }}</td>
+                                <td>{{ app.date_applied }}</td>
+                                <td>{{ app.monthly_earning_category }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -161,15 +160,16 @@
                 {% else %}
                     <p>No loan applications found for this member.</p>
                 {% endif %}
-            </div>
-
-            
+            </div>    
     
             <div id="payments" class="tab-content">
                
             </div>
+  
         
         </div>
+
+        
 
     </div>
     
@@ -180,10 +180,12 @@
         
             tabs.forEach(tab => {
                 tab.addEventListener("click", function () {
+                    console.log(`Tab clicked: ${tab.dataset.tab}`); // Debugging
+        
                     // Remove active class from all tabs
                     tabs.forEach(t => t.classList.remove("active"));
         
-                    // Hide all tab contents by setting display: none
+                    // Hide all tab contents
                     contents.forEach(content => {
                         content.classList.remove("active");
                         content.style.display = 'none';
@@ -193,11 +195,17 @@
                     tab.classList.add("active");
         
                     const activeContent = document.getElementById(tab.dataset.tab);
-                    activeContent.classList.add("active");
-                    activeContent.style.display = 'block';  // Explicitly show the clicked content
+                    console.log(`Activating content: ${tab.dataset.tab}`); // Debugging
+                    if (activeContent) {
+                        activeContent.classList.add("active");
+                        activeContent.style.display = 'block';
+                    } else {
+                        console.error(`No content found for tab: ${tab.dataset.tab}`);
+                    }
                 });
             });
         });
+          
     </script>
 </body>
 </html>

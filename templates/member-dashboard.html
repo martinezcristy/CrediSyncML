@@ -2,10 +2,75 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>CrediSync Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/member-dashboard.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
-    test
+    <!--sidebar-->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        </div>
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
+            <p class="admin-role">{{ g.user.firstname }}</p>
+            <!-- {% if g.user and g.user['type'] == 'member' %}
+                <p class="admin-role">{{ g.user.firstname }}</p>
+            {% else %}
+                <p class="admin-role">Welcome, Cooperative</p>
+            {% endif %} -->
+        </div>
+        <!--sidebar navs-->
+        <nav class="menu">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
+                <!-- <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li> -->
+            </ul>
+        </nav>
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
+    </div>
+
+    <div class="main-content">
+        <h1>Welcome to CrediSync</h1><br><br>
+
+        <!-- analytics boxes -->
+        <div class="dashboard-cards">   
+            <div class="card">
+                <div>
+                    <h2>
+                        Please fill-out your <br>
+                        application to be considered <br>
+                        for the evaluation?
+                    </h2>
+                    <p>The loan application form gathers essential details, including your personal, financial, and employment background, as well as information about your assets and liabilities. Submitting accurate and up-to-date information is crucial to ensure a smooth and efficient application process. This helps lenders evaluate your eligibility and make informed decisions promptly.</p>
+                    <br>
+                    <!-- <button class="add-member-btn">Go to Application Form <i class="fas fa-arrow-right"></i></button> -->
+                    <button class="add-member-btn" onclick="redirectToForm()">Go to Application Form <i class="fas fa-arrow-right"></i></button>
+
+                    <script>
+                        function redirectToForm() {
+                            // Get the account number (assuming you have access to it in your context)
+                            //var accountNumber = '{{ g.user.account_number }}';  // Replace with dynamic value
+                            //window.location.href = "/loanapplication-form?account_number=" + accountNumber;
+                            window.location.href = "/loanapplication-form"; 
+                        }
+                    </script>
+
+                    <!-- <div class="value">{{ all_members_count }}</div> -->
+                </div>
+                <img src="{{ url_for('static', filename='icons/send-2-svgrepo-com.svg') }}">
+            </div>
+        
+        </div>
+        
+
+    </div>
+
+   
 </body>
 </html>

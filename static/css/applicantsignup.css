@@ -798,6 +798,12 @@ textarea {
 .member-profile-image {
     text-align: center;
 }
+.member-profile-image-logo   img {
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    margin-inline-start: 45%;
+}
 
 /* members page dialog */
 .dialog {
@@ -904,12 +910,12 @@ textarea {
 /* Example content box styling */
 .content-box {
     flex-grow: 1;
-    margin-left: 220px;
+    margin-left: 400px;
     border: 1px solid #ddd;
     padding: 20px;
     background-color: #f9f9f9;
     border-radius: 5px;
-    width: 70%;
+    width: 50%;
 }
 
 button {

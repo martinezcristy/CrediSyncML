@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CrediSync Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/loanapplication-form.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <!--sidebar-->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        </div>
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
+            <p class="admin-role">{{ g.user.firstname }}</p>
+            <!-- {% if g.user and g.user['type'] == 'member' %}
+                <p class="admin-role">{{ g.user.firstname }}</p>
+            {% else %}
+                <p class="admin-role">Welcome, Cooperative</p>
+            {% endif %} -->
+        </div>
+        <!--sidebar navs-->
+        <nav class="menu">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
+            </ul>
+        </nav>
+        <div class="logout-section"> 
+            <a href="{{ url_for('memberlogout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
+    </div>
+
+    <div class="main-content">
+
+        <div id="applicant-info" class="tab-content active">
+
+            <div class="content-box">
+
+                <form id="signup-form" method="POST" action="{{ url_for('applicantsignup') }}">
+
+                    <div class="member-profile-image-logo">
+                        <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+                    </div>
+
+                    <div class="member-profile-image">
+                        <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic"><br>
+                        <p><i>**For Registered Members Only.<br>Please fill-up the form correctly. Your loan application will be reviewed for approval.</i></p><br><br>
+                    </div>
+
+                    <h1>Loan Details</h1><br>
+                    <div class="form-row">
+                        
+                        <div class="form-group">
+                            <label for="loantype">Loan Type</label>
+                            <select name="Loan_Type" required class="form-control">
+                                <option value="">Please select</option>
+                                <option value="50">85 months above</option>
+                                <option value="80">60 to 84 months</option>
+                                <option value="100">12 to 60 months</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="loanterm">Loan Term</label>
+                            <select name="Loan_Term" required class="form-control">
+                                <option value="">Please select</option>
+                                <option value="50">85 months above</option>
+                                <option value="80">60 to 84 months</option>
+                                <option value="100">12 to 60 months</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="loanterm">Paymemt Method</label>
+                            <select name="Payment_Method" required class="form-control">
+                                <option value="">Please select</option>
+                                <option value="50">Cash </option>
+                                <option value="80">Post-dated Check </option>
+                                <option value="100">Debit to Savings Account </option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="loanterm">Repayment Schedule</label>
+                            <select name="Repayment_Schedule" required class="form-control">
+                                <option value="">Please select</option>
+                                <option value="50">Quarterly/Semi-Anually/Anually </option>
+                                <option value="80">Monthly </option>
+                                <option value="100">Weekly </option>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <h1>Personal Information</h1><br>
+                    <div class="form-row">   
+                        <div class="form-group">
+                            <label for="lastname">Last Name</label>
+                            <input type="text" id="lastname" name="lastname" required maxlength="30" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input type="text" id="firstname" name="firstname" required maxlength="30" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="middlename">Middle Name</label>
+                            <input type="text" id="middlename" name="middlename" required maxlength="30" class="form-control">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="present_address">Present Address</label>
+                            <input type="text" id="present_address" name="present_address" required maxlength="28" class="form-control">
+                        </div>
+                        <div class="form-group">
+
+                            <label for="provincial_address">Provincial Address</label>
+                            <input type="text" id="provincial_address" name="provincial_address" required maxlength="28" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="telephone_number">Contact Number</label>
+                            <input type="text" id="telephone_number" name="telephone_number" required maxlength="12" class="form-control">
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            
+                            <label for="civil_status">Civil Status</label>
+                            <input type="text" id="civil_status" name="civil_status" required maxlength="10" class="form-control">
+                              
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Gender</label>
+                            <input type="text" id="gender" name="gender" required maxlength="6" class="form-control">
+                                            
+                        </div>
+                        <div class="form-group">
+                            
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" required maxlength="28" class="form-control">
+                        </div>
+
+                    </div>
+
+                    <h1>Employment Data</h1><br>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employer_name">Employer Name</label>
+                            <input type="text" id="employer_name" name="employer_name" required maxlength="30" class="form-control">
+                        
+                        </div>
+                        <div class="form-group">                     
+                            <label for="position">Position</label>
+                            <input type="text" id="position" name="position" required maxlength="30" class="form-control">
+                        </div>
+                        <div class="form-group">
+                            <label for="employer_address">Employer Address</label>
+                            <input type="text" id="employer_address" name="employer_address" required maxlength="30" class="form-control">
+                        </div>
+                        
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="employment_status">Employment Status</label>
+                            <input type="text" id="employment_status" name="employment_status" required maxlength="12" class="form-control">
+                             
+                        </div>
+                       
+                        <div class="form-group">
+                            <label for="contact_number">Contact Number</label>
+                            <input type="text" id="contact_number" name="contact_number" required maxlength="11" class="form-control">
+                        
+                        </div>
+                        <div class="form-group">
+                            <label for="net_take_home_salary">Net Take Home Salary
+                            <input type="text" id="net_take_home_salary" name="net_take_home_salary" required maxlength="11" class="form-control">
+                        
+                        </div>
+                    </div>
+    
+                    <button type="submit">Sign Up</button>
+                    <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Click here to login</a></p> </div>
+    
+                </form>
+                <!-- Link to the external JavaScript file -->
+                <script src="{{ url_for('static', filename='js/applicantSignupValidation.js') }}"></script>
+                
+            </div>
+
+        </div>
+        
+
+    </div>
+
+   
+</body>
+</html>

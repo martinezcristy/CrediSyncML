@@ -75,6 +75,29 @@ def before_request():
     elif request.endpoint not in ('login', 'signup', 'static'):
         return redirect(url_for('login'))
 
+# @app.before_request
+# def before_request():
+#     g.user = None  # Initialize g.user to None
+
+#     # Check if the user is a cooperative (from the 'user' table)
+#     if 'cooperative_id' in session:
+#         g.user = {'cooperative_id': session['cooperative_id'], 'type': 'cooperative'}
+
+#     # Check if the user is a member (from the 'members' table)
+#     elif 'account_number' in session:
+#         g.user = {
+#             'account_number': session['account_number'],
+#             'firstname': session['firstname'],
+#             'lastname': session['lastname'],
+#             'email': session['email'],
+#             'type': 'member'
+#         }
+
+#     # If neither cooperative nor member, redirect to login (except for specific pages like login/signup/static)
+#     elif request.endpoint not in ('login', 'signup', 'static'):
+#         return redirect(url_for('login'))
+
+
 # Load subscription plans data from JSON file
 def load_subscriptions():
     with open('subscriptions.json') as f:
@@ -113,48 +136,79 @@ def login():
     error_message = session.pop('error', None)  # if entered wrong credentials
     return render_template('login.html', success=success_message, error=error_message)
 
-
 @app.route('/memberlogin', methods=['GET', 'POST'])
 def memberlogin():
     if request.method == 'POST':
         account_number = request.form['account_number']
-        lastname = request.form['lastname']
-        firstname = request.form['firstname']
         password = request.form['password']  # Get entered password
 
-        # Construct expected password from lastname + firstname
-        expected_password = lastname + firstname
-
         cursor = mysql.connection.cursor()
-        # Verify account number, lastname, firstname, and check if password matches
+        # Verify account number and check if password matches the hashed one
         cursor.execute(
-            "SELECT * FROM members WHERE account_number = %s AND lastname = %s AND firstname = %s",
-            (account_number, lastname, firstname)
+            "SELECT * FROM members WHERE account_number = %s",
+            (account_number,)
         )
         user = cursor.fetchone()
         cursor.close()
 
-        if user and password == expected_password:  # Validate the password
-            session['logged_in'] = True
-            return redirect(url_for('member_dashboard'))
+        if user:
+            # Compare entered password with hashed password stored in the database
+            if bcrypt.check_password_hash(user['password'], password):
+                session.pop('error', None)  # Clear any previous error messages
+                session['logged_in'] = True
+                session['account_number'] = user['account_number']  # Store account number in session
+                session['firstname'] = user['firstname']  # Store firstname in session
+                session['lastname'] = user['lastname']  # Store lastname in session
+                session['email'] = user['email']  # Store email in session
+
+                return redirect(url_for('member_dashboard'))
+            else:
+                session['error'] = "Incorrect password. Please try again."
+                return redirect(url_for('memberlogin'))
         else:
-            session['error'] = "Invalid credentials or password. Please try again."
+            session['error'] = "Invalid account number. Please check your details and try again."
             return redirect(url_for('memberlogin'))
 
-    # Handle both success and error messages
-    success_message = session.pop('success', None)  # Get and remove 'success' from session
-    error_message = session.pop('error', None)      # Get and remove 'error' from session
+    # Handle success and error messages from session
+    success_message = session.pop('success', None)  # Get success message if available
+    error_message = session.pop('error', None)      # If entered wrong credentials
     return render_template('member-login.html', success=success_message, error=error_message)
-
-
 
 @app.route('/member-dashboard')
 def member_dashboard():
+ 
     if session.get('logged_in'):
-        return render_template('member-dashboard.html')
+        return render_template('member-dashboard.html',)
     else:
         return redirect(url_for('memberlogin'))
+    
+@app.route('/loanapplication-form')
+def loan_application_form():
+    if g.user:  # Make sure the user is logged in
+        return render_template('loanapplication-form.html')  # Renders the loan application form page
+    else:
+        return redirect(url_for('memberlogin'))  # Redirect to login if user is not logged in
 
+
+# @app.route('/member-dashboard')
+# def member_dashboard():
+#     if not g.user or g.user['type'] != 'member':
+#         return redirect(url_for('memberlogin'))
+
+#     # Access member data from g.user
+#     account_number = g.user.get('account_number')
+#     firstname = g.user.get('firstname')
+#     lastname = g.user.get('lastname')
+#     email = g.user.get('email')
+
+#     if session.get('logged_in'):
+#         return render_template('member-dashboard.html',
+#                                 account_number=account_number, 
+#                                 firstname=firstname, 
+#                                 lastname=lastname, 
+#                                 email=email)
+#     else:
+#         return redirect(url_for('memberlogin'))
 
 # @app.route('/login', methods=['GET', 'POST'])
 # def login():
@@ -189,11 +243,16 @@ def member_dashboard():
 #     error_message = session.pop('error', None) #if entered wrong credentials
 #     return render_template('login.html', success=success_message, error=error_message)
 
-# Logout route
+# Cooperative Logout route
 @app.route('/logout')
 def logout():
     session.pop('user_id', None)
     return redirect(url_for('login'))
+
+@app.route('/memberlogout')
+def memberlogout():
+    session.pop('account_number', None)
+    return redirect(url_for('memberlogin'))
 
 # Signup route
 @app.route('/signup', methods=['GET', 'POST'])
@@ -241,7 +300,7 @@ def generate_account_number():
 
 # Send login credentials via email
 def send_credentials_email(recipient_email, account_number, firstname, lastname):
-    subject = "Credisync - Login Credentials"
+    subject = "Credisync - Member Credentials"
     html_content = f"""
     <html>
       <body>
@@ -249,7 +308,6 @@ def send_credentials_email(recipient_email, account_number, firstname, lastname)
         <p>Your account number and login credentials for CREDISYNC are as follows:</p>
         <ul>
           <li>Account Number: {account_number}</li>
-          <li>Password: Your password is your lastname+firstname</li>
         </ul>
         <p>Thank you for applying!</p>
       </body>
@@ -272,47 +330,32 @@ def send_credentials_email(recipient_email, account_number, firstname, lastname)
         print(f"Failed to send email: {e}")
         return False
 
+
 @app.route('/applicantsignup', methods=['GET', 'POST'])
 def applicantsignup():
     if request.method == 'POST':
-        # Extract form data
-        lastname = request.form['lastname']
+        # Extract form data (only required fields)
         firstname = request.form['firstname']
-        middlename = request.form['middlename']
-        present_address = request.form['present_address']
-        previous_address = request.form['previous_address']
-        provincial_address = request.form['provincial_address']
-        civil_status = request.form['civil_status']
-        sex = request.form['sex']
-        age = request.form['age']
-        employment_status = request.form['employment_status']
-        employer_name = request.form['employer_name']
-        employer_address = request.form['employer_address']
-        telephone_number = request.form['telephone_number']
-        position = request.form['position']
-        spouse_name = request.form['spouse_name']
-        contact_number = request.form['contact_number']
+        lastname = request.form['lastname']
         email = request.form['email']
-        date_applied = request.form['date_applied']
+        password = request.form['password']  # New password field
 
-        # Generate account number
+        # Hash the password
+        hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
+
+        # Generate account number using your account number generator function
         account_number = generate_account_number()
 
         # Database connection
         cursor = mysql.connection.cursor()
 
         try:
-            # Insert user signup data into database
+            # Insert user signup data into the database
             cursor.execute(
-                '''INSERT INTO members (account_number, lastname, firstname, middlename, present_address, 
-                previous_address, provincial_address, civil_status, sex, age, employment_status, employer_name, 
-                employer_address, telephone_number, position, spouse_name, contact_number, email, date_applied, cooperative_id) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+                '''INSERT INTO members (account_number, firstname, lastname, email, password, status) 
+                VALUES (%s, %s, %s, %s, %s, %s)''',
                 (
-                    account_number, lastname, firstname, middlename, present_address,
-                    previous_address, provincial_address, civil_status, sex, age, employment_status,
-                    employer_name, employer_address, telephone_number, position, spouse_name,
-                    contact_number, email, date_applied, 'MVI001'  # Default cooperative_id
+                    account_number, firstname, lastname, email, hashed_password, 'Pending'  # Added hashed_password
                 )
             )
             mysql.connection.commit()
@@ -333,6 +376,69 @@ def applicantsignup():
     # Handle error messages for rendering in the frontend
     error_message = session.pop('error', None)
     return render_template('applicant-signup.html', error=error_message)
+
+
+# @app.route('/applicantsignup', methods=['GET', 'POST'])
+# def applicantsignup():
+#     if request.method == 'POST':
+#         # Extract form data
+#         lastname = request.form['lastname']
+#         firstname = request.form['firstname']
+#         middlename = request.form['middlename']
+#         present_address = request.form['present_address']
+#         previous_address = request.form['previous_address']
+#         provincial_address = request.form['provincial_address']
+#         civil_status = request.form['civil_status']
+#         sex = request.form['sex']
+#         age = request.form['age']
+#         employment_status = request.form['employment_status']
+#         employer_name = request.form['employer_name']
+#         employer_address = request.form['employer_address']
+#         telephone_number = request.form['telephone_number']
+#         position = request.form['position']
+#         spouse_name = request.form['spouse_name']
+#         contact_number = request.form['contact_number']
+#         email = request.form['email']
+#         date_applied = request.form['date_applied']
+
+#         # Generate account number
+#         account_number = generate_account_number()
+
+#         # Database connection
+#         cursor = mysql.connection.cursor()
+
+#         try:
+#             # Insert user signup data into database
+#             cursor.execute(
+#                 '''INSERT INTO members (account_number, lastname, firstname, middlename, present_address, 
+#                 previous_address, provincial_address, civil_status, sex, age, employment_status, employer_name, 
+#                 employer_address, telephone_number, position, spouse_name, contact_number, email, date_applied, cooperative_id) 
+#                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+#                 (
+#                     account_number, lastname, firstname, middlename, present_address,
+#                     previous_address, provincial_address, civil_status, sex, age, employment_status,
+#                     employer_name, employer_address, telephone_number, position, spouse_name,
+#                     contact_number, email, date_applied, 'MVI001'  # Default cooperative_id
+#                 )
+#             )
+#             mysql.connection.commit()
+
+#             # Send login credentials email
+#             if send_credentials_email(email, account_number, firstname, lastname):
+#                 session['success'] = 'Your account has been created successfully. Please check your email for your credentials.'
+#             else:
+#                 session['error'] = 'Account created, but failed to send email.'
+
+#         except Exception as e:
+#             session['error'] = str(e)
+#         finally:
+#             cursor.close()
+
+#         return redirect(url_for('memberlogin'))
+    
+#     # Handle error messages for rendering in the frontend
+#     error_message = session.pop('error', None)
+#     return render_template('applicant-signup.html', error=error_message)
 
 
 # Dashboard route

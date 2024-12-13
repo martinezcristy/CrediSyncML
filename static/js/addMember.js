@@ -55,9 +55,7 @@ document.getElementById("addMemberForm").onsubmit = function (e) {
                         <td>${document.getElementById("account-number").value}</td>
                         <td>${document.getElementById("lastname").value}</td>
                         <td>${document.getElementById("firstname").value}</td>
-                        <td>${document.getElementById("contact-number").value}</td>
                         <td>${document.getElementById("email-address").value}</td>
-                        <td>${document.getElementById("date-applied").value}</td>
                         <td>${status}</td>
                         <td class="actions">
                             <button class="approve" 

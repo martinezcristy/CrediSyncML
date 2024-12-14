@@ -278,6 +278,7 @@ body {
 
 .card p {
     font-size: 15px;
+    width: 90%;
     margin-left: 25px;
     margin-top: 15px;
 }

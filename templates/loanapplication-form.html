@@ -26,7 +26,7 @@
         <!--sidebar navs-->
         <nav class="menu">
             <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
+                <li><a href="{{ url_for('member_dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
             </ul>
         </nav>
         <div class="logout-section"> 
@@ -58,9 +58,9 @@
                             <label for="loantype">Loan Type</label>
                             <select name="Loan_Type" required class="form-control">
                                 <option value="">Please select</option>
-                                <option value="50">85 months above</option>
-                                <option value="80">60 to 84 months</option>
-                                <option value="100">12 to 60 months</option>
+                                <option value="50">Personal Loans/Home Equity Loans</option>
+                                <option value="80">Auto Loans/Student Loans</option>
+                                <option value="100">Mortgages/Small Business Loans</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -183,8 +183,8 @@
                         </div>
                     </div>
     
-                    <button type="submit">Sign Up</button>
-                    <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Click here to login</a></p> </div>
+                    <button type="submit">Submit Application</button>
+                    <!-- <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Click here to login</a></p> </div> -->
     
                 </form>
                 <!-- Link to the external JavaScript file -->

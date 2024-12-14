@@ -26,8 +26,8 @@
         <!--sidebar navs-->
         <nav class="menu">
             <ul>
-                <li><a href="{{ url_for('dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
-                <!-- <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li> -->
+                <li><a href="{{ url_for('member_dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
+                <li><a href="{{ url_for('profile') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Profile Icon">Profile</a></li>
             </ul>
         </nav>
         <div class="logout-section"> 
@@ -45,7 +45,7 @@
                     <h2>
                         Please fill-out your <br>
                         application to be considered <br>
-                        for the evaluation?
+                        for evaluation and approval
                     </h2>
                     <p>The loan application form gathers essential details, including your personal, financial, and employment background, as well as information about your assets and liabilities. Submitting accurate and up-to-date information is crucial to ensure a smooth and efficient application process. This helps lenders evaluate your eligibility and make informed decisions promptly.</p>
                     <br>
@@ -63,7 +63,7 @@
 
                     <!-- <div class="value">{{ all_members_count }}</div> -->
                 </div>
-                <img src="{{ url_for('static', filename='icons/send-2-svgrepo-com.svg') }}">
+                <img src="{{ url_for('static', filename='icons/loan-svgrepo-com.svg') }}">
             </div>
         
         </div>

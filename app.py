@@ -825,6 +825,43 @@ def settings():
             return render_template('settings.html', user=user, cooperative_name=cooperative_name)
         return jsonify({"error": "User not found"}), 404
 
+# Profile route
+@app.route('/profile', methods=['GET', 'POST'])
+def profile():
+    cooperative_name = session.get('cooperative_name')
+    coop_id = session.get('cooperative_id')
+    if not coop_id:
+        return redirect(url_for('login'))
+
+    if request.method == 'POST':
+        try:
+            data = request.get_json()
+            coop_name = data['coop_name']
+            address = data['address']
+            contact_number = data['contact_number']
+
+            cur = mysql.connection.cursor()
+            cur.execute("""
+                UPDATE user
+                SET cooperative_name = %s, address = %s, contact_number = %s
+                WHERE cooperative_id = %s
+            """, (coop_name, address, contact_number, coop_id))
+            mysql.connection.commit()
+            cur.close()
+
+            return jsonify({"message": "User updated successfully!"}), 200
+        except Exception as e:
+            mysql.connection.rollback()
+            return jsonify({"error": str(e)}), 500
+    else:
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number FROM user WHERE cooperative_id = %s", (coop_id,))
+        user = cur.fetchone()
+        cur.close()
+        if user:
+            return render_template('profile.html', user=user, cooperative_name=cooperative_name)
+        return jsonify({"error": "User not found"}), 404
+    
 # # Route to fetch user details
 # @app.route('/get_user', methods=['GET'])
 # def get_user():

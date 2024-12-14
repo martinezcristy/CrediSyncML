@@ -14,12 +14,13 @@
 
         <div class="profile-section">
             <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic">
-            <p class="admin-role">{{ cooperative_name }}</p>
+            <p class="admin-role">{{ session.get('firstname') }} {{ session.get('lastname') }}</p>
+            <p class="admin-role">{{ session.get('account_number') }}</p>
         </div>
         
         <nav class="menu">
             <ul>
-                <li><a href="{{ url_for('member_dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('member_dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
                 <li><a href="{{ url_for('profile') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
             </ul>
         </nav>
@@ -30,38 +31,48 @@
     </div>
 
     <div class="coop-main-content">
-        <form action="{{ url_for('settings') }}" method="POST" onsubmit="updateUser(event)">
+        <form action="{{ url_for('profile') }}" method="POST" onsubmit="updateMember(event)">
             <div class="member-profile-image">
                 <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Profile" class="profile-pic">
-                <h2>{{ user['cooperative_name'] if user else 'No Coop Name' }}</h2>
+                <!-- <h2>{{ member['firstname'] }} {{ member['lastname'] }}</h2> -->
+               
             </div>
             <br><br>
             <div id="success-message" style="color: green; text-align: center;"></div><br><br>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="coopID">Cooperative ID</label>
-                    <input type="text" id="coopID" class="form-control" name="cooperative_id" value="{{ user['cooperative_id'] }}" readonly>
+                    <label for="accountNumber">Account Number</label>
+                    <input type="text" id="accountNumber" class="form-control" name="account_number" value="{{ member['account_number'] }}" disabled>
                 </div>
                 <div class="form-group">
-                    <label for="coopName">Cooperative Name</label>
-                    <input type="text" id="coopName" class="form-control" name="coop_name" value="{{ user['cooperative_name'] }}">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" class="form-control" name="firstname" value="{{ member['firstname'] }}">
                 </div>
             </div>
             <div class="form-row">
                 <div class="form-group">
-                    <label for="address">Address</label>
-                    <input type="text" id="address" class="form-control" name="address" value="{{ user['address'] }}">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" class="form-control" name="lastname" value="{{ member['lastname'] }}">
                 </div>
                 <div class="form-group">
-                    <label for="contactNumber">Contact Number</label>
-                    <input type="text" id="contactNumber" class="form-control" name="contact_number" value="{{ user['contact_number'] }}">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" class="form-control" name="email" value="{{ member['email'] }}">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="status">Status</label>
+                    <input type="text" id="status" class="form-control" name="status" value="{{ member['status'] }}" disabled>
+                </div>
+                <div class="form-group">
+                    <label for="cooperativeId">Cooperative ID</label>
+                    <input type="text" id="cooperativeId" class="form-control" name="cooperative_id" value="{{ member['cooperative_id'] }}" disabled>
                 </div>
             </div>
             <button type="submit" class="btn">Save</button>
         </form>
         
-        <script src="{{ url_for('static', filename='js/userProfile.js') }}"></script>
-
+        <script src="{{ url_for('static', filename='js/memberProfile.js') }}"></script>
     </div>
     
 </body>

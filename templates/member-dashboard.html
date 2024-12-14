@@ -16,7 +16,8 @@
         </div>
         <div class="profile-section">
             <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
-            <p class="admin-role">{{ g.user.firstname }}</p>
+            <p class="admin-role">{{ member_name }}</p>
+            <p class="admin-role">{{ member_account_number}}</p>
             <!-- {% if g.user and g.user['type'] == 'member' %}
                 <p class="admin-role">{{ g.user.firstname }}</p>
             {% else %}
@@ -53,11 +54,10 @@
                     <button class="add-member-btn" onclick="redirectToForm()">Go to Application Form <i class="fas fa-arrow-right"></i></button>
 
                     <script>
+                        const accountNumber = "{{ member_account_number }}";
+    
                         function redirectToForm() {
-                            // Get the account number (assuming you have access to it in your context)
-                            //var accountNumber = '{{ g.user.account_number }}';  // Replace with dynamic value
-                            //window.location.href = "/loanapplication-form?account_number=" + accountNumber;
-                            window.location.href = "/loanapplication-form"; 
+                            window.location.href = "/loanapplication-form?account_number=" + accountNumber;
                         }
                     </script>
 

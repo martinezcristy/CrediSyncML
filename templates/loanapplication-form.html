@@ -16,17 +16,15 @@
         </div>
         <div class="profile-section">
             <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
-            <p class="admin-role">{{ g.user.firstname }}</p>
-            <!-- {% if g.user and g.user['type'] == 'member' %}
-                <p class="admin-role">{{ g.user.firstname }}</p>
-            {% else %}
-                <p class="admin-role">Welcome, Cooperative</p>
-            {% endif %} -->
+            <p class="admin-role">{{ g.member['firstname'] }} {{ g.member['lastname'] }}</p>
+            <p class="admin-role">{{ g.member['account_number'] }}</p>
+
         </div>
         <!--sidebar navs-->
         <nav class="menu">
             <ul>
                 <li><a href="{{ url_for('member_dashboard') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Loan Application</a></li>
+                <li><a href="{{ url_for('profile') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Profile Icon">Profile</a></li>
             </ul>
         </nav>
         <div class="logout-section"> 

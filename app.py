@@ -67,35 +67,37 @@ mail = Mail(app)
 ELIGIBILITY_MODEL = joblib.load('decision_tree_model.pkl')
 
 # Check if user is logged in, allowed access to signup
-@app.before_request 
-def before_request(): 
-    g.user = None 
-    if 'cooperative_id' in session: 
-        g.user = session['cooperative_id']
-    elif request.endpoint not in ('login', 'signup', 'static'):
-        return redirect(url_for('login'))
-
-# @app.before_request
-# def before_request():
-#     g.user = None  # Initialize g.user to None
-
-#     # Check if the user is a cooperative (from the 'user' table)
-#     if 'cooperative_id' in session:
-#         g.user = {'cooperative_id': session['cooperative_id'], 'type': 'cooperative'}
-
-#     # Check if the user is a member (from the 'members' table)
-#     elif 'account_number' in session:
-#         g.user = {
-#             'account_number': session['account_number'],
-#             'firstname': session['firstname'],
-#             'lastname': session['lastname'],
-#             'email': session['email'],
-#             'type': 'member'
-#         }
-
-#     # If neither cooperative nor member, redirect to login (except for specific pages like login/signup/static)
+# @app.before_request 
+# def before_request(): 
+#     g.user = None 
+#     if 'cooperative_id' in session: 
+#         g.user = session['cooperative_id']
 #     elif request.endpoint not in ('login', 'signup', 'static'):
 #         return redirect(url_for('login'))
+
+@app.before_request
+def before_request():
+    g.user = None
+    g.member = None
+    
+    # Check if a cooperative is logged in
+    if 'cooperative_id' in session:
+        g.user = {
+            'id': session['cooperative_id'],
+            'name': session.get('cooperative_name')
+        }
+    # Check if a member is logged in
+    elif 'account_number' in session:
+        g.member = {
+            'account_number': session['account_number'],
+            'firstname': session.get('firstname'),
+            'lastname': session.get('lastname'),
+            'email': session.get('email')
+        }
+    # Redirect if neither cooperative nor member is logged in and the route isn't public
+    elif request.endpoint not in ('login', 'memberlogin', 'signup', 'static'):
+        return redirect(url_for('login'))
+
 
 
 # Load subscription plans data from JSON file
@@ -107,6 +109,8 @@ def load_subscriptions():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
+        session.clear()
+
         cooperative_id = request.form['cooperative_id']
         password = request.form['password']
 
@@ -136,30 +140,28 @@ def login():
     error_message = session.pop('error', None)  # if entered wrong credentials
     return render_template('login.html', success=success_message, error=error_message)
 
+
 @app.route('/memberlogin', methods=['GET', 'POST'])
 def memberlogin():
     if request.method == 'POST':
+        session.clear()
+
         account_number = request.form['account_number']
-        password = request.form['password']  # Get entered password
+        password = request.form['password']
 
         cursor = mysql.connection.cursor()
-        # Verify account number and check if password matches the hashed one
-        cursor.execute(
-            "SELECT * FROM members WHERE account_number = %s",
-            (account_number,)
-        )
+        cursor.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
         user = cursor.fetchone()
         cursor.close()
 
         if user:
-            # Compare entered password with hashed password stored in the database
             if bcrypt.check_password_hash(user['password'], password):
-                session.pop('error', None)  # Clear any previous error messages
+                session.pop('error', None)
                 session['logged_in'] = True
-                session['account_number'] = user['account_number']  # Store account number in session
-                session['firstname'] = user['firstname']  # Store firstname in session
-                session['lastname'] = user['lastname']  # Store lastname in session
-                session['email'] = user['email']  # Store email in session
+                session['account_number'] = user['account_number']
+                session['firstname'] = user['firstname']
+                session['lastname'] = user['lastname']
+                session['email'] = user['email']
 
                 return redirect(url_for('member_dashboard'))
             else:
@@ -169,26 +171,91 @@ def memberlogin():
             session['error'] = "Invalid account number. Please check your details and try again."
             return redirect(url_for('memberlogin'))
 
-    # Handle success and error messages from session
-    success_message = session.pop('success', None)  # Get success message if available
-    error_message = session.pop('error', None)      # If entered wrong credentials
+    success_message = session.pop('success', None)
+    error_message = session.pop('error', None)
     return render_template('member-login.html', success=success_message, error=error_message)
+
 
 @app.route('/member-dashboard')
 def member_dashboard():
- 
-    if session.get('logged_in'):
-        return render_template('member-dashboard.html',)
+    if g.member:
+        member_account_number = f"{g.member['account_number']}"
+        member_name = f"{g.member['firstname']} {g.member['lastname']}"
+        member_email = f"{g.member['email']}"
+        return render_template('member-dashboard.html', member_name=member_name, member_email=member_email, member_account_number=member_account_number)
     else:
         return redirect(url_for('memberlogin'))
     
+# @app.route('/memberlogin', methods=['GET', 'POST'])
+# def memberlogin():
+#     if request.method == 'POST':
+#         account_number = request.form['account_number']
+#         password = request.form['password']  # Get entered password
+
+#         cursor = mysql.connection.cursor()
+#         # Verify account number and check if password matches the hashed one
+#         cursor.execute(
+#             "SELECT * FROM members WHERE account_number = %s",
+#             (account_number,)
+#         )
+#         user = cursor.fetchone()
+#         cursor.close()
+
+#         if user:
+#             # Compare entered password with hashed password stored in the database
+#             if bcrypt.check_password_hash(user['password'], password):
+#                 session.pop('error', None)  # Clear any previous error messages
+#                 session['logged_in'] = True
+#                 session['account_number'] = user['account_number']  # Store account number in session
+#                 session['firstname'] = user['firstname']  # Store firstname in session
+#                 session['lastname'] = user['lastname']  # Store lastname in session
+#                 session['email'] = user['email']  # Store email in session
+
+#                 return redirect(url_for('member_dashboard'))
+#             else:
+#                 session['error'] = "Incorrect password. Please try again."
+#                 return redirect(url_for('memberlogin'))
+#         else:
+#             session['error'] = "Invalid account number. Please check your details and try again."
+#             return redirect(url_for('memberlogin'))
+
+#     # Handle success and error messages from session
+#     success_message = session.pop('success', None)  # Get success message if available
+#     error_message = session.pop('error', None)      # If entered wrong credentials
+#     return render_template('member-login.html', success=success_message, error=error_message)
+
+# @app.route('/member-dashboard')
+# def member_dashboard():
+ 
+#     if session.get('logged_in'):
+#         return render_template('member-dashboard.html',)
+#     else:
+#         return redirect(url_for('memberlogin'))
+
 @app.route('/loanapplication-form')
 def loan_application_form():
-    if g.user:  # Make sure the user is logged in
-        return render_template('loanapplication-form.html')  # Renders the loan application form page
+    if g.member:  # Ensure the user is logged in
+        # Pass account number, firstname, lastname, and email to the loan application form
+        return render_template(
+            'loanapplication-form.html',
+            account_number=g.member['account_number'],
+            firstname=g.member['firstname'],
+            lastname=g.member['lastname'],
+            email=g.member['email']
+        )
     else:
-        return redirect(url_for('memberlogin'))  # Redirect to login if user is not logged in
+        return redirect(url_for('memberlogin'))
 
+# @app.route('/loanapplication-form')
+# def loan_application_form():
+#     if g.member:  # Ensure user is logged in
+#         account_number = request.args.get("account_number")
+        
+#         if not account_number:
+#             return redirect(url_for('memberlogin'))  # Redirect if no account number exists
+#         return render_template('loanapplication-form.html', account_number=account_number)  # Pass account number
+#     else:
+#         return redirect(url_for('memberlogin'))
 
 # @app.route('/member-dashboard')
 # def member_dashboard():
@@ -788,7 +855,7 @@ def update_member_status():
         cur.close()
 
 
-# Profile route
+#Cooperative Profile route
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     cooperative_name = session.get('cooperative_name')
@@ -825,67 +892,57 @@ def settings():
             return render_template('settings.html', user=user, cooperative_name=cooperative_name)
         return jsonify({"error": "User not found"}), 404
 
-# Profile route
+# Member Profile route
 @app.route('/profile', methods=['GET', 'POST'])
 def profile():
-    cooperative_name = session.get('cooperative_name')
-    coop_id = session.get('cooperative_id')
-    if not coop_id:
-        return redirect(url_for('login'))
+    account_number = session.get('account_number')
+    if not account_number:
+        return redirect(url_for('memberlogin'))
 
     if request.method == 'POST':
         try:
+            # Get data from the form submission
             data = request.get_json()
-            coop_name = data['coop_name']
-            address = data['address']
-            contact_number = data['contact_number']
+            firstname = data['firstname']
+            lastname = data['lastname']
+            email = data['email']
+            status = data['status']
 
             cur = mysql.connection.cursor()
             cur.execute("""
-                UPDATE user
-                SET cooperative_name = %s, address = %s, contact_number = %s
-                WHERE cooperative_id = %s
-            """, (coop_name, address, contact_number, coop_id))
+                UPDATE members
+                SET firstname = %s, lastname = %s, email = %s, status = %s
+                WHERE account_number = %s
+            """, (firstname, lastname, email, status, account_number))
             mysql.connection.commit()
             cur.close()
 
-            return jsonify({"message": "User updated successfully!"}), 200
+             # Update session variables for immediate reflection in the sidebar
+            session['firstname'] = firstname
+            session['lastname'] = lastname
+            session['email'] = email
+
+            return jsonify({"message": "Member profile updated successfully!"}), 200
         except Exception as e:
             mysql.connection.rollback()
             return jsonify({"error": str(e)}), 500
     else:
         cur = mysql.connection.cursor()
-        cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number FROM user WHERE cooperative_id = %s", (coop_id,))
-        user = cur.fetchone()
+        cur.execute("""
+            SELECT account_number, firstname, lastname, email, status, cooperative_id
+            FROM members
+            WHERE account_number = %s
+        """, (account_number,))
+        member = cur.fetchone()
         cur.close()
-        if user:
-            return render_template('profile.html', user=user, cooperative_name=cooperative_name)
-        return jsonify({"error": "User not found"}), 404
-    
-# # Route to fetch user details
-# @app.route('/get_user', methods=['GET'])
-# def get_user():
-#     cur = mysql.connection.cursor()
-#     try:
-#         cur.execute("SELECT cooperative_id, cooperative_name, address, contact_number, email FROM user LIMIT 1")
-#         user = cur.fetchone()
+        if member:
+            session['firstname'] = member['firstname']
+            session['lastname'] = member['lastname']
+            session['email'] = member['email']
+            return render_template('profile.html', member=member)
+        return jsonify({"error": "Member not found"}), 404
 
-#         if not user:
-#             return jsonify({"error": "User not found"}), 404
-
-#         user_data = {
-#             "cooperative_id": user['cooperative_id'], 
-#             "cooperative_name": user['cooperative_name'], 
-#             "address": user['address'], 
-#             "contact_number": user['contact_number'], 
-#             "email": user['email']
-#         }
-#         return jsonify(user_data), 200
-#     except Exception as e:
-#         return jsonify({"error": str(e)}), 500
-#     finally:
-#         cur.close()
-
+#Evaluation Route
 @app.route('/evaluation', methods=['GET', 'POST'])
 def evaluation():
     cooperative_name = session.get('cooperative_name')

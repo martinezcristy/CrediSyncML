@@ -40,14 +40,16 @@
 
                 <form id="signup-form" method="POST" action="{{ url_for('applicantsignup') }}">
 
-                    <div class="member-profile-image-logo">
+                    <!-- <div class="member-profile-image-logo">
                         <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
-                    </div>
+                    </div> -->
 
                     <div class="member-profile-image">
                         <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic"><br>
                         <p><i>**For Registered Members Only.<br>Please fill-up the form correctly. Your loan application will be reviewed for approval.</i></p><br><br>
                     </div>
+
+                    <br>
 
                     <h1>Loan Details</h1><br>
                     <div class="form-row">
@@ -142,6 +144,8 @@
                         </div>
 
                     </div>
+
+                    <hr>
 
                     <h1>Employment Data</h1><br>
     

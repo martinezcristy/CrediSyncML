@@ -101,46 +101,7 @@
         {% endif %}
     </div>
 
-    <script>
-        document.getElementById("searchBar").addEventListener("input", function() {
-            const searchTerm = this.value.trim().toLowerCase();
-            const rows = document.querySelectorAll(".members-table tbody tr");
-            let hasVisibleMembers = false;
-        
-            rows.forEach(row => {
-                // Collect text content from all columns in the row
-                const accountNumber = row.querySelector("td:nth-child(1)").textContent.toLowerCase();
-                const name = row.querySelector("td:nth-child(2)").textContent.toLowerCase();
-                const contactNumber = row.querySelector("td:nth-child(3)").textContent.toLowerCase();
-                const email = row.querySelector("td:nth-child(4)").textContent.toLowerCase();
-                const address = row.querySelector("td:nth-child(5)").textContent.toLowerCase();
-                const dateApplied = row.querySelector("td:nth-child(6)").textContent.toLowerCase();
-                const status = row.querySelector("td:nth-child(7)").textContent.toLowerCase();
-        
-                // Check if any column includes the search term
-                if (accountNumber.includes(searchTerm) || 
-                    name.includes(searchTerm) || 
-                    contactNumber.includes(searchTerm) || 
-                    email.includes(searchTerm) || 
-                    address.includes(searchTerm) || 
-                    dateApplied.includes(searchTerm) || 
-                    status.includes(searchTerm)) {
-                    row.style.display = ""; // Show row
-                    hasVisibleMembers = true;
-                } else {
-                    row.style.display = "none"; // Hide row
-                }
-            });
-        
-            // Show or hide the "No members yet" message based on visibility
-            if (!hasVisibleMembers) {
-                document.getElementById("noMembersFound").style.display = "block";
-            } else {
-                document.getElementById("noMembersFound").style.display = "none";
-            }
-        });
-                
-    </script>
+    <script src="{{ url_for('static', filename='js/searchMember.js') }}"></script>
 
     <!-- Add New Member Modal -->
     <div id="addMemberModal" class="modal">

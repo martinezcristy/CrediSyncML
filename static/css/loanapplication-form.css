@@ -806,6 +806,14 @@ textarea {
     margin-inline-start: 46%;
 }
 
+.member-profile-image-logo   img {
+    text-align: center;
+    width: 100px;
+    height: 100px;
+    margin-inline-start: 46%;
+}
+
+
 /* members page dialog */
 .dialog {
     display: none;

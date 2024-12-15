@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CrediSync Dashboard</title>
+    <title>Loan Application Form</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/loanapplication-form.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
@@ -38,6 +38,7 @@
 
             <div class="content-box">
 
+               
                 <form id="signup-form" method="POST" action="{{ url_for('applicantsignup') }}">
 
                     <!-- <div class="member-profile-image-logo">
@@ -49,147 +50,420 @@
                         <p><i>**For Registered Members Only.<br>Please fill-up the form correctly. Your loan application will be reviewed for approval.</i></p><br><br>
                     </div>
 
-                    <br>
-
-                    <h1>Loan Details</h1><br>
-                    <div class="form-row">
-                        
-                        <div class="form-group">
-                            <label for="loantype">Loan Type</label>
-                            <select name="Loan_Type" required class="form-control">
-                                <option value="">Please select</option>
-                                <option value="50">Personal Loans/Home Equity Loans</option>
-                                <option value="80">Auto Loans/Student Loans</option>
-                                <option value="100">Mortgages/Small Business Loans</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="loanterm">Loan Term</label>
-                            <select name="Loan_Term" required class="form-control">
-                                <option value="">Please select</option>
-                                <option value="50">85 months above</option>
-                                <option value="80">60 to 84 months</option>
-                                <option value="100">12 to 60 months</option>
-                            </select>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="loanterm">Paymemt Method</label>
-                            <select name="Payment_Method" required class="form-control">
-                                <option value="">Please select</option>
-                                <option value="50">Cash </option>
-                                <option value="80">Post-dated Check </option>
-                                <option value="100">Debit to Savings Account </option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="loanterm">Repayment Schedule</label>
-                            <select name="Repayment_Schedule" required class="form-control">
-                                <option value="">Please select</option>
-                                <option value="50">Quarterly/Semi-Anually/Anually </option>
-                                <option value="80">Monthly </option>
-                                <option value="100">Weekly </option>
-                            </select>
-                        </div>
-
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progress-bar"></div>
                     </div>
 
-                    <h1>Personal Information</h1><br>
-                    <div class="form-row">   
-                        <div class="form-group">
-                            <label for="lastname">Last Name</label>
-                            <input type="text" id="lastname" name="lastname" required maxlength="30" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="firstname">First Name</label>
-                            <input type="text" id="firstname" name="firstname" required maxlength="30" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="middlename">Middle Name</label>
-                            <input type="text" id="middlename" name="middlename" required maxlength="30" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="present_address">Present Address</label>
-                            <input type="text" id="present_address" name="present_address" required maxlength="28" class="form-control">
-                        </div>
-                        <div class="form-group">
-
-                            <label for="provincial_address">Provincial Address</label>
-                            <input type="text" id="provincial_address" name="provincial_address" required maxlength="28" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="telephone_number">Contact Number</label>
-                            <input type="text" id="telephone_number" name="telephone_number" required maxlength="12" class="form-control">
-                        </div>
-                    </div>
-    
-                    <div class="form-row">
-                        <div class="form-group">
+                    <div id="step-1" class="form-step active">
+                        <!-- Loan Details -->
+                        <p>STEP 1</p>
+                        <h1>Loan Details</h1><br>
+                        <div class="form-row">
+                            <!-- Loan Type -->
+                            <div class="form-group">
+                                <label for="loantype">Loan Type</label>
+                                <select name="Loan_Type" required class="form-control">
+                                    <option value="">Please select</option>
+                                    <option value="50">Personal Loans/Home Equity Loans</option>
+                                    <option value="80">Auto Loans/Student Loans</option>
+                                    <option value="100">Mortgages/Small Business Loans</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanterm">Loan Term</label>
+                                <select name="Loan_Term" required class="form-control">
+                                    <option value="">Please select</option>
+                                    <option value="50">85 months above</option>
+                                    <option value="80">60 to 84 months</option>
+                                    <option value="100">12 to 60 months</option>
+                                </select>
+                            </div>
                             
-                            <label for="civil_status">Civil Status</label>
-                            <input type="text" id="civil_status" name="civil_status" required maxlength="10" class="form-control">
-                              
+                            <div class="form-group">
+                                <label for="loanterm">Paymemt Method</label>
+                                <select name="Payment_Method" required class="form-control">
+                                    <option value="">Please select</option>
+                                    <option value="50">Cash </option>
+                                    <option value="80">Post-dated Check </option>
+                                    <option value="100">Debit to Savings Account </option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="loanterm">Repayment Schedule</label>
+                                <select name="Repayment_Schedule" required class="form-control">
+                                    <option value="">Please select</option>
+                                    <option value="50">Quarterly/Semi-Anually/Anually </option>
+                                    <option value="80">Monthly </option>
+                                    <option value="100">Weekly </option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="gender">Gender</label>
-                            <input type="text" id="gender" name="gender" required maxlength="6" class="form-control">
-                                            
+                        <button type="button" class="next-btn">Next</button>
+                    </div>
+                    
+                    <div id="step-2" class="form-step">
+                        <p>STEP 2</p>
+                        <h1>Personal Information</h1><br>
+                        <div class="form-row">
+                            <!-- Last Name -->
+                            <div class="form-group">
+                                <label for="lastname">Last Name</label>
+                                <input type="text" id="lastname" name="lastname" required maxlength="30" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="firstname">First Name</label>
+                                <input type="text" id="firstname" name="firstname" required maxlength="30" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="middlename">Middle Name</label>
+                                <input type="text" id="middlename" name="middlename" required maxlength="30" class="form-control">
+                            </div>
                         </div>
-                        <div class="form-group">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="present_address">Present Address</label>
+                                <input type="text" id="present_address" name="present_address" required maxlength="28" class="form-control">
+                            </div>
+                            <div class="form-group">
+    
+                                <label for="provincial_address">Provincial Address</label>
+                                <input type="text" id="provincial_address" name="provincial_address" required maxlength="28" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="telephone_number">Contact Number</label>
+                                <input type="text" id="telephone_number" name="telephone_number" required maxlength="12" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                
+                                <label for="civil_status">Civil Status</label>
+                                <input type="text" id="civil_status" name="civil_status" required maxlength="10" class="form-control">
+                                  
+                            </div>
+                            <div class="form-group">
+                                <label for="gender">Gender</label>
+                                <input type="text" id="gender" name="gender" required maxlength="6" class="form-control">
+                                                
+                            </div>
+                            <div class="form-group">
+                                
+                                <label for="email">Email Address</label>
+                                <input type="email" id="email" name="email" required maxlength="28" class="form-control">
+                            </div>
+    
+                        </div>
+                        <div class="form-row">
+                            <button type="button" class="prev-btn">Previous</button>
+                            <button type="button" class="next-btn">Next</button>
+                        </div>
+                        
+                    </div>
+                    
+                    <div id="step-3" class="form-step">
+                        <p>STEP 3</p>
+                        <h1>Employment Data</h1><br>
+                        <div class="form-row">
+                            <!-- Employer Name -->
+                            <div class="form-group">
+                                <label for="employer_name">Employer Name</label>
+                                <input type="text" id="employer_name" name="employer_name" required maxlength="30" class="form-control">
+                            </div>
+                            <div class="form-group">                     
+                                <label for="position">Position</label>
+                                <input type="text" id="position" name="position" required maxlength="30" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="employer_address">Employer Address</label>
+                                <input type="text" id="employer_address" name="employer_address" required maxlength="30" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employment_status">Employment Status</label>
+                                <input type="text" id="employment_status" name="employment_status" required maxlength="12" class="form-control">
+                                 
+                            </div>
+                           
+                            <div class="form-group">
+                                <label for="contact_number">Contact Number</label>
+                                <input type="text" id="contact_number" name="contact_number" required maxlength="11" class="form-control">
                             
-                            <label for="email">Email Address</label>
-                            <input type="email" id="email" name="email" required maxlength="28" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="net_take_home_salary">Net Take Home Salary
+                                <input type="text" id="net_take_home_salary" name="net_take_home_salary" required maxlength="11" class="form-control">
+                            
+                            </div>
                         </div>
-
-                    </div>
-
-                    <hr>
-
-                    <h1>Employment Data</h1><br>
-    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="employer_name">Employer Name</label>
-                            <input type="text" id="employer_name" name="employer_name" required maxlength="30" class="form-control">
-                        
-                        </div>
-                        <div class="form-group">                     
-                            <label for="position">Position</label>
-                            <input type="text" id="position" name="position" required maxlength="30" class="form-control">
-                        </div>
-                        <div class="form-group">
-                            <label for="employer_address">Employer Address</label>
-                            <input type="text" id="employer_address" name="employer_address" required maxlength="30" class="form-control">
+                        <div class="form-row">
+                            <button type="button" class="prev-btn">Previous</button>
+                            <button type="button" class="next-btn">Next</button>
                         </div>
                         
                     </div>
-    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="employment_status">Employment Status</label>
-                            <input type="text" id="employment_status" name="employment_status" required maxlength="12" class="form-control">
-                             
+                    
+                    <div id="step-4" class="form-step">
+                        <p>STEP 4</p>
+                        <h1>Co-Makers Information</h1><br>
+                        <div class="form-row">
+                            <label for="co_maker_toggle">Do you have a co-maker?</label>
+                            <label class="switch">
+                                <input type="checkbox" id="co_maker_toggle">
+                                <span class="slider round"></span>
+                            </label>
+                            
                         </div>
-                       
-                        <div class="form-group">
-                            <label for="contact_number">Contact Number</label>
-                            <input type="text" id="contact_number" name="contact_number" required maxlength="11" class="form-control">
-                        
+                        <div id="co-maker-form" style="display: none;">
+                            <div class="form-row">
+                                <!-- Co-Maker Fields -->
+                                <div class="form-group">
+                                    <label for="co_lastname">Last Name</label>
+                                    <input type="text" id="co_lastname" name="co_lastname" maxlength="30" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="co_firstname">First Name</label>
+                                    <input type="text" id="co_firstname" name="co_firstname" maxlength="30" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="co_middlename">Middle Name</label>
+                                    <input type="text" id="co_middlename" name="co_middlename" maxlength="30" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="co_present_address">Present Address</label>
+                                    <input type="text" id="co_present_address" name="co_present_address" required maxlength="28" class="form-control">
+                                </div>
+                                <div class="form-group">
+        
+                                    <label for="co_provincial_address">Provincial Address</label>
+                                    <input type="text" id="co_provincial_address" name="co_provincial_address" required maxlength="28" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="co_telephone_number">Contact Number</label>
+                                    <input type="text" id="co_telephone_number" name="co_telephone_number" required maxlength="12" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    
+                                    <label for="co_civil_status">Civil Status</label>
+                                    <input type="text" id="co_civil_status" name="co_civil_status" required maxlength="10" class="form-control">
+                                      
+                                </div>
+                                <div class="form-group">
+                                    <label for="co_gender">Gender</label>
+                                    <input type="text" id="co_gender" name="co_gender" required maxlength="6" class="form-control">
+                                                    
+                                </div>
+                                <div class="form-group">
+                                    
+                                    <label for="co_email">Email Address</label>
+                                    <input type="email" id="co_email" name="co_email" required maxlength="28" class="form-control">
+                                </div>
+        
+                            </div>
+                            <h1>Employment Data</h1>
+                            <div class="form-row">
+                                <!-- Employer Name -->
+                                <div class="form-group">
+                                    <label for="co_employer_name">Employer Name</label>
+                                    <input type="text" id="co_employer_name" name="co_employer_name" required maxlength="30" class="form-control">
+                                </div>
+                                <div class="form-group">                     
+                                    <label for="co_position">Position</label>
+                                    <input type="text" id="co_position" name="co_position" required maxlength="30" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="co_employer_address">Employer Address</label>
+                                    <input type="text" id="co_employer_address" name="co_employer_address" required maxlength="30" class="form-control">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="co_employment_status">Employment Status</label>
+                                    <input type="text" id="co_employment_status" name="co_employment_status" required maxlength="12" class="form-control">
+                                     
+                                </div>
+                               
+                                <div class="form-group">
+                                    <label for="co_contact_number">Contact Number</label>
+                                    <input type="text" id="co_contact_number" name="co_contact_number" required maxlength="11" class="form-control">
+                                
+                                </div>
+                                <div class="form-group">
+                                    <label for="co_net_take_home_salary">Net Take Home Salary
+                                    <input type="text" id="co_net_take_home_salary" name="co_net_take_home_salary" required maxlength="11" class="form-control">
+                                
+                                </div>
+                            </div>
+                            
                         </div>
-                        <div class="form-group">
-                            <label for="net_take_home_salary">Net Take Home Salary
-                            <input type="text" id="net_take_home_salary" name="net_take_home_salary" required maxlength="11" class="form-control">
+                        <div class="form-row">
+                            <button type="button" class="prev-btn">Previous</button>
+                            <button type="button" class="next-btn">Next</button>
+                        </div>
                         
+
+                    </div>
+
+                    <div id="step-5" class="form-step">
+                        <p>STEP 5</p>
+                        <h1>Asset Details</h1><br>
+                        <div class="form-row">
+                            <label for="assets_toggle">Do you have assets?</label>
+                            <label class="switch">
+                                <input type="checkbox" id="assets_toggle">
+                                <span class="slider round"></span>
+                            </label>
+                            
+                        </div>
+                        <div id="assets-form" style="display: none;">
+                            <!-- Asset Type Checkboxes -->
+                            <div class="form-group">
+                                <label>Asset Types</label>
+                                <div>
+                                    <label>
+                                        <input type="checkbox" name="asset_type" value="Property"> Property
+                                    </label>
+                                </div>
+                                <div>
+                                    <label>
+                                        <input type="checkbox" name="asset_type" value="Vehicle"> Vehicle Owner
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="form-row">
+                                    <!-- Input Fields -->
+                                <div class="form-group">
+                                    <label for="registration_number">Registration Number</label>
+                                    <input type="text" id="registration_number" name="registration_number" class="form-control">
+                                </div>
+                                <div class="form-group">
+                                    <label for="estimated_value">Estimated Asset Value</label>
+                                    <input type="number" id="estimated_value" name="estimated_value" class="form-control">
+                                </div>
+                        
+                                <!-- Dropdown for Ownership Status -->
+                                <div class="form-group">
+                                    <label for="ownership_status">Ownership Status</label>
+                                    <select id="ownership_status" name="ownership_status" class="form-control">
+                                        <option value="">Select Ownership Status</option>
+                                        <option value="owned">Owned Outright</option>
+                                        <option value="mortgaged">Mortgaged</option>
+                                        <option value="co-owned">Co-owned</option>
+                                    </select>
+                                </div>
+                        
+                                <!-- Input Field for Year Acquired -->
+                                <div class="form-group">
+                                    <label for="year_acquired">Year Acquired</label>
+                                    <input type="number" id="year_acquired" name="year_acquired" class="form-control">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <button type="button" class="prev-btn">Previous</button>
+                                <button type="button" class="next-btn">Next</button>
+                            </div>
+                            <button type="submit">Submit Application</button>
+                            
                         </div>
                     </div>
-    
-                    <button type="submit">Submit Application</button>
+
+                    
                     <!-- <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Click here to login</a></p> </div> -->
     
-                </form>
-                <!-- Link to the external JavaScript file -->
+                </form>  
+                
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        // CoMaker Toggle Logic
+                        const coMakerToggle = document.getElementById('co_maker_toggle');
+                        const coMakerForm = document.getElementById('co-maker-form');
+                    
+                        // Listen for toggle change
+                        coMakerToggle.addEventListener('change', () => {
+                            if (coMakerToggle.checked) {
+                                coMakerForm.style.display = 'block'; // Show co-maker form
+                            } else {
+                                coMakerForm.style.display = 'none'; // Hide co-maker form
+                            }
+                        });
+
+                         // Assets Toggle Logic
+                        const assetsToggle = document.getElementById('assets_toggle');
+                        const assetsForm = document.getElementById('assets-form');
+
+                        assetsToggle.addEventListener('change', () => {
+                            if (assetsToggle.checked) {
+                                assetsForm.style.display = 'block'; // Show assets form
+                            } else {
+                                assetsForm.style.display = 'none'; // Hide assets form
+                            }
+                        });
+
+                        //Form Navigation Logic
+                        const steps = document.querySelectorAll('.form-step');
+                        const nextBtns = document.querySelectorAll('.next-btn');
+                        const prevBtns = document.querySelectorAll('.prev-btn');
+                        const progressBar = document.getElementById('progress-bar');
+                    
+                        let currentStep = 0;
+                    
+                        // Show the current step
+                        function showStep(step) {
+                            steps.forEach((s, index) => {
+                                s.classList.toggle('active', index === step);
+                            });
+                    
+                            // Update progress bar
+                            const progress = ((step + 1) / steps.length) * 100; // Calculate percentage
+                            progressBar.style.width = `${progress}%`;
+                        }
+                    
+                        // Next button logic
+                        nextBtns.forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                const currentForm = steps[currentStep];
+                                const requiredInputs = currentForm.querySelectorAll('input:required, select:required');
+                                
+                                // Validate required fields
+                                let valid = true;
+                                requiredInputs.forEach(input => {
+                                    if (!input.value.trim()) {
+                                        valid = false;
+                                        input.classList.add('invalid'); // Optional: add a red border or highlight
+                                    } else {
+                                        input.classList.remove('invalid');
+                                    }
+                                });
+                    
+                                if (valid && currentStep < steps.length - 1) {
+                                    currentStep++;
+                                    showStep(currentStep);
+                                }
+                            });
+                        });
+                    
+                        // Previous button logic
+                        prevBtns.forEach(btn => {
+                            btn.addEventListener('click', () => {
+                                if (currentStep > 0) {
+                                    currentStep--;
+                                    showStep(currentStep);
+                                }
+                            });
+                        });
+                    
+                        // Initialize first step and progress bar
+                        showStep(currentStep);
+                    });
+                       
+                </script>
+                
                 <script src="{{ url_for('static', filename='js/applicantSignupValidation.js') }}"></script>
                 
             </div>

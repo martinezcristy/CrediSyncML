@@ -15,12 +15,12 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 body {
     display: flex;
-    height: 100vh;
+    height: 120vh;
     background-color: var(--primary-color-2);
 }
 
@@ -159,7 +159,7 @@ body {
 }
 
 .add-member-btn {
-    padding: 10px 20px;
+    padding: 5px 10px;
     background-color: var(--secondary-color);
     color: white;
     border: none;
@@ -256,8 +256,8 @@ body {
 .card {
     flex-grow: 1;
     background-color: var(--primary-color) !important;
-    width: 200px; 
-    height: 550px; 
+    width: 190px; 
+    height: 450px; 
     padding: 20px;
     border-radius: 9px;
     display: flex;
@@ -267,13 +267,14 @@ body {
 }
 
 .card img {
-    width: 260px;  
-    height: 260px;  
-    object-fit: contain;  
+    width: 180px;  
+    height: 180px;  
+    object-fit: contain; 
+    margin-bottom: 100px; 
 }
 
 .card h2 {
-    font-size: 50px;
+    font-size: 45px;
     margin-left: 25px;
 }
 
@@ -286,10 +287,10 @@ body {
 
 .card button {
     margin-left: 25px;
-    height: 50px;
+    height: 45px;
     width: 30%;
     margin-top: 15px;
-    font-size: 15px;
+    font-size: 13px;
 }
 
 

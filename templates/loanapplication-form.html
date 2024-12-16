@@ -41,10 +41,6 @@
                
                 <form id="signup-form" method="POST" action="{{ url_for('applicantsignup') }}">
 
-                    <!-- <div class="member-profile-image-logo">
-                        <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
-                    </div> -->
-
                     <div class="member-profile-image">
                         <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic"><br>
                         <p><i>**For Registered Members Only.<br>Please fill-up the form correctly. Your loan application will be reviewed for approval.</i></p><br><br>
@@ -64,18 +60,18 @@
                                 <label for="loantype">Loan Type</label>
                                 <select name="Loan_Type" required class="form-control">
                                     <option value="">Please select</option>
-                                    <option value="50">Personal Loans/Home Equity Loans</option>
-                                    <option value="80">Auto Loans/Student Loans</option>
-                                    <option value="100">Mortgages/Small Business Loans</option>
+                                    <option value="Personal Loans/Home Equity Loans">Personal Loans/Home Equity Loans</option>
+                                    <option value="Auto Loans/Student Loans">Auto Loans/Student Loans</option>
+                                    <option value="Mortgages/Small Business Loans">Mortgages/Small Business Loans</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="loanterm">Loan Term</label>
                                 <select name="Loan_Term" required class="form-control">
                                     <option value="">Please select</option>
-                                    <option value="50">85 months above</option>
-                                    <option value="80">60 to 84 months</option>
-                                    <option value="100">12 to 60 months</option>
+                                    <option value="85 months above">85 months above</option>
+                                    <option value="60 to 84 months">60 to 84 months</option>
+                                    <option value="12 to 60 months">12 to 60 months</option>
                                 </select>
                             </div>
                             
@@ -83,18 +79,18 @@
                                 <label for="loanterm">Paymemt Method</label>
                                 <select name="Payment_Method" required class="form-control">
                                     <option value="">Please select</option>
-                                    <option value="50">Cash </option>
-                                    <option value="80">Post-dated Check </option>
-                                    <option value="100">Debit to Savings Account </option>
+                                    <option value="Cash">Cash </option>
+                                    <option value="Post-dated Check">Post-dated Check </option>
+                                    <option value="Debit to Savings Account">Debit to Savings Account </option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="loanterm">Repayment Schedule</label>
                                 <select name="Repayment_Schedule" required class="form-control">
                                     <option value="">Please select</option>
-                                    <option value="50">Quarterly/Semi-Anually/Anually </option>
-                                    <option value="80">Monthly </option>
-                                    <option value="100">Weekly </option>
+                                    <option value="Quarterly/Semi-Anually/Anually">Quarterly/Semi-Anually/Anually </option>
+                                    <option value="Monthly">Monthly </option>
+                                    <option value="Weekly">Weekly </option>
                                 </select>
                             </div>
                         </div>
@@ -363,116 +359,27 @@
                                     <input type="number" id="year_acquired" name="year_acquired" class="form-control">
                                 </div>
                             </div>
-
-                            <div class="form-row">
-                                <button type="button" class="prev-btn">Previous</button>
-                                <button type="button" class="next-btn">Next</button>
-                            </div>
-                            <button type="submit">Submit Application</button>
                             
                         </div>
+
+                        <div class="form-row">
+                            <button type="button" class="prev-btn">Previous</button>
+                            <button type="submit">Submit Application</button>
+                        </div>
+                       
                     </div>
 
-                    
-                    <!-- <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Click here to login</a></p> </div> -->
-    
                 </form>  
                 
-                <script>
-                    document.addEventListener('DOMContentLoaded', () => {
-                        // CoMaker Toggle Logic
-                        const coMakerToggle = document.getElementById('co_maker_toggle');
-                        const coMakerForm = document.getElementById('co-maker-form');
-                    
-                        // Listen for toggle change
-                        coMakerToggle.addEventListener('change', () => {
-                            if (coMakerToggle.checked) {
-                                coMakerForm.style.display = 'block'; // Show co-maker form
-                            } else {
-                                coMakerForm.style.display = 'none'; // Hide co-maker form
-                            }
-                        });
-
-                         // Assets Toggle Logic
-                        const assetsToggle = document.getElementById('assets_toggle');
-                        const assetsForm = document.getElementById('assets-form');
-
-                        assetsToggle.addEventListener('change', () => {
-                            if (assetsToggle.checked) {
-                                assetsForm.style.display = 'block'; // Show assets form
-                            } else {
-                                assetsForm.style.display = 'none'; // Hide assets form
-                            }
-                        });
-
-                        //Form Navigation Logic
-                        const steps = document.querySelectorAll('.form-step');
-                        const nextBtns = document.querySelectorAll('.next-btn');
-                        const prevBtns = document.querySelectorAll('.prev-btn');
-                        const progressBar = document.getElementById('progress-bar');
-                    
-                        let currentStep = 0;
-                    
-                        // Show the current step
-                        function showStep(step) {
-                            steps.forEach((s, index) => {
-                                s.classList.toggle('active', index === step);
-                            });
-                    
-                            // Update progress bar
-                            const progress = ((step + 1) / steps.length) * 100; // Calculate percentage
-                            progressBar.style.width = `${progress}%`;
-                        }
-                    
-                        // Next button logic
-                        nextBtns.forEach(btn => {
-                            btn.addEventListener('click', () => {
-                                const currentForm = steps[currentStep];
-                                const requiredInputs = currentForm.querySelectorAll('input:required, select:required');
-                                
-                                // Validate required fields
-                                let valid = true;
-                                requiredInputs.forEach(input => {
-                                    if (!input.value.trim()) {
-                                        valid = false;
-                                        input.classList.add('invalid'); // Optional: add a red border or highlight
-                                    } else {
-                                        input.classList.remove('invalid');
-                                    }
-                                });
-                    
-                                if (valid && currentStep < steps.length - 1) {
-                                    currentStep++;
-                                    showStep(currentStep);
-                                }
-                            });
-                        });
-                    
-                        // Previous button logic
-                        prevBtns.forEach(btn => {
-                            btn.addEventListener('click', () => {
-                                if (currentStep > 0) {
-                                    currentStep--;
-                                    showStep(currentStep);
-                                }
-                            });
-                        });
-                    
-                        // Initialize first step and progress bar
-                        showStep(currentStep);
-                    });
-                       
-                </script>
-                
+                <script src="{{ url_for('static', filename='js/loanApplication.js') }}"></script>
                 <script src="{{ url_for('static', filename='js/applicantSignupValidation.js') }}"></script>
                 
             </div>
 
         </div>
         
-
     </div>
 
-   
 </body>
+
 </html>

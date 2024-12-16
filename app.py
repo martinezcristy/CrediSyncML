@@ -186,51 +186,6 @@ def member_dashboard():
     else:
         return redirect(url_for('memberlogin'))
     
-# @app.route('/memberlogin', methods=['GET', 'POST'])
-# def memberlogin():
-#     if request.method == 'POST':
-#         account_number = request.form['account_number']
-#         password = request.form['password']  # Get entered password
-
-#         cursor = mysql.connection.cursor()
-#         # Verify account number and check if password matches the hashed one
-#         cursor.execute(
-#             "SELECT * FROM members WHERE account_number = %s",
-#             (account_number,)
-#         )
-#         user = cursor.fetchone()
-#         cursor.close()
-
-#         if user:
-#             # Compare entered password with hashed password stored in the database
-#             if bcrypt.check_password_hash(user['password'], password):
-#                 session.pop('error', None)  # Clear any previous error messages
-#                 session['logged_in'] = True
-#                 session['account_number'] = user['account_number']  # Store account number in session
-#                 session['firstname'] = user['firstname']  # Store firstname in session
-#                 session['lastname'] = user['lastname']  # Store lastname in session
-#                 session['email'] = user['email']  # Store email in session
-
-#                 return redirect(url_for('member_dashboard'))
-#             else:
-#                 session['error'] = "Incorrect password. Please try again."
-#                 return redirect(url_for('memberlogin'))
-#         else:
-#             session['error'] = "Invalid account number. Please check your details and try again."
-#             return redirect(url_for('memberlogin'))
-
-#     # Handle success and error messages from session
-#     success_message = session.pop('success', None)  # Get success message if available
-#     error_message = session.pop('error', None)      # If entered wrong credentials
-#     return render_template('member-login.html', success=success_message, error=error_message)
-
-# @app.route('/member-dashboard')
-# def member_dashboard():
- 
-#     if session.get('logged_in'):
-#         return render_template('member-dashboard.html',)
-#     else:
-#         return redirect(url_for('memberlogin'))
 
 @app.route('/loanapplication-form')
 def loan_application_form():
@@ -445,69 +400,6 @@ def applicantsignup():
     return render_template('applicant-signup.html', error=error_message)
 
 
-# @app.route('/applicantsignup', methods=['GET', 'POST'])
-# def applicantsignup():
-#     if request.method == 'POST':
-#         # Extract form data
-#         lastname = request.form['lastname']
-#         firstname = request.form['firstname']
-#         middlename = request.form['middlename']
-#         present_address = request.form['present_address']
-#         previous_address = request.form['previous_address']
-#         provincial_address = request.form['provincial_address']
-#         civil_status = request.form['civil_status']
-#         sex = request.form['sex']
-#         age = request.form['age']
-#         employment_status = request.form['employment_status']
-#         employer_name = request.form['employer_name']
-#         employer_address = request.form['employer_address']
-#         telephone_number = request.form['telephone_number']
-#         position = request.form['position']
-#         spouse_name = request.form['spouse_name']
-#         contact_number = request.form['contact_number']
-#         email = request.form['email']
-#         date_applied = request.form['date_applied']
-
-#         # Generate account number
-#         account_number = generate_account_number()
-
-#         # Database connection
-#         cursor = mysql.connection.cursor()
-
-#         try:
-#             # Insert user signup data into database
-#             cursor.execute(
-#                 '''INSERT INTO members (account_number, lastname, firstname, middlename, present_address, 
-#                 previous_address, provincial_address, civil_status, sex, age, employment_status, employer_name, 
-#                 employer_address, telephone_number, position, spouse_name, contact_number, email, date_applied, cooperative_id) 
-#                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
-#                 (
-#                     account_number, lastname, firstname, middlename, present_address,
-#                     previous_address, provincial_address, civil_status, sex, age, employment_status,
-#                     employer_name, employer_address, telephone_number, position, spouse_name,
-#                     contact_number, email, date_applied, 'MVI001'  # Default cooperative_id
-#                 )
-#             )
-#             mysql.connection.commit()
-
-#             # Send login credentials email
-#             if send_credentials_email(email, account_number, firstname, lastname):
-#                 session['success'] = 'Your account has been created successfully. Please check your email for your credentials.'
-#             else:
-#                 session['error'] = 'Account created, but failed to send email.'
-
-#         except Exception as e:
-#             session['error'] = str(e)
-#         finally:
-#             cursor.close()
-
-#         return redirect(url_for('memberlogin'))
-    
-#     # Handle error messages for rendering in the frontend
-#     error_message = session.pop('error', None)
-#     return render_template('applicant-signup.html', error=error_message)
-
-
 # Dashboard route
 @app.route('/', methods=['GET'])
 def dashboard():
@@ -636,40 +528,6 @@ def decline_member():
         return jsonify({"error": str(e)}), 500
     finally:
         cur.close()
-
-# def send_decline_email(member):
-#     recipient = member['email']
-#     applicant_name = member['name']
-#     account_number = member['account_number']
-
-#     # Get the path to the declined-email.html template
-#     html_file_path = os.path.join('templates', 'declined-email.html')
-
-#     try:
-#         with open(html_file_path, 'r') as file:
-#             html_content = file.read()
-
-#             # Replace placeholders with actual values
-#             html_content = html_content.replace("[APPLICANT NAME]", applicant_name)
-#             html_content = html_content.replace("[ACCOUNT NUMBER]", account_number)
-#             html_content = html_content.replace("[COOPERATIVE NAME]", session.get('cooperative_name', 'Your Cooperative'))
-#             html_content = html_content.replace("[APPLICATION DATE]", member['date_applied'].strftime('%Y-%m-%d'))
-
-#         # Create and send the email
-#         msg = MIMEMultipart()
-#         msg['From'] = EMAIL_USERNAME
-#         msg['To'] = recipient
-#         msg['Subject'] = "Credisync - Loan Application Approved"
-
-#         msg.attach(MIMEText(html_content, 'html'))
-
-#         with smtplib.SMTP(EMAIL_SERVER, EMAIL_PORT) as server:
-#             server.starttls()
-#             server.login(EMAIL_USERNAME, EMAIL_PASSWORD)
-#             server.sendmail(EMAIL_USERNAME, recipient, msg.as_string())
-
-#     except Exception as e:
-#         print(f"Error sending decline email: {str(e)}")
 
 
 @app.route('/send_decline_email', methods=['POST'])
@@ -1152,36 +1010,6 @@ def member_profile(account_number):
         """, (account_number,))
         member = cur.fetchone()
 
-        # Fetch applications associated with the member
-        # cur.execute("""
-        #     SELECT * FROM loan_applications WHERE account_number = %s
-        # """, (account_number,))
-        # applications = cur.fetchall()
-
-        # Fetch loan applications with resolved data
-        # cur.execute("""
-        #     SELECT 
-        #         la.id AS loan_application_id,
-        #         lt.loan_type,
-        #         ltm.loan_term,
-        #         la.date_applied,
-        #         me.monthly_earning_category
-        #     FROM 
-        #         loan_applications la
-        #     JOIN 
-        #         loan_type lt ON la.loan_type_id = lt.loan_type_id
-        #     JOIN 
-        #         loan_term ltm ON la.loan_term_id = ltm.loan_term_id
-        #     JOIN 
-        #         monthly_earnings me ON la.monthly_earnings_id = me.monthly_earnings_id
-        #     WHERE 
-        #         la.account_number = %s
-        # """, (account_number,))
-        # applications = cur.fetchall()
-
-        # # Debugging purpose
-        # print(applications)  # Add this line to confirm the data is being retrieved
-
         # Close cursor
         cur.close()
 
@@ -1201,28 +1029,6 @@ def member_profile(account_number):
         cur.close()
         return jsonify({"error": str(e)}), 500
 
-# @app.route('/member-profile/<account_number>')
-# def member_profile(account_number):
-#     cooperative_name = session.get('cooperative_name')
-#     cur = mysql.connection.cursor()
-#     try:
-#         # Fetch member details based on account number
-#         cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
-#         member = cur.fetchone()
-
-#         # Close cursor
-#         cur.close()
-
-#         success_message = session.pop('success', None) # Get success message if available
-
-#         if member:
-#             return render_template('member-profile.html', member=member, success=success_message, cooperative_name=cooperative_name)
-#         else:
-#             return "Member not found", 404
-
-#     except Exception as e:
-#         cur.close()
-#         return jsonify({"error": str(e)}), 500
 
 # Edit member route  
 @app.route('/update-member', methods=['POST'])

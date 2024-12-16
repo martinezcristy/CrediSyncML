@@ -7,84 +7,61 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/applicantsignup.css') }}">
 </head>
 <body>
-    <div class="coop-main-content">
+    <div class="wrapper">
+        <form id="signup-form" method="POST" action="{{ url_for('applicantsignup') }}">
 
-        <div id="applicant-info" class="tab-content active">
-
-            <div class="content-box">
-
-                <form id="signup-form" method="POST" action="{{ url_for('applicantsignup') }}">
-
-                    <div class="member-profile-image-logo">
-                        <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
-                    </div>
-
-                    <div class="member-profile-image">
-                        <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic"><br>
-                        <p><i>**For Registered Members Only.<br>Please fill-up the form correctly. Your login credentials will be sent to your email.</i></p><br><br>
-                    </div>
-
-                    <div class="form-row">
-                        <!-- <div class="form-group">
-                            <label for="account_number">Account Number</label>
-                            <input type="text" id="account_number" name="account_number" required maxlength="8" class="form-control">
-                        </div> -->
-                        <div class="form-group">
-                            <label for="firstname">First Name</label>
-                            <input type="text" id="firstname" name="firstname" required maxlength="30" class="form-control">
-                        </div>
-                        
-                        
-                        <!-- <div class="form-group">
-                            <label for="middlename">Middle Name</label>
-                            <input type="text" id="middlename" name="middlename" required maxlength="30" class="form-control">
-                        </div> -->
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="lastname">Last Name</label>
-                            <input type="text" id="lastname" name="lastname" required maxlength="30" class="form-control">
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <label for="email">Email</label>
-                            <input type="email" id="email" name="email" required maxlength="28" class="form-control">
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            
-                            <label for="email">Password</label>
-                            <input type="password" id="password" name="password" placeholder="Enter your password" required maxlength="28" class="form-control">
-                            <div class="error-message" id="password_error" style="color: red; display: none;"></div>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">     
-                            <label for="email">Confirm Password</label>
-                            <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required maxlength="28" class="form-control">
-                            <div class="error-message" id="confirm_password_error" style="color: red; display: none;"></div>
-                        </div>
-                    </div>
-                 
-    
-                    <button type="submit">Sign Up</button>
-                    <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Click here to login</a></p> </div>
-    
-                </form>
-                <!-- Link to the external JavaScript file -->
-                <script src="{{ url_for('static', filename='js/applicantSignupValidation.js') }}"></script>
-                
+            <div class="member-profile-image-logo">
+                <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
             </div>
 
-        </div>
-       
+            <div>
+                <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Karthi Madesh" class="profile-pic"><br>
+                <p><i>**For Registered Members Only.<br>Please fill-up the form correctly. Your login credentials will be sent to your email.</i></p><br><br>
+            </div>
 
-    </div>   
+            <div class="form-row">
 
+                <div class="form-group">
+                    <label for="firstname">First Name</label>
+                    <input type="text" id="firstname" name="firstname" required maxlength="30" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Last Name</label>
+                    <input type="text" id="lastname" name="lastname" required maxlength="30" class="form-control">
+                </div>
+                             
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required maxlength="28" class="form-control">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    
+                    <label for="email">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required maxlength="28" class="form-control">
+                    <div class="error-message" id="password_error" style="color: red; display: none;"></div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">     
+                    <label for="email">Confirm Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirm your password" required maxlength="28" class="form-control">
+                    <div class="error-message" id="confirm_password_error" style="color: red; display: none;"></div>
+                </div>
+            </div>
+         
+
+            <button type="submit">Sign Up</button>
+            <div class="signup-link"> <p>Already have a member account? <a href="{{ url_for('memberlogin') }}">Log in</a></p> </div>
+
+        </form>
+    </div>
 </body>
 </html>

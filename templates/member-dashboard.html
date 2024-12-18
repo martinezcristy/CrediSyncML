@@ -18,11 +18,6 @@
             <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
             <p class="admin-role">{{ member_name }}</p>
             <p class="admin-role">{{ member_account_number}}</p>
-            <!-- {% if g.user and g.user['type'] == 'member' %}
-                <p class="admin-role">{{ g.user.firstname }}</p>
-            {% else %}
-                <p class="admin-role">Welcome, Cooperative</p>
-            {% endif %} -->
         </div>
         <!--sidebar navs-->
         <nav class="menu">
@@ -32,7 +27,7 @@
             </ul>
         </nav>
         <div class="logout-section"> 
-            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+            <a href="{{ url_for('memberlogout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
         </div>
     </div>
 

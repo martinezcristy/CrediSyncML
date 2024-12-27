@@ -94,88 +94,6 @@ document.getElementById("addMemberForm").onsubmit = function (e) {
     }
 };
 
-
-// document.getElementById("addMemberForm").onsubmit = function(e) {
-//     e.preventDefault();  // Prevent form submission to manually handle the process
-
-//     // Validate the form before proceeding
-//     if (validateForm(e)) {
-//         // Form is valid, proceed with form submission
-//         let requiredFields = document.querySelectorAll("#addMemberForm input[required]");
-//         let allValid = true;
-
-//         requiredFields.forEach(function(field) {
-//             if (!field.value) {
-//                 field.style.borderColor = "red"; 
-//                 allValid = false;
-//             } else {
-//                 field.style.borderColor = ""; 
-//             }
-//         });
-
-//         if (allValid) {
-//             // Gather form data
-//             const formData = new FormData(document.getElementById("addMemberForm"));
-
-//             // Use fetch to send the data to the server
-//             fetch("/members", {
-//                 method: "POST",
-//                 body: formData
-//             })
-//             .then(response => response.json())
-//             .then(data => {
-//                 if (data.success) {
-//                     // Dynamically create the new table row
-//                     let newRow = document.createElement("tr");
-//                     let applicantName = document.getElementById("name").value;
-//                     let status = "Pending"; 
-//                     newRow.innerHTML = `
-//                         <td>${document.getElementById("account-number").value}</td>
-//                         <td>${applicantName}</td>
-//                         <td>${document.getElementById("contact-number").value}</td>
-//                         <td>${document.getElementById("email-address").value}</td>
-//                         <td>${document.getElementById("address").value}</td>
-//                         <td>${document.getElementById("date-applied").value}</td>
-//                         <td>${status}</td>
-//                         <td class="actions">
-//                             <button class="approve" 
-//                                 data-email="${document.getElementById("email-address").value}" data-name="${applicantName}">Approve</button>
-//                             <button class="decline"
-//                                 data-email="${document.getElementById("email-address").value}" data-name="${applicantName}" onclick="openDeclineModal(this)">Decline</button>
-//                             <button class="evaluate">Evaluate</button>
-//                         </td>
-//                     `;
-//                     // Add the new row to the table in the UI
-//                     document.querySelector(".members-table tbody").appendChild(newRow);
-
-//                     // Event listener for "Evaluate" button to redirect to evaluation page
-//                     newRow.querySelector(".evaluate").addEventListener("click", function() {
-//                         window.location.href = "/evaluation";  
-//                     });
-
-//                     // Clear the form and close the modal
-//                     document.getElementById("addMemberForm").reset();
-//                     alert("New member added!");
-//                     document.getElementById("addMemberModal").style.display = "none";
-//                     location.reload();
-//                 } else {
-//                      // Show error message if insertion failed
-//                      alert("Failed to add member! Error: " + data.error);
-//                 }
-//             })
-//             .catch(error => {      
-//                 console.error("Error adding member:", error);
-//                 alert("Successfully added a member!"); 
-//                 location.reload(); // This will reload the page after the alert   
-//             });
-//         }
-//     } else {
-//         //If the validation failed, prevent form submission
-//         // alert("Please correct the errors in the form first.");
-//     }
-// };
-
-
 // Open the approval modal
 function openApproveModal(button) {
     currentApproveEmail = button.getAttribute("data-email"); // Get the email from the clicked approve button
@@ -217,7 +135,7 @@ function confirmApprove() {
                     body: JSON.stringify({ 
                         // account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
                         account_number: accountNumber,
-                        status: 'Approved' // Set status to "Approved"
+                        loan_status: 'Approved' // Set status to "Approved"
                      }),
                 });
             } else {
@@ -247,69 +165,3 @@ membersTableBody.addEventListener('click', function(e) {
         openApproveModal(e.target); // Open the approval modal
     } 
 });
-
-// decline member javascript logic
-
-// function openDeclineModal(button) {
-//     // currentDeclineRow = button.closest("tr"); // Get the row of the clicked decline button
-//     currentDeclineEmail = button.getAttribute('data-email'); 
-//     document.getElementById("declineMemberModal").style.display = "block";
-// }
-
-// function closeDeclineModal() {
-//     document.getElementById("declineMemberModal").style.display = "none";
-// }
-
-// function confirmDecline() {
- 
-//     const declineButton = document.querySelector(`.approve[data-email="${currentDeclineEmail}"]`);
-//     const applicantName = declineButton.getAttribute("data-name"); // Get the name from the button
-//     const accountNumber = declineButton.closest('tr').cells[0].textContent;
-
-//     if (currentDeclineEmail) {
-//         fetch('/send_declined_email', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ 
-//                 recipient: currentDeclineEmail,
-//                 applicantName: applicantName, // Send the applicant's name
-//                 accountNumber: accountNumber
-//              }),
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.message) {
-//                 return fetch('/update_member_status', {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                     },
-//                     body: JSON.stringify({ 
-//                         account_number: accountNumber,
-//                         status: 'Declined' // Set status to "Declined"
-//                      }),
-//                 });
-//             } else {
-//                 alert('Error: ' + data.error);
-//             }
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.success) {
-//                 alert(`You have declined ${applicantName}. A notification has been sent to: ${currentDeclineEmail}`);
-//                 location.reload();
-//             } else {
-//                 alert('Error: ' + (data.error || 'Unknown error'));
-//             } 
-//         })
-//         .catch(error => {
-//             console.error('Error sending email:', error);
-//             alert('Failed to send email.');
-//         });
-//     }
-//     closeDeclineModal();
-
-        
-// }

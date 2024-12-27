@@ -1,37 +1,29 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // CoMaker Toggle Logic
-    const coMakerToggle = document.getElementById('co_maker_toggle');
-    const coMakerForm = document.getElementById('co-maker-form');
+    // Toggle Form Sections
+    function setupToggle(toggleId, formId) {
+        const toggle = document.getElementById(toggleId);
+        const form = document.getElementById(formId);
 
-    coMakerToggle.addEventListener('change', () => {
-        if (coMakerToggle.checked) {
-            coMakerForm.style.display = 'block'; // Show co-maker form
-        } else {
-            coMakerForm.style.display = 'none'; // Hide co-maker form
+        toggle.addEventListener('change', () => {
+            const inputs = form.querySelectorAll('input, select');
+            if (toggle.checked) {
+                form.style.display = 'block'; // Show form
+                inputs.forEach(input => input.required = true); // Make inputs required
+            } else {
+                form.style.display = 'none'; // Hide form
+                inputs.forEach(input => {
+                    input.required = false; // Remove required attribute
+                    input.value = ''; // Clear inputs
+                });
+            }
+        });
+    }
 
-            // Clear inputs when form is hidden
-            const inputs = coMakerForm.querySelectorAll('input');
-            inputs.forEach(input => input.value = '');
-        }
-    });
+    // Initialize toggles
+    setupToggle('co_maker_toggle', 'co-maker-form');
+    setupToggle('assets_toggle', 'assets-form');
 
-    // Assets Toggle Logic
-    const assetsToggle = document.getElementById('assets_toggle');
-    const assetsForm = document.getElementById('assets-form');
-
-    assetsToggle.addEventListener('change', () => {
-        if (assetsToggle.checked) {
-            assetsForm.style.display = 'block'; // Show assets form
-        } else {
-            assetsForm.style.display = 'none'; // Hide assets form
-
-            // Clear inputs when form is hidden
-            const inputs = assetsForm.querySelectorAll('input');
-            inputs.forEach(input => input.value = '');
-        }
-    });
-
-    // Form Navigation Logic
+    // Multi-Step Form Logic
     const steps = document.querySelectorAll('.form-step');
     const nextBtns = document.querySelectorAll('.next-btn');
     const prevBtns = document.querySelectorAll('.prev-btn');
@@ -39,19 +31,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentStep = 0;
 
-    // Show the current step
     function showStep(step) {
-        steps.forEach((s, index) => {
-            s.classList.toggle('active', index === step);
-        });
-
-        // Update progress bar
-        const progress = ((step + 1) / steps.length) * 100; // Calculate percentage
+        steps.forEach((s, index) => s.classList.toggle('active', index === step));
+        const progress = ((step + 1) / steps.length) * 100; // Update progress bar
         progressBar.style.width = `${progress}%`;
     }
 
-    // Validate required inputs for mandatory steps (steps 1-3)
-    function validateRequiredInputs(form) {
+    function validateInputs(form) {
         const requiredInputs = form.querySelectorAll('input:required, select:required');
         let valid = true;
 
@@ -67,26 +53,16 @@ document.addEventListener('DOMContentLoaded', () => {
         return valid;
     }
 
-    // Next button logic
     nextBtns.forEach((btn, index) => {
         btn.addEventListener('click', () => {
             const currentForm = steps[currentStep];
-
-            // Validate required inputs only for steps 1-3
-            if (currentStep < 3) {
-                const isValid = validateRequiredInputs(currentForm);
-                if (!isValid) return; // Stop if validation fails
-            }
-
-            // Move to the next step if applicable
-            if (currentStep < steps.length - 1) {
+            if (currentStep < steps.length - 1 && validateInputs(currentForm)) {
                 currentStep++;
                 showStep(currentStep);
             }
         });
     });
 
-    // Previous button logic
     prevBtns.forEach(btn => {
         btn.addEventListener('click', () => {
             if (currentStep > 0) {
@@ -96,7 +72,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Initialize first step and progress bar
-    showStep(currentStep);
+    showStep(currentStep); // Initialize first step
 
+    // Handle Form Submission
+    const loanForm = document.getElementById('loan-application-form');
+    loanForm.addEventListener('submit', (e) => {
+        if (!validateInputs(loanForm)) {
+            e.preventDefault(); // Prevent submission if validation fails
+            alert('Please fill out all required fields.');
+        }
+    });
 });

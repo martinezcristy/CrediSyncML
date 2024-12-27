@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for, render_template_string
+from flask import Flask, render_template, request, jsonify, session, g, redirect, url_for, flash
 from flask_session import Session
 from flask_bcrypt import Bcrypt
 import bcrypt
@@ -14,7 +14,7 @@ import json
 import joblib
 import numpy  as np
 import random
-
+import uuid
 
 load_dotenv()
 
@@ -187,19 +187,152 @@ def member_dashboard():
         return redirect(url_for('memberlogin'))
     
 
+# @app.route('/loanapplication-form')
+# def loan_application_form():
+#     if g.member:  # Ensure the user is logged in
+#         # Pass member details to the form
+#         return render_template(
+#             'loanapplication-form.html',
+#             member={
+#                 'account_number': g.member['account_number'],
+#                 'firstname': g.member['firstname'],
+#                 'lastname': g.member['lastname'],
+#                 'email': g.member['email'],
+#                 'cooperative_id': g.member['cooperative_id']
+#             }
+#         )
+#     else:
+#         return redirect(url_for('memberlogin'))
+
 @app.route('/loanapplication-form')
 def loan_application_form():
-    if g.member:  # Ensure the user is logged in
-        # Pass account number, firstname, lastname, and email to the loan application form
+    if 'logged_in' in session:  
+        account_number = session.get('account_number')
+        cooperative_id = session.get('cooperative_id')  
+        
+        # If no cooperative_id in the session, query it from the database
+        cursor = mysql.connection.cursor()
+        cursor.execute("SELECT cooperative_id FROM members WHERE account_number = %s", (account_number,))
+        cooperative_id = cursor.fetchone()['cooperative_id']
+        cursor.close()
+
+        # Pass account number, cooperative_id, firstname, lastname, and email to the loan application form
         return render_template(
             'loanapplication-form.html',
-            account_number=g.member['account_number'],
-            firstname=g.member['firstname'],
-            lastname=g.member['lastname'],
-            email=g.member['email']
+            account_number=account_number,
+            cooperative_id=cooperative_id,
+            firstname=session.get('firstname'),
+            lastname=session.get('lastname'),
+            email=session.get('email')
         )
     else:
         return redirect(url_for('memberlogin'))
+
+# Helper function to insert data
+def insert_into_db(cursor, query, params):
+    cursor.execute(query, params)
+
+# Route to handle the loan application form submission
+@app.route('/submit_loan_application', methods=['POST'])
+def submit_loan_application():
+    try:
+        loan_application_number = str(uuid.uuid4())  # Generate unique ID
+        account_number = request.form.get('account_number')  # Hidden input from form
+        cooperative_id = request.form.get('cooperative_id')
+        loan_type = request.form.get('Loan_Type')
+        loan_term = request.form.get('Loan_Term')
+        payment_method = request.form.get('Payment_Method')
+        repayment_schedule = request.form.get('Repayment_Schedule')
+        loan_amount = request.form.get('Loan_Amount')
+
+        # Step 1 - Loan Information
+        loan_application_data = (
+            loan_application_number, account_number, cooperative_id, 
+            loan_type, loan_term, payment_method, repayment_schedule, loan_amount
+        )
+
+        # Step 2 - Personal Information
+        personal_info_data = (
+            request.form['lastname'], request.form['firstname'], request.form['middlename'],
+            request.form['present_address'], request.form['provincial_address'], request.form['contact_number'],
+            request.form['civil_status'], request.form['gender'], request.form['email']
+        )
+
+        # Step 3 - Employment Information
+        employment_info_data = (
+            request.form['employer_name'], request.form['position'], request.form['employer_address'], 
+            request.form['employment_status'], request.form['employer_contact_number'], datetime.now().strftime('%Y-%m-%d')
+        )
+
+        cursor = mysql.connection.cursor()
+
+        # Insert loan application with loan_status defaulting to 'Pending'
+        insert_into_db(cursor, """
+            INSERT INTO loan_applications (
+                loan_application_number, account_number, cooperative_id, 
+                loan_type, loan_term, payment_method, repayment_schedule, loan_amount, 
+                lastname, firstname, middlename, present_address, provincial_address, 
+                contact_number, civil_status, gender, email, 
+                employer_name, position, employer_address, employment_status, 
+                employer_contact_number, application_date, loan_status
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+                      %s, %s, %s, %s, %s, %s, 'Pending')
+        """, loan_application_data + personal_info_data + employment_info_data)
+
+        # Step 4 - Co-Makers Information
+        if request.form.get('co_maker_toggle') == 'on':
+            co_maker_data = (
+                loan_application_number,
+                request.form.get('co_lastname'), request.form.get('co_firstname'), 
+                request.form.get('co_middlename'), request.form.get('co_present_address'), 
+                request.form.get('co_provincial_address'), request.form.get('co_telephone_number'), 
+                request.form.get('co_civil_status'), request.form.get('co_gender'), 
+                request.form.get('co_email'), request.form.get('co_employer_name'), 
+                request.form.get('co_position'), request.form.get('co_employer_address'), 
+                request.form.get('co_employment_status'), request.form.get('co_contact_number'), 
+                request.form.get('co_net_take_home_salary')
+            )
+            insert_into_db(cursor, """
+                INSERT INTO co_makers_info (
+                    loan_application_number, co_lastname, co_firstname, co_middlename, 
+                    co_present_address, co_provincial_address, co_telephone_number, 
+                    co_civil_status, co_gender, co_email, co_employer_name, 
+                    co_position, co_employer_address, co_employment_status, 
+                    co_contact_number, co_net_take_home_salary
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """, co_maker_data)
+
+        # Step 5 - Assets Information
+        if request.form.get('assets_toggle') == 'on':
+            asset_types = request.form.getlist('asset_type[]')
+            registration_number = request.form.get('registration_number')
+            estimated_value = request.form.get('estimated_value')
+            ownership_status = request.form.get('ownership_status')
+            year_acquired = request.form.get('year_acquired')
+
+            if asset_types:  # Proceed only if asset_types is not empty
+                for asset_type in asset_types:
+                    asset_data = (
+                        loan_application_number, asset_type, registration_number, 
+                        estimated_value, ownership_status, year_acquired
+                    )
+                    insert_into_db(cursor, """
+                        INSERT INTO assets_info (
+                            loan_application_number, asset_type, registration_number, 
+                            estimated_value, ownership_status, year_acquired
+                        ) VALUES (%s, %s, %s, %s, %s, %s)
+                    """, asset_data)
+
+        # Commit changes to the database
+        mysql.connection.commit()
+        flash('Loan application submitted successfully!', 'success')
+        return redirect(url_for('member_dashboard'))
+
+    except Exception as e:
+        mysql.connection.rollback()  # Roll back in case of error
+        flash(f'Error submitting loan application: {e}', 'danger')
+        return redirect(url_for('loan_application_form'))
+
 
 # @app.route('/loanapplication-form')
 # def loan_application_form():
@@ -446,46 +579,23 @@ def members():
     coop_id = session.get('cooperative_id')  # Get cooperative_id from session
     cooperative_name = session.get('cooperative_name')  # Get cooperative_name from session
 
-    if request.method == 'POST':
-        # Extract member data from form
-        account_number = request.form['account-number']
-        lastname = request.form['lastname']
-        firstname = request.form['firstname']
-        contact_number = request.form['contact-number']
-        email = request.form['email-address']
-        present_address = request.form['present_address']
-        date_applied = request.form['date-applied']
-
-        # Validate if account number or email already exists in the database
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM members WHERE cooperative_id = %s AND (account_number = %s OR email = %s)", 
-                    (coop_id, account_number, email))
-        existing_member = cur.fetchone()
-
-        if existing_member:
-            error_message = "A member with the same credentials already exists."
-            return jsonify({"success": False, "error": error_message})
-
-        try:
-            cur.execute("""
-                INSERT INTO members (cooperative_id, account_number, lastname, firstname, contact_number, email, present_address, date_applied, status) 
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 'Pending')
-            """, (coop_id, account_number, lastname, firstname, contact_number, email, present_address, date_applied))
-            mysql.connection.commit()
-            cur.close()
-            return jsonify({"success": True})
-        except Exception as e:
-            mysql.connection.rollback()
-            cur.close()
-            return jsonify({"success": False, "error": str(e)})
-
-    # Fetch members for this cooperative
+    # Fetch loan applications for this cooperative
     cur = mysql.connection.cursor()
-    cur.execute("SELECT * FROM members WHERE cooperative_id = %s", (coop_id,))
-    members_data = cur.fetchall()
+    cur.execute("""
+        SELECT 
+            account_number, lastname, firstname, email, loan_status
+        FROM loan_applications 
+        WHERE cooperative_id = %s
+    """, (coop_id,))
+    loan_applications_list = cur.fetchall()
     cur.close()
 
-    return render_template('members.html', members=members_data, cooperative_name=cooperative_name)
+    return render_template(
+        'members.html', 
+        loan_applications_list=loan_applications_list,
+        cooperative_name=cooperative_name
+    )
+
 
 
 # Declined  members route
@@ -684,10 +794,10 @@ def send_approval_email_route():
 def update_member_status():
     data = request.json
     account_number = data.get('account_number')  # Account number is read-only
-    status = data.get('status')
+    loan_status = data.get('status')
     email = data.get('email')  # Include this in checking
 
-    if not account_number or not status:
+    if not account_number or not loan_status:
         return jsonify({"error": "Account number or status not provided"}), 400
 
     coop_id = session.get('cooperative_id')  # Get cooperative_id from session
@@ -695,14 +805,14 @@ def update_member_status():
 
     try:
         # Check if email exists (excluding the current member and within the same cooperative)
-        cur.execute("SELECT * FROM members WHERE email = %s AND account_number != %s AND cooperative_id = %s", (email, account_number, coop_id))
+        cur.execute("SELECT * FROM loan_applications WHERE email = %s AND account_number != %s AND cooperative_id = %s", (email, account_number, coop_id))
         email_exists = cur.fetchone()
 
         if email_exists:
             return jsonify({"error": "Email already exists for another account within the same cooperative"}), 409
 
         # Update the member's status (within the same cooperative)
-        cur.execute("UPDATE members SET status = %s WHERE account_number = %s AND cooperative_id = %s", (status, account_number, coop_id))
+        cur.execute("UPDATE loan_applications SET loan_status = %s WHERE account_number = %s AND cooperative_id = %s", (loan_status, account_number, coop_id))
         mysql.connection.commit()
 
         return jsonify({"success": True}), 200
@@ -937,7 +1047,7 @@ def evaluation():
             app.logger.info(f"Prediction result - Eligibility: {eligibility_text}")
 
              # Get the current date as the evaluation date
-            evaluation_date = datetime.now().strftime('%Y-%m-%d')
+            datetime.now().strftime('%Y-%m-%d')
 
              # Save evaluation details to the evaluated_members table
             name = form_data.get('name')
@@ -1006,7 +1116,7 @@ def member_profile(account_number):
     try:
         # Fetch member details based on account number
         cur.execute("""
-            SELECT * FROM members WHERE account_number = %s
+            SELECT * FROM loan_applications WHERE account_number = %s
         """, (account_number,))
         member = cur.fetchone()
 

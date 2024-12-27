@@ -38,25 +38,23 @@
     <!-- Main Content -->
     <div class="main-content">
         <div class="header">
+            <!-- <h1>{{ cooperative_name }} - Loan Applicants</h1> -->
             <h1>Loan Applicants</h1>
             <div class="header-right">
-                <!-- <input type="text" placeholder="Search..." class="search-bar"> -->
                 <input type="text" placeholder="Search..." class="search-bar" id="searchBar">
-                <!-- <button class="add-member-btn">ADD NEW MEMBER</button> -->
             </div>
         </div>
-
-        {% if not members or members|length == 0 %}
-        <div class="no-member-yet">
-            <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
-            <div class="message">No members have been added yet.</div>
-        </div>
-
-        <div class="no-member-yet" id="noMembersFound" style="display: none;">
-            <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
-            <div class="message">No search result</div>
-        </div>
-        
+    
+        {% if not loan_applications_list or loan_applications_list|length == 0 %}
+            <div class="no-member-yet">
+                <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
+                <div class="message">No loan applications have been added yet.</div>
+            </div>
+    
+            <div class="no-member-yet" id="noMembersFound" style="display: none;">
+                <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
+                <div class="message">No search results found.</div>
+            </div>
         {% else %}
             <table class="members-table">
                 <thead>
@@ -64,42 +62,38 @@
                         <th>Account Number</th>
                         <th>Lastname</th>
                         <th>Firstname</th>
-                        <!-- <th>Contact Number</th> -->
                         <th>Email Address</th>
-                        <!-- <th>Date Applied</th> -->
-                        <th>Status</th>
+                        <th>Loan Status</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="membersTableBody">
-                    {% for member in members %}
+                    {% for member in loan_applications_list %}
                         <tr data-url="{{ url_for('member_profile', account_number=member['account_number']) }}">
                             <td>{{ member.account_number }}</td>
                             <td>{{ member.lastname }}</td>
                             <td>{{ member.firstname }}</td>
-                            <!-- <td>{{ member.contact_number }}</td> -->
                             <td>{{ member.email }}</td>
-                            <!-- <td>{{ member.date_applied }}</td> -->
-                            <td class="status-cell">{{ member.status }}</td>
+                            <td class="status-cell">{{ member.loan_status }}</td>
                             <td class="actions">
-                                {% if member.status == 'Evaluated' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.lastname }}">Approve</button>
+                                {% if member[4] == 'Evaluated' %}
+                                    <button class="approve" data-email="{{ member[3] }}" data-name="{{ member[1] }}">Approve</button>
                                     <button class="decline" onclick="openDeclineModal(this)">Decline</button>
-                                {% elif member.status == 'Approved' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.lastname }}" disabled>Approved</button>
-                                {% elif member.status == 'Declined' %}
+                                {% elif member[4] == 'Approved' %}
+                                    <button class="approve" data-email="{{ member[3] }}" data-name="{{ member[1] }}" disabled>Approved</button>
+                                {% elif member[4] == 'Declined' %}
                                     <button class="decline" onclick="openDeclineModal(this)" disabled>Declined</button>
                                 {% else %}
-                                    <!-- currently pending member -->
                                     <button class="evaluate" onclick="evaluateMember()">Evaluate</button>
                                 {% endif %}
                             </td>
                         </tr>
                     {% endfor %}
-                </tbody>                
+                </tbody>
             </table>
         {% endif %}
     </div>
+    
 
     <script src="{{ url_for('static', filename='js/searchMember.js') }}"></script>
 

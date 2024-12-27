@@ -281,25 +281,27 @@ def submit_loan_application():
 
         # Step 4 - Co-Makers Information
         if request.form.get('co_maker_toggle') == 'on':
+            co_maker_id = str(uuid.uuid4())  # Generate unique ID for co-maker
             co_maker_data = (
-                loan_application_number,
-                request.form.get('co_lastname'), request.form.get('co_firstname'), 
-                request.form.get('co_middlename'), request.form.get('co_present_address'), 
-                request.form.get('co_provincial_address'), request.form.get('co_telephone_number'), 
-                request.form.get('co_civil_status'), request.form.get('co_gender'), 
-                request.form.get('co_email'), request.form.get('co_employer_name'), 
-                request.form.get('co_position'), request.form.get('co_employer_address'), 
-                request.form.get('co_employment_status'), request.form.get('co_contact_number'), 
-                request.form.get('co_net_take_home_salary')
+                co_maker_id, loan_application_number, account_number,
+                request.form.get('co_maker_lastname'), request.form.get('co_maker_firstname'), 
+                request.form.get('co_maker_middlename'), request.form.get('co_maker_present_address'), 
+                request.form.get('co_maker_provincial_address'), request.form.get('co_maker_contact'), 
+                request.form.get('co_maker_civil_status'), request.form.get('co_maker_gender'), 
+                request.form.get('co_maker_email'), request.form.get('co_maker_employer_name'), 
+                request.form.get('co_maker_position'), request.form.get('co_maker_employer_address'), 
+                request.form.get('co_maker_employment_status'), request.form.get('co_maker_employer_contact_number'), 
+                request.form.get('co_maker_net_take_home_salary')
             )
             insert_into_db(cursor, """
                 INSERT INTO co_makers_info (
-                    loan_application_number, co_lastname, co_firstname, co_middlename, 
-                    co_present_address, co_provincial_address, co_telephone_number, 
-                    co_civil_status, co_gender, co_email, co_employer_name, 
-                    co_position, co_employer_address, co_employment_status, 
-                    co_contact_number, co_net_take_home_salary
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    co_maker_id, loan_application_number, account_number, co_maker_lastname, 
+                    co_maker_firstname, co_maker_middlename, co_maker_present_address, 
+                    co_maker_provincial_address, co_maker_contact, co_maker_civil_status, 
+                    co_maker_gender, co_maker_email, co_maker_employer_name, 
+                    co_maker_position, co_maker_employer_address, co_maker_employment_status, 
+                    co_maker_employer_contact_number, co_maker_net_take_home_salary
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
             """, co_maker_data)
 
         # Step 5 - Assets Information
@@ -312,15 +314,16 @@ def submit_loan_application():
 
             if asset_types:  # Proceed only if asset_types is not empty
                 for asset_type in asset_types:
+                    asset_id = str(uuid.uuid4())  # Generate unique ID for each asset
                     asset_data = (
-                        loan_application_number, asset_type, registration_number, 
-                        estimated_value, ownership_status, year_acquired
+                        asset_id, loan_application_number, account_number, asset_type, 
+                        registration_number, estimated_value, ownership_status, year_acquired
                     )
                     insert_into_db(cursor, """
                         INSERT INTO assets_info (
-                            loan_application_number, asset_type, registration_number, 
-                            estimated_value, ownership_status, year_acquired
-                        ) VALUES (%s, %s, %s, %s, %s, %s)
+                            asset_id, loan_application_number, account_number, asset_type, 
+                            registration_number, estimated_value, ownership_status, year_acquired
+                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                     """, asset_data)
 
         # Commit changes to the database

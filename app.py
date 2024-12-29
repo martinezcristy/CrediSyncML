@@ -933,8 +933,123 @@ def evaluation():
 
                 if not member:
                     return jsonify({"error": "Member not found"}), 404
+                
+                # Fetch and calculate all necessary fields
+                # Payment History
+                cur.execute("""
+                    SELECT 
+                        CASE 
+                            WHEN COUNT(*) = 0 THEN 'No History'
+                            WHEN MAX(STR_TO_DATE(payment_date, '%%Y-%%m-%%d')) > MAX(due_date) THEN 'After the due date'
+                            ELSE 'On or before the due date'
+                        END AS payment_history
+                    FROM payments_info
+                    WHERE account_number = %s
+                """, (account_number,))
+                payment_history = cur.fetchone()['payment_history']
 
-                return render_template('evaluation.html', member=member, cooperative_name=cooperative_name)
+
+                # Monthly Earnings
+                cur.execute("""
+                    SELECT 
+                        CASE 
+                            WHEN net_take_home_salary < 11300 THEN 'P11,300 below'
+                            WHEN net_take_home_salary BETWEEN 11301 AND 41299 THEN 'P11,301 to P41,299'
+                            ELSE 'P41,300 above'
+                        END AS monthly_earnings
+                    FROM loan_applications
+                    WHERE account_number = %s
+                """, (account_number,))
+                monthly_earnings = cur.fetchone()['monthly_earnings']
+
+                # Loan Type
+                cur.execute("""
+                    SELECT loan_type FROM loan_applications WHERE account_number = %s
+                """, (account_number,))
+                loan_type = cur.fetchone()['loan_type']
+
+                # Loan Term
+                cur.execute("""
+                    SELECT 
+                        CASE 
+                            WHEN loan_term >= 85 THEN '85 months above'
+                            WHEN loan_term BETWEEN 60 AND 84 THEN '60 to 84 months'
+                            ELSE '12 to 60 months'
+                        END AS loan_term
+                    FROM loan_applications
+                    WHERE account_number = %s
+                """, (account_number,))
+                loan_term = cur.fetchone()['loan_term']
+
+                # Co-Maker
+                cur.execute("""
+                    SELECT 
+                        CASE 
+                            WHEN COUNT(*) = 0 THEN 'No co-maker'
+                            WHEN COUNT(*) BETWEEN 1 AND 2 THEN 'Co-maker with moderate reliability'
+                            ELSE 'Co-maker with strong reliability'
+                        END AS co_maker_status
+                    FROM co_makers_info
+                    WHERE account_number = %s
+                """, (account_number,))
+                co_maker_status = cur.fetchone()['co_maker_status']
+
+                # Fetch Savings Account Status Based on Last Transaction Date
+                cur.execute("""
+                    SELECT 
+                        CASE 
+                            WHEN MAX(last_transaction_date) IS NULL THEN 'No Savings Account'
+                            WHEN MAX(last_transaction_date) < DATE_SUB(CURDATE(), INTERVAL 1 YEAR) THEN 'Not Active'
+                            ELSE 'Active'
+                        END AS savings_status
+                    FROM savings_account_info
+                    WHERE account_number = %s
+                """, (account_number,))
+                savings_status_row = cur.fetchone()
+
+                # If no row is found, default to 'No Savings Account'
+                savings_status = savings_status_row['savings_status'] if savings_status_row else 'No Savings Account'
+
+                # Asset Owner
+                cur.execute("""
+                    SELECT 
+                        CASE 
+                            WHEN COUNT(*) = 0 THEN 'No assets'
+                            WHEN COUNT(DISTINCT asset_type) = 1 THEN 'Owns properties/vehicle'
+                            ELSE 'Owns both properties and vehicle'
+                        END AS asset_status
+                    FROM assets_info
+                    WHERE account_number = %s
+                """, (account_number,))
+                asset_status = cur.fetchone()['asset_status']
+
+                # Payment Method
+                cur.execute("""
+                    SELECT payment_method FROM loan_applications WHERE account_number = %s
+                """, (account_number,))
+                payment_method = cur.fetchone()['payment_method']
+
+                # Repayment Schedule
+                cur.execute("""
+                    SELECT repayment_schedule FROM loan_applications WHERE account_number = %s
+                """, (account_number,))
+                repayment_schedule = cur.fetchone()['repayment_schedule']
+
+                # Prepare data for the template
+                evaluation_data = {
+                    'payment_history': payment_history,
+                    'monthly_earnings': monthly_earnings,
+                    'loan_type': loan_type,
+                    'loan_term': loan_term,
+                    'co_maker_status': co_maker_status,
+                    'savings_status': savings_status,
+                    'asset_status': asset_status,
+                    'payment_method': payment_method,
+                    'repayment_schedule': repayment_schedule,
+                }
+
+                return render_template('evaluation.html', member=member, evaluation_data=evaluation_data, cooperative_name=cooperative_name)
+                # return render_template('evaluation.html', member=member, )
 
             except Exception as e:
                 app.logger.error(f"Database error: {str(e)}")

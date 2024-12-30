@@ -52,7 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return valid;
     }
-
+    
     nextBtns.forEach((btn, index) => {
         btn.addEventListener('click', () => {
             const currentForm = steps[currentStep];
@@ -82,4 +82,18 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('Please fill out all required fields.');
         }
     });
+
+    // Auto-format Registration Number
+    const registrationNumberInput = document.getElementById('registration_number');
+    if (registrationNumberInput) {
+        registrationNumberInput.addEventListener('input', () => {
+            let value = registrationNumberInput.value.replace(/\D/g, ''); // Remove non-digit characters
+            if (value.length > 4 && value.length <= 8) {
+                value = value.substring(0, 4) + '-' + value.substring(4);
+            } else if (value.length > 8) {
+                value = value.substring(0, 4) + '-' + value.substring(4, 8) + '-' + value.substring(8, 13);
+            }
+            registrationNumberInput.value = value;
+        });
+    }
 });

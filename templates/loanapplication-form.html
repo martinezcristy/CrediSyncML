@@ -124,16 +124,17 @@
                                 <input type="text" id="middlename" name="middlename" required maxlength="30" class="form-control">
                             </div>
                         </div>
-                        <div class="form-row">
+                        <div class="form-row">               
                             <div class="form-group">
                                 <label for="present_address">Present Address</label>
-                                <input type="text" id="present_address" name="present_address" required maxlength="28" class="form-control">
+                                <input type="text" id="present_address" name="present_address" required maxlength="28" class="form-control" 
+                                       pattern="^[A-Za-z0-9\s,.-]+,\s[A-Za-z0-9\s.-]+,\s[A-Za-z0-9\s.-]+$" placeholder="Street Name, Barangay, City/Province">
                             </div>
                             <div class="form-group">
-    
                                 <label for="provincial_address">Provincial Address</label>
-                                <input type="text" id="provincial_address" name="provincial_address" required maxlength="28" class="form-control">
-                            </div>
+                                <input type="text" id="provincial_address" name="provincial_address" required maxlength="28" class="form-control" 
+                                       pattern="^[A-Za-z0-9\s,.-]+,\s[A-Za-z0-9\s.-]+,\s[A-Za-z0-9\s.-]+$" placeholder="Street Name, Barangay, City/Province">
+                            </div>                  
                             <div class="form-group">
                                 <label for="contact_number">Contact Number</label>
                                 <input type="tel" id="contact_number" name="contact_number" required placeholder="e.g. 0917XXXXXXX" pattern="^(09|\+639)\d{9}$" inputmode="numeric" maxlength="11" class="form-control">
@@ -187,19 +188,25 @@
                             </div>
                             <div class="form-group">
                                 <label for="employer_address">Employer Address</label>
-                                <input type="text" id="employer_address" name="employer_address" required maxlength="30" class="form-control">
+                                <input type="text" id="employer_address" name="employer_address" required maxlength="30" class="form-control" 
+                                pattern="^[A-Za-z0-9\s,.-]+(?:\s(?:Building|Unit|Floor)?[\s\#\-\d\w]+)?,\s[A-Za-z0-9\s,.-]+,\s[A-Za-z0-9\s,.-]+$" 
+                                           placeholder="Building Name, Unit/Floor, Street Name, Barangay, City/Province">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="employment_status">Employment Status</label>
-                                <input type="text" id="employment_status" name="employment_status" required maxlength="12" class="form-control">
-                                 
-                            </div>
+                                <select id="employment_status" name="employment_status" required class="form-control">
+                                    <option value="">Please select</option>
+                                    <option value="Regular">Regular</option>
+                                    <option value="Contractual">Contractual</option>
+                                    <option value="Probationary">Probationary</option>
+                                </select>
+                            </div>           
                            
                             <div class="form-group">
                                 <label for="employer_contact_number">Contact Number</label>
-                                <input type="text" id="employer_contact_number" name="employer_contact_number" required maxlength="11" class="form-control">
+                                <input type="text" id="employer_contact_number" name="employer_contact_number" required placeholder="e.g. 0917XXXXXXX" required maxlength="11" class="form-control">
                             
                             </div>
                             <div class="form-group">
@@ -246,16 +253,16 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="co_maker_present_address">Present Address</label>
-                                    <input type="text" id="co_maker_present_address" name="co_maker_present_address" required maxlength="28" class="form-control">
+                                    <input type="text" id="co_maker_present_address" name="co_maker_present_address" required maxlength="28" class="form-control" pattern="^[A-Za-z0-9\s,.-]+,\s[A-Za-z0-9\s.-]+,\s[A-Za-z0-9\s.-]+$" placeholder="Street Name, Barangay, City/Province">
                                 </div>
                                 <div class="form-group">
         
                                     <label for="co_maker_provincial_address">Provincial Address</label>
-                                    <input type="text" id="co_maker_provincial_address" name="co_maker_provincial_address" required maxlength="28" class="form-control">
+                                    <input type="text" id="co_maker_provincial_address" name="co_maker_provincial_address" required maxlength="28" class="form-control" pattern="^[A-Za-z0-9\s,.-]+,\s[A-Za-z0-9\s.-]+,\s[A-Za-z0-9\s.-]+$" placeholder="Street Name, Barangay, City/Province">
                                 </div>
                                 <div class="form-group">
                                     <label for="co_maker_contact">Contact Number</label>
-                                    <input type="text" id="co_maker_contact" name="co_maker_contact" required maxlength="12" class="form-control">
+                                    <input type="text" id="co_maker_contact" name="co_maker_contact" required placeholder="e.g. 0917XXXXXXX" required maxlength="12" class="form-control">
                                 </div>
                             </div>
                             <div class="form-row">
@@ -294,21 +301,29 @@
                                     <label for="co_maker_position">Position</label>
                                     <input type="text" id="co_maker_position" name="co_maker_position" required maxlength="30" class="form-control">
                                 </div>
+                
                                 <div class="form-group">
                                     <label for="co_maker_employer_address">Employer Address</label>
-                                    <input type="text" id="co_maker_employer_address" name="co_maker_employer_address" required maxlength="30" class="form-control">
+                                    <input type="text" id="co_maker_employer_address" name="co_maker_employer_address" required maxlength="50" class="form-control" 
+                                           pattern="^[A-Za-z0-9\s,.-]+(?:\s(?:Building|Unit|Floor)?[\s\#\-\d\w]+)?,\s[A-Za-z0-9\s,.-]+,\s[A-Za-z0-9\s,.-]+$" 
+                                           placeholder="Building Name, Unit/Floor, Street Name, Barangay, City/Province">
                                 </div>
+                                
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label for="co_maker_employment_status">Employment Status</label>
-                                    <input type="text" id="co_maker_employment_status" name="co_maker_employment_status" required maxlength="12" class="form-control">
-                                     
+                                    <select id="co_maker_employment_status" name="co_maker_employment_status" required class="form-control">
+                                        <option value="">Please select</option>
+                                        <option value="Regular">Regular</option>
+                                        <option value="Contractual">Contractual</option>
+                                        <option value="Probationary">Probationary</option>
+                                    </select>
                                 </div>
                                
                                 <div class="form-group">
                                     <label for="co_maker_employer_contact_number">Contact Number</label>
-                                    <input type="text" id="co_maker_employer_contact_number" name="co_maker_employer_contact_number" required maxlength="12" class="form-control">
+                                    <input type="text" id="co_maker_employer_contact_number" name="co_maker_employer_contact_number" required placeholder="e.g. 0917XXXXXXX" required maxlength="12" class="form-control">
                                 
                                 </div>
                                 <div class="form-group">
@@ -362,7 +377,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="estimated_value">Estimated Asset Value</label>
-                                    <input type="number" id="estimated_value" name="estimated_value" class="form-control" required maxlength="6">
+                                    <input type="text" id="estimated_value" name="estimated_value" class="form-control" required maxlength="6">
                                 </div>
                         
                                 <!-- Dropdown for Ownership Status -->
@@ -379,7 +394,7 @@
                                 <!-- Input Field for Year Acquired -->
                                 <div class="form-group">
                                     <label for="year_acquired">Year Acquired</label>
-                                    <input type="number" id="year_acquired" name="year_acquired" class="form-control" required maxlength="4">
+                                    <input type="text" id="year_acquired" name="year_acquired" class="form-control" required maxlength="4">
                                 </div>
                             </div>
                             

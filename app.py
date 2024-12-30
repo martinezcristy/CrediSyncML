@@ -752,7 +752,7 @@ def send_approval_email_route():
                 html_content = html_content.replace("[DATE_APPROVED]", current_date)
                 html_content = html_content.replace("[ACCOUNT NUMBER]", str(evaluation_details.get('account_number', 'N/A')))
                 html_content = html_content.replace("[APPLICANT NAME]", f"{evaluation_details.get('firstname', 'N/A')} {evaluation_details.get('lastname', 'N/A')}")
-                html_content = html_content.replace("[APPLICATION DATE]", str(evaluation_details.get('date_applied', 'N/A')))
+                html_content = html_content.replace("[APPLICATION DATE]", str(evaluation_details.get('application_date', 'N/A')))
                 html_content = html_content.replace("[EVALUATION DATE]", str(evaluation_details.get('date_evaluated', 'N/A')))
                 # loan applicant details
                 html_content = html_content.replace("[MONTHLY EARNINGS]", str(evaluation_details.get('monthly_earnings', 'N/A')))
@@ -797,7 +797,8 @@ def send_approval_email_route():
 def update_member_status():
     data = request.json
     account_number = data.get('account_number')  # Account number is read-only
-    loan_status = data.get('status')
+    status = data.get('status') # for members table
+    loan_status = data.get('loan_status') #for loan applications table
     email = data.get('email')  # Include this in checking
 
     if not account_number or not loan_status:
@@ -815,6 +816,7 @@ def update_member_status():
             return jsonify({"error": "Email already exists for another account within the same cooperative"}), 409
 
         # Update the member's status (within the same cooperative)
+        cur.execute("UPDATE members SET status = %s WHERE account_number = %s AND cooperative_id = %s", (status, account_number, coop_id))
         cur.execute("UPDATE loan_applications SET loan_status = %s WHERE account_number = %s AND cooperative_id = %s", (loan_status, account_number, coop_id))
         mysql.connection.commit()
 
@@ -928,6 +930,9 @@ def evaluation():
             cur = mysql.connection.cursor()
 
             try:
+                cur.execute("SELECT * FROM loan_applications WHERE account_number = %s", (account_number,))
+                loan_applicant = cur.fetchone()
+
                 cur.execute("SELECT * FROM members WHERE account_number = %s", (account_number,))
                 member = cur.fetchone()
 
@@ -1048,7 +1053,7 @@ def evaluation():
                     'repayment_schedule': repayment_schedule,
                 }
 
-                return render_template('evaluation.html', member=member, evaluation_data=evaluation_data, cooperative_name=cooperative_name)
+                return render_template('evaluation.html', member=member, loan_applicant=loan_applicant, evaluation_data=evaluation_data, cooperative_name=cooperative_name)
                 # return render_template('evaluation.html', member=member, )
 
             except Exception as e:
@@ -1139,20 +1144,23 @@ def evaluation():
                 'Payment_Method', 'Repayment_Schedule', 'Payment_History','Credit_Score'
             ]
 
-            missing_fields = [field for field in required_fields if not form_data.get(field)]
+            # missing_fields = [field for field in required_fields if not form_data.get(field)]
+            missing_fields = [field for field in required_fields if form_data.get(field) is None]
             if missing_fields:
+                app.logger.error(f"Missing fields: {missing_fields}")
                 return jsonify({"error": f"Missing required fields: {', '.join(missing_fields)}"}), 400
 
             features = [
-                float(form_data.get('Monthly_Earnings')),
-                float(form_data.get('Loan_Type')),
-                float(form_data.get('Loan_Term')),
-                float(form_data.get('Co_Maker')),
-                float(form_data.get('Savings_Account')),
-                float(form_data.get('Asset_Owner')),
-                float(form_data.get('Payment_Method')),
-                float(form_data.get('Repayment_Schedule')),
-                float(form_data.get('Payment_History')),
+                # float(form_data.get('Monthly_Earnings')),
+                float(form_data.get('Monthly_Earnings', 0)),
+                float(form_data.get('Loan_Type', 0)),
+                float(form_data.get('Loan_Term', 0)),
+                float(form_data.get('Co_Maker', 0)),
+                float(form_data.get('Savings_Account', 0)),
+                float(form_data.get('Asset_Owner', 0)),
+                float(form_data.get('Payment_Method', 0)),
+                float(form_data.get('Repayment_Schedule', 0)),
+                float(form_data.get('Payment_History', 0)),
                 float(form_data.get('Credit_Score', 0))
             ]
 
@@ -1168,10 +1176,11 @@ def evaluation():
             datetime.now().strftime('%Y-%m-%d')
 
              # Save evaluation details to the evaluated_members table
-            name = form_data.get('name')
+            firstname = form_data.get('firstname')
             contact_number = form_data.get('contact_number')
             email = form_data.get('email')
-            address = form_data.get('address')
+            present_address = form_data.get('present_address')
+            application_date = form_data.get('application_date')
 
             #  # evaluation details
            
@@ -1183,7 +1192,7 @@ def evaluation():
             # asset_owner = form_data.get('Asset_Owner')
             # payment_method = form_data.get('Payment_Method')
             # repayment_schedule = form_data.get('Repayment_Schedule')
-             # payment_history = form_data.get('Payment_History') #this is Payment History field in the eval form
+            # payment_history = form_data.get('Payment_History') #this is Payment History field in the eval form
 
             cur = mysql.connection.cursor()
 
@@ -1191,14 +1200,14 @@ def evaluation():
                 # save to evaluated_members table
                 cur.execute("""
                     INSERT INTO evaluated_members (
-                        account_number, name, contact_number, email, address, date_applied, status, credit_score, 
+                        account_number, firstname, contact_number, email, present_address, application_date, status, credit_score, 
                         prediction, date_evaluated, monthly_earnings, loan_type, loan_term, co_maker, 
                         savings_account, asset_owner, payment_method, repayment_schedule, payment_history, cooperative_id, cooperative_name
                     )
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
-                    account_number, form_data.get('name'), form_data.get('contact_number'), form_data.get('email'),
-                    form_data.get('address'), form_data.get('dateapplied'), 'Evaluated', 
+                    account_number, form_data.get('firstname'), form_data.get('contact_number'), form_data.get('email'),
+                    form_data.get('present_address'), form_data.get('application_date'), 'Evaluated', 
                     credit_score, eligibility_text, datetime.now().strftime('%Y-%m-%d'), 
                     monthly_earnings, loan_type, loan_term, 
                     co_maker, savings_account, asset_owner, 
@@ -1208,8 +1217,11 @@ def evaluation():
                 # Commit the changes
                 mysql.connection.commit()
 
-                # Now, update the member's status in the original members table
+                # Now, update the member's status in the original members table and loan_applications table
                 cur.execute("UPDATE members SET status = 'Evaluated' WHERE account_number = %s", (account_number,))
+                mysql.connection.commit()
+
+                cur.execute("UPDATE loan_applications SET loan_status = 'Evaluated' WHERE account_number = %s", (account_number,))
                 mysql.connection.commit()
 
             except Exception as e:

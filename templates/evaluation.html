@@ -55,17 +55,17 @@
 
         <form id="evaluation-form" class="evaluation-form" method="POST" action="/evaluation">
 
-            <input type="hidden" name="account_number" value="{{ member.account_number }}">
-            <input type="hidden" name="name" value="{{ member.name }}">
-            <input type="hidden" name="contact_number" value="{{ member.contact_number }}">
-            <input type="hidden" name="email" value="{{ member.email }}">
-            <input type="hidden" name="address" value="{{ member.address }}">
-            <input type="hidden" name="dateapplied" value="{{ member.date_applied }}">
+            <input type="hidden" name="account_number" value="{{ loan_applicant.account_number }}" required>
+            <input type="hidden" name="firstname" value="{{ loan_applicant.firstname }}" required>
+            <input type="hidden" name="contact_number" value="{{ loan_applicant.contact_number }}" required>
+            <input type="hidden" name="email" value="{{ loan_applicant.email }}" required>
+            <input type="hidden" name="present_address" value="{{ loan_applicant.present_address }}" required>
+            <input type="hidden" name="application_date" value="{{ loan_applicant.application_date }}" required>
         
             <!-- Monthly Earnings -->
             <div class="form-group">
                 <label>Monthly Earnings</label>
-                <select name="Monthly_Earnings" required disabled>
+                <select name="Monthly_Earnings" required>
                     <option value="" {% if not evaluation_data.monthly_earnings %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.monthly_earnings == "P11,300 below" %}selected{% endif %}>P11,300 below</option>
                     <option value="80" {% if evaluation_data.monthly_earnings == "P11,301 to P41,299" %}selected{% endif %}>P11,301 to P41,299</option>
@@ -76,7 +76,7 @@
             <!-- Loan Type -->
             <div class="form-group">
                 <label>Loan Type</label>
-                <select name="Loan_Type" required disabled>
+                <select name="Loan_Type" required>
                     <option value="" {% if not evaluation_data.loan_type %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.loan_type == "Personal Loans/Home Equity Loans" %}selected{% endif %}>Personal Loans/Home Equity Loans</option>
                     <option value="80" {% if evaluation_data.loan_type == "Auto Loans/Student Loans" %}selected{% endif %}>Auto Loans/Student Loans</option>
@@ -87,7 +87,7 @@
             <!-- Loan Term -->
             <div class="form-group">
                 <label>Loan Term</label>
-                <select name="Loan_Term" required disabled>
+                <select name="Loan_Term" required>
                     <option value="" {% if not evaluation_data.loan_term %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.loan_term == "85 months above" %}selected{% endif %}>85 months above</option>
                     <option value="80" {% if evaluation_data.loan_term == "60 to 84 months" %}selected{% endif %}>60 to 84 months</option>
@@ -98,7 +98,7 @@
             <!-- Co-Maker -->
             <div class="form-group">
                 <label>Co-Maker</label>
-                <select name="Co_Maker" required disabled>
+                <select name="Co_Maker" required>
                     <option value="" {% if not evaluation_data.co_maker_status %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.co_maker_status == "No co-maker" %}selected{% endif %}>No co-maker</option>
                     <option value="80" {% if evaluation_data.co_maker_status == "Co-maker with moderate reliability" %}selected{% endif %}>Co-maker with moderate reliability</option>
@@ -109,7 +109,7 @@
             <!-- Savings Account Status -->
             <div class="form-group">
                 <label>Savings Account Status</label>
-                <select name="Savings_Account" required disabled>
+                <select name="Savings_Account" required>
                     <option value="" {% if not evaluation_data.savings_status %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.savings_status == "No Savings Account" %}selected{% endif %}>No Savings Account</option>
                     <option value="80" {% if evaluation_data.savings_status == "Not Active" %}selected{% endif %}>Not Active</option>
@@ -120,7 +120,7 @@
             <!-- Asset Owner -->
             <div class="form-group">
                 <label>Asset Owner</label>
-                <select name="Asset_Owner" required disabled>
+                <select name="Asset_Owner" required>
                     <option value="" {% if not evaluation_data.asset_status %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.asset_status == "No assets" %}selected{% endif %}>No assets</option>
                     <option value="80" {% if evaluation_data.asset_status == "Owns properties/vehicle" %}selected{% endif %}>Owns properties/vehicle</option>
@@ -131,7 +131,7 @@
             <!-- Payment Method -->
             <div class="form-group">
                 <label>Payment Method</label>
-                <select name="Payment_Method" required disabled>
+                <select name="Payment_Method" required>
                     <option value="" {% if not evaluation_data.payment_method %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.payment_method == "Cash" %}selected{% endif %}>Cash</option>
                     <option value="80" {% if evaluation_data.payment_method == "Post-dated Check" %}selected{% endif %}>Post-dated Check</option>
@@ -142,7 +142,7 @@
             <!-- Repayment Schedule -->
             <div class="form-group">
                 <label>Repayment Schedule</label>
-                <select name="Repayment_Schedule" required disabled>
+                <select name="Repayment_Schedule" required>
                     <option value="" {% if not evaluation_data.repayment_schedule %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.repayment_schedule == "Quarterly/Semi-Anually/Anually" %}selected{% endif %}>Quarterly/Semi-Anually/Anually</option>
                     <option value="80" {% if evaluation_data.repayment_schedule == "Monthly" %}selected{% endif %}>Monthly</option>
@@ -153,7 +153,7 @@
             <!-- Payment History -->
             <div class="form-group">
                 <label>Payment History</label>
-                <select name="Payment_History" required disabled>
+                <select name="Payment_History" required>
                     <option value="" {% if not evaluation_data.payment_history %}selected{% endif %}>Please select</option>
                     <option value="50" {% if evaluation_data.payment_history == "No History" %}selected{% endif %}>No History</option>
                     <option value="80" {% if evaluation_data.payment_history == "After the due date" %}selected{% endif %}>After the due date</option>

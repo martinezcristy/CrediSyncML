@@ -108,9 +108,14 @@ function closeApproveModal() {
 // Confirm the approval and send the email
 function confirmApprove() {
     const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
-    const declineButton = approveButton.nextElementSibling;
+    if (!approveButton) {
+        alert('Approval button not found.');
+        return;
+    }
+
     const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
     const accountNumber = approveButton.closest('tr').cells[0].textContent;
+    const email = approveButton.getAttribute("data-email"); // Get the email from the button
 
     if (currentApproveEmail) {
         fetch('/send_approval_email', {
@@ -122,21 +127,23 @@ function confirmApprove() {
                 recipient: currentApproveEmail,
                 applicantName: applicantName, // Send the applicant's name
                 accountNumber: accountNumber
-             }),
+            }),
         })
         .then(response => response.json())
         .then(data => {
             if (data.message) {
+                // Send the request to update member status, including the email
                 return fetch('/update_member_status', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ 
-                        // account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
                         account_number: accountNumber,
-                        loan_status: 'Approved' // Set status to "Approved"
-                     }),
+                        status: 'Approved', // Set status to "Approved" in members table
+                        loan_status: 'Approved', // Set status to "Approved" in loan_applications table
+                        email: email // Include email in the request
+                    }),
                 });
             } else {
                 alert('Error: ' + data.error);
@@ -148,16 +155,69 @@ function confirmApprove() {
                 alert(`You have approved ${applicantName}. A notification has been sent to: ${currentApproveEmail}`);
                 location.reload();
             } else {
-                alert('Error: ' + (data.error || 'Unknown error'));
+                alert('Error updating status: ' + (data.error || 'Unknown error'));
             } 
         })
         .catch(error => {
-            console.error('Error sending email:', error);
-            alert('Failed to send email.');
+            console.error('Error:', error);
+            alert('Failed to approve the application.');
         });
     }
     closeApproveModal();
 }
+// // Confirm the approval and send the email
+// function confirmApprove() {
+//     const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
+//     const declineButton = approveButton.nextElementSibling;
+//     const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
+//     const accountNumber = approveButton.closest('tr').cells[0].textContent;
+
+//     if (currentApproveEmail) {
+//         fetch('/send_approval_email', {
+//             method: 'POST',
+//             headers: {
+//                 'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify({ 
+//                 recipient: currentApproveEmail,
+//                 applicantName: applicantName, // Send the applicant's name
+//                 accountNumber: accountNumber
+//              }),
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.message) {
+//                 return fetch('/update_member_status', {
+//                     method: 'POST',
+//                     headers: {
+//                         'Content-Type': 'application/json',
+//                     },
+//                     body: JSON.stringify({ 
+//                         // account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
+//                         account_number: accountNumber,
+//                         loan_status: 'Approved' // Set status to "Approved"
+//                      }),
+//                 });
+//             } else {
+//                 alert('Error: ' + data.error);
+//             }
+//         })
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.success) {
+//                 alert(`You have approved ${applicantName}. A notification has been sent to: ${currentApproveEmail}`);
+//                 location.reload();
+//             } else {
+//                 alert('Error: ' + (data.error || 'Unknown error'));
+//             } 
+//         })
+//         .catch(error => {
+//             console.error('Error sending email:', error);
+//             alert('Failed to send email.');
+//         });
+//     }
+//     closeApproveModal();
+// }
 
 // Attach event listener to the members table body
 membersTableBody.addEventListener('click', function(e) {

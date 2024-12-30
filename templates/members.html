@@ -77,10 +77,10 @@
                             <td class="status-cell">{{ member.loan_status }}</td>
                             <td class="actions">
                                 {% if member.loan_status == 'Evaluated' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.firstname }}">Approve</button>
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.firstname ~ ' ' ~ member.lastname }}">Approve</button>
                                     <button class="decline" onclick="openDeclineModal(this)">Decline</button>
                                 {% elif member.loan_status == 'Approved' %}
-                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.firstname }}" disabled>Approved</button>
+                                    <button class="approve" data-email="{{ member.email }}" data-name="{{ member.firstname ~ ' ' ~ member.lastname }}" disabled>Approved</button>
                                 {% elif member.loan_status == 'Declined' %}
                                     <button class="decline" onclick="openDeclineModal(this)" disabled>Declined</button>
                                 {% else %}

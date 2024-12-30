@@ -751,7 +751,7 @@ def send_approval_email_route():
                 html_content = html_content.replace("[COOPERATIVE NAME]", str(evaluation_details.get('cooperative_name', 'N/A')))
                 html_content = html_content.replace("[DATE_APPROVED]", current_date)
                 html_content = html_content.replace("[ACCOUNT NUMBER]", str(evaluation_details.get('account_number', 'N/A')))
-                html_content = html_content.replace("[APPLICANT NAME]", f"{evaluation_details.get('firstname', 'N/A')} {evaluation_details.get('lastname', 'N/A')}")
+                html_content = html_content.replace("[APPLICANT NAME]", evaluation_details.get('firstname', 'N/A'))
                 html_content = html_content.replace("[APPLICATION DATE]", str(evaluation_details.get('application_date', 'N/A')))
                 html_content = html_content.replace("[EVALUATION DATE]", str(evaluation_details.get('date_evaluated', 'N/A')))
                 # loan applicant details

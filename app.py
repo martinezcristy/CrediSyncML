@@ -233,9 +233,11 @@ def insert_into_db(cursor, query, params):
     cursor.execute(query, params)
 
 # Route to handle the loan application form submission
+# Route to handle the loan application form submission
 @app.route('/submit_loan_application', methods=['POST'])
 def submit_loan_application():
     try:
+        # Get form data
         loan_application_number = str(uuid.uuid4())  # Generate unique ID
         account_number = request.form.get('account_number')  # Hidden input from form
         cooperative_id = request.form.get('cooperative_id')
@@ -265,6 +267,17 @@ def submit_loan_application():
         )
 
         cursor = mysql.connection.cursor()
+
+        # Check if a loan application already exists for this account number
+        cursor.execute("""
+            SELECT * FROM loan_applications 
+            WHERE account_number = %s AND loan_status IN ('Pending', 'Evaluated')
+        """, (account_number,))
+        existing_application = cursor.fetchone()
+
+        if existing_application:
+            flash('You already have an active or pending loan application.', 'warning')
+            return redirect(url_for('loan_application_form'))
 
         # Insert loan application with loan_status defaulting to 'Pending'
         insert_into_db(cursor, """
@@ -335,6 +348,109 @@ def submit_loan_application():
         mysql.connection.rollback()  # Roll back in case of error
         flash(f'Error submitting loan application: {e}', 'danger')
         return redirect(url_for('loan_application_form'))
+
+# @app.route('/submit_loan_application', methods=['POST'])
+# def submit_loan_application():
+#     try:
+#         loan_application_number = str(uuid.uuid4())  # Generate unique ID
+#         account_number = request.form.get('account_number')  # Hidden input from form
+#         cooperative_id = request.form.get('cooperative_id')
+#         loan_type = request.form.get('Loan_Type')
+#         loan_term = request.form.get('Loan_Term')
+#         payment_method = request.form.get('Payment_Method')
+#         repayment_schedule = request.form.get('Repayment_Schedule')
+#         loan_amount = request.form.get('Loan_Amount')
+
+#         # Step 1 - Loan Information
+#         loan_application_data = (
+#             loan_application_number, account_number, cooperative_id, 
+#             loan_type, loan_term, payment_method, repayment_schedule, loan_amount
+#         )
+
+#         # Step 2 - Personal Information
+#         personal_info_data = (
+#             request.form['lastname'], request.form['firstname'], request.form['middlename'],
+#             request.form['present_address'], request.form['provincial_address'], request.form['contact_number'],
+#             request.form['civil_status'], request.form['gender'], request.form['email']
+#         )
+
+#         # Step 3 - Employment Information
+#         employment_info_data = (
+#             request.form['employer_name'], request.form['position'], request.form['employer_address'], 
+#             request.form['employment_status'], request.form['employer_contact_number'], datetime.now().strftime('%Y-%m-%d')
+#         )
+
+#         cursor = mysql.connection.cursor()
+
+#         # Insert loan application with loan_status defaulting to 'Pending'
+#         insert_into_db(cursor, """
+#             INSERT INTO loan_applications (
+#                 loan_application_number, account_number, cooperative_id, 
+#                 loan_type, loan_term, payment_method, repayment_schedule, loan_amount, 
+#                 lastname, firstname, middlename, present_address, provincial_address, 
+#                 contact_number, civil_status, gender, email, 
+#                 employer_name, position, employer_address, employment_status, 
+#                 employer_contact_number, application_date, loan_status
+#             ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, 
+#                       %s, %s, %s, %s, %s, %s, 'Pending')
+#         """, loan_application_data + personal_info_data + employment_info_data)
+
+#         # Step 4 - Co-Makers Information
+#         if request.form.get('co_maker_toggle') == 'on':
+#             co_maker_id = str(uuid.uuid4())  # Generate unique ID for co-maker
+#             co_maker_data = (
+#                 co_maker_id, loan_application_number, account_number,
+#                 request.form.get('co_maker_lastname'), request.form.get('co_maker_firstname'), 
+#                 request.form.get('co_maker_middlename'), request.form.get('co_maker_present_address'), 
+#                 request.form.get('co_maker_provincial_address'), request.form.get('co_maker_contact'), 
+#                 request.form.get('co_maker_civil_status'), request.form.get('co_maker_gender'), 
+#                 request.form.get('co_maker_email'), request.form.get('co_maker_employer_name'), 
+#                 request.form.get('co_maker_position'), request.form.get('co_maker_employer_address'), 
+#                 request.form.get('co_maker_employment_status'), request.form.get('co_maker_employer_contact_number'), 
+#                 request.form.get('co_maker_net_take_home_salary')
+#             )
+#             insert_into_db(cursor, """
+#                 INSERT INTO co_makers_info (
+#                     co_maker_id, loan_application_number, account_number, co_maker_lastname, 
+#                     co_maker_firstname, co_maker_middlename, co_maker_present_address, 
+#                     co_maker_provincial_address, co_maker_contact, co_maker_civil_status, 
+#                     co_maker_gender, co_maker_email, co_maker_employer_name, 
+#                     co_maker_position, co_maker_employer_address, co_maker_employment_status, 
+#                     co_maker_employer_contact_number, co_maker_net_take_home_salary
+#                 ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+#             """, co_maker_data)
+
+#         # Step 5 - Assets Information
+#         if request.form.get('assets_toggle') == 'on':
+#             asset_types = request.form.getlist('asset_type[]')
+#             registration_number = request.form.get('registration_number')
+#             estimated_value = request.form.get('estimated_value')
+#             ownership_status = request.form.get('ownership_status')
+#             year_acquired = request.form.get('year_acquired')
+
+#             if asset_types:  # Proceed only if asset_types is not empty
+#                 for asset_type in asset_types:
+#                     asset_id = str(uuid.uuid4())  # Generate unique ID for each asset
+#                     asset_data = (
+#                         asset_id, loan_application_number, account_number, asset_type, 
+#                         registration_number, estimated_value, ownership_status, year_acquired
+#                     )
+#                     insert_into_db(cursor, """
+#                         INSERT INTO assets_info (
+#                             asset_id, loan_application_number, account_number, asset_type, 
+#                             registration_number, estimated_value, ownership_status, year_acquired
+#                         ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+#                     """, asset_data)
+
+#         # Commit changes to the database
+#         mysql.connection.commit()
+#         flash('Loan application submitted successfully!', 'success')
+#         return redirect(url_for('member_dashboard'))
+
+#     except Exception as e:
+#         mysql.connection.rollback()  # Roll back in case of error
+#         flash(f'Error submitting loan application: {e}', 'danger')
+#         return redirect(url_for('loan_application_form'))
 
 
 # @app.route('/loanapplication-form')

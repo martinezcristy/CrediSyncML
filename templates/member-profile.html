@@ -139,8 +139,8 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% if payments %}
-                            {% for payment in payments %}
+                        {% if payment_history %}
+                            {% for payment in payment_history %}
                             <tr>
                                 <td>{{ payment.payment_date }}</td>
                                 <td>{{ payment.payment_amount }}</td>
@@ -154,10 +154,7 @@
                         {% endif %}
                     </tbody>
                 </table>
-            </div>
-    
-            
-            
+            </div>          
   
         </div>
 

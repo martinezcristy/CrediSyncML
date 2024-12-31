@@ -128,35 +128,39 @@
 
             </div>
 
-            <div id="payments" class="tab-content">
-                <h3>Payment History</h3>
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>Payment Date</th>
-                            <th>Payment Amount</th>
-                            <th>Due Date</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% if payment_history %}
-                            {% for payment in payment_history %}
-                            <tr>
-                                <td>{{ payment.payment_date }}</td>
-                                <td>{{ payment.payment_amount }}</td>
-                                <td>{{ payment.due_date }}</td>
-                            </tr>
-                            {% endfor %}
-                        {% else %}
-                            <tr>
-                                <td colspan="3" style="text-align: center;">No payment history available.</td>
-                            </tr>
-                        {% endif %}
-                    </tbody>
-                </table>
-            </div>          
-  
         </div>
+
+        <div id="payments" class="tab-content">
+            <table class="members-table">
+                <thead>
+                    <tr>
+                        <th>Payment ID</th>
+                        <th>Loan ID</th>
+                        <th>Amount</th>
+                        <th>Payment Date</th>
+                        <th>Due Date</th>
+                        
+                    </tr>
+                </thead>
+                <tbody id="membersTableBody">
+                    {% if payment_history %}
+                        {% for payment_history in payment_history %}
+                        <tr>
+                            <td>{{ payment_history.payment_id }}</td>
+                            <td>{{ payment_history.loan_application_number }}</td>
+                            <td>{{ payment_history.payment_amount }}</td>
+                            <td>{{ payment_history.payment_date }}</td>
+                            <td>{{ payment_history.due_date }}</td> 
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="3" style="text-align: center;">No payment history available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>     
 
     </div>
     

@@ -1372,7 +1372,7 @@ def member_profile(account_number):
 
          # Fetch payment history for the member
         cur.execute("""
-            SELECT payment_date, payment_amount, due_date 
+            SELECT payment_id, loan_application_number, payment_date, payment_amount, due_date 
             FROM payments_info 
             WHERE account_number = %s
             ORDER BY payment_date DESC

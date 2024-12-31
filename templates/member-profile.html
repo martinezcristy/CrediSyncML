@@ -39,7 +39,7 @@
          <!-- Tabs Navigation -->
          <div class="tabs-nav">
             <a href="javascript:void(0)" class="tab-link active" data-tab="applicant-info">{{ member.firstname }}'s Application</a>
-            <a href="javascript:void(0)" class="tab-link" data-tab="payments">Payments</a>
+            <a href="javascript:void(0)" class="tab-link" data-tab="payments">Payments History</a>
         </div>
 
         <div id="applicant-info" class="tab-content active">
@@ -127,10 +127,37 @@
                
 
             </div>
-    
+
             <div id="payments" class="tab-content">
-               
+                <h3>Payment History</h3>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Payment Date</th>
+                            <th>Payment Amount</th>
+                            <th>Due Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if payments %}
+                            {% for payment in payments %}
+                            <tr>
+                                <td>{{ payment.payment_date }}</td>
+                                <td>{{ payment.payment_amount }}</td>
+                                <td>{{ payment.due_date }}</td>
+                            </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="3" style="text-align: center;">No payment history available.</td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
             </div>
+    
+            
+            
   
         </div>
 

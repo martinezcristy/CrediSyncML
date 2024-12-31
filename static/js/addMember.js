@@ -165,59 +165,6 @@ function confirmApprove() {
     }
     closeApproveModal();
 }
-// // Confirm the approval and send the email
-// function confirmApprove() {
-//     const approveButton = document.querySelector(`.approve[data-email="${currentApproveEmail}"]`);
-//     const declineButton = approveButton.nextElementSibling;
-//     const applicantName = approveButton.getAttribute("data-name"); // Get the name from the button
-//     const accountNumber = approveButton.closest('tr').cells[0].textContent;
-
-//     if (currentApproveEmail) {
-//         fetch('/send_approval_email', {
-//             method: 'POST',
-//             headers: {
-//                 'Content-Type': 'application/json',
-//             },
-//             body: JSON.stringify({ 
-//                 recipient: currentApproveEmail,
-//                 applicantName: applicantName, // Send the applicant's name
-//                 accountNumber: accountNumber
-//              }),
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.message) {
-//                 return fetch('/update_member_status', {
-//                     method: 'POST',
-//                     headers: {
-//                         'Content-Type': 'application/json',
-//                     },
-//                     body: JSON.stringify({ 
-//                         // account_number: approveButton.closest('tr').cells[0].textContent, // Get account number
-//                         account_number: accountNumber,
-//                         loan_status: 'Approved' // Set status to "Approved"
-//                      }),
-//                 });
-//             } else {
-//                 alert('Error: ' + data.error);
-//             }
-//         })
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.success) {
-//                 alert(`You have approved ${applicantName}. A notification has been sent to: ${currentApproveEmail}`);
-//                 location.reload();
-//             } else {
-//                 alert('Error: ' + (data.error || 'Unknown error'));
-//             } 
-//         })
-//         .catch(error => {
-//             console.error('Error sending email:', error);
-//             alert('Failed to send email.');
-//         });
-//     }
-//     closeApproveModal();
-// }
 
 // Attach event listener to the members table body
 membersTableBody.addEventListener('click', function(e) {

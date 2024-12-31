@@ -39,7 +39,7 @@
     <div class="main-content">
         <div class="header">
             <!-- <h1>{{ cooperative_name }} - Loan Applicants</h1> -->
-            <h1>Loan Applicants</h1>
+            <h1>Loan Applications</h1>
             <div class="header-right">
                 <input type="text" placeholder="Search..." class="search-bar" id="searchBar">
             </div>
@@ -59,6 +59,7 @@
             <table class="members-table">
                 <thead>
                     <tr>
+                        <!-- <th>Loan Application ID</th> -->
                         <th>Account Number</th>
                         <th>Lastname</th>
                         <th>Firstname</th>
@@ -69,7 +70,8 @@
                 </thead>
                 <tbody id="membersTableBody">
                     {% for member in loan_applications_list %}
-                        <tr data-url="{{ url_for('member_profile', account_number=member['account_number']) }}">
+                        <tr data-url="{{ url_for('member_profile',  account_number=member['account_number']) }}">
+                            <!-- <td>{{ member.loan_application_number }}</td> -->
                             <td>{{ member.account_number }}</td>
                             <td>{{ member.lastname }}</td>
                             <td>{{ member.firstname }}</td>

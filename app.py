@@ -940,13 +940,17 @@ def evaluation():
                     return jsonify({"error": "Member not found"}), 404
                 
                 # Fetch and calculate all necessary fields
-                # Payment History
+                # Payment History  Across All Applications (account_number)
                 cur.execute("""
                     SELECT 
                         CASE 
                             WHEN COUNT(*) = 0 THEN 'No History'
-                            WHEN MAX(STR_TO_DATE(payment_date, '%%Y-%%m-%%d')) > MAX(due_date) THEN 'After the due date'
-                            ELSE 'On or before the due date'
+                            WHEN AVG(CASE 
+                                    WHEN STR_TO_DATE(payment_date, '%%Y-%%m-%%d') <= DATE_ADD(due_date, INTERVAL 30 DAY) 
+                                    THEN 1 
+                                    ELSE 0 
+                                END) >= 0.5 THEN 'On or before the due date'
+                            ELSE 'After the due date'
                         END AS payment_history
                     FROM payments_info
                     WHERE account_number = %s
@@ -1250,6 +1254,18 @@ def member_profile(account_number):
         """, (account_number,))
         member = cur.fetchone()
 
+         # Fetch payment history for the member
+        cur.execute("""
+            SELECT payment_date, payment_amount, due_date 
+            FROM payments_info 
+            WHERE account_number = %s
+            ORDER BY payment_date DESC
+        """, (account_number,))
+        payment_history = cur.fetchall()
+
+         # Debugging: Print payments to verify data
+        print("Payments fetched from the database:", payment_history)  # Debugging line
+
         # Close cursor
         cur.close()
 
@@ -1258,7 +1274,8 @@ def member_profile(account_number):
         if member:
             return render_template(
                 'member-profile.html', 
-                member=member, 
+                member=member,
+                payment_history=payment_history,
                 success=success_message, 
                 cooperative_name=cooperative_name, 
              )

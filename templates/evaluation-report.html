@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluation Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        </div>
+
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
+            <p class="admin-role">{{ cooperative_name }}</p>
+        </div>
+        
+        <!-- Sidebar Navigation -->
+        <nav class="menu">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/users-group-rounded-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('evaluatedmembers') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/receipt-1-svgrepo-com.svg') }}" alt="Report Icon">Evaluation Report</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1>Applicant Evaluations</h1>
+            <div class="header-right">
+                <input type="text" placeholder="Search..." class="search-bar" id="searchBar">
+            </div>
+        </div>
+    
+        {% if not evaluated_applicants_list or evaluated_applicants_list|length == 0 %}
+            <div class="no-member-yet">
+                <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
+                <div class="message">No evaluated members yet</div>
+            </div>
+    
+            <div class="no-member-yet" id="noMembersFound" style="display: none;">
+                <img src="{{ url_for('static', filename='icons/profile-2user-svgrepo-com.svg') }}" alt="Not Found Icon" />
+                <div class="message">No search results found</div>
+            </div>
+        {% else %}
+            <table class="members-table">
+                <thead>
+                    <tr>
+                        <th>Evaluation ID</th>
+                        <th>Loan ID</th>                                                                                                                                   
+                        <th>Account Number</th>
+                        <th>Applicant Name</th>
+                        <th>Email Address</th>
+                    </tr>
+                </thead>
+                <tbody id="membersTableBody">
+                    {% for member in evaluated_applicants_list %}
+                        <tr data-url="{{ url_for('evaluatedmember_profile',  account_number=member['account_number']) }}">
+                            <td>{{ member.evaluation_number }}</td>
+                            <td>{{ member.loan_application_number }}</td>
+                            <td>{{ member.account_number }}</td>
+                            <td>{{ member.firstname }}</td>
+                            <td>{{ member.email }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+    </div>
+
+    <script>
+        //clickable row - redirect to member profile component
+        document.addEventListener("DOMContentLoaded", function() {
+            // Add click event listener to all rows in the table
+            const rows = document.querySelectorAll('tr[data-url]');
+            
+            rows.forEach(row => {
+                row.addEventListener('click', function() {
+                    // Redirect to the URL stored in the data-url attribute
+                    window.location.href = row.getAttribute('data-url');
+                });
+            });
+        });
+
+        // Search functionality
+        document.getElementById('searchBar').addEventListener('input', function() {
+            const searchValue = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.members-table tbody tr');
+
+            let hasResults = false;
+            rows.forEach(row => {
+                const rowText = row.textContent.toLowerCase();
+                const matches = rowText.includes(searchValue);
+                row.style.display = matches ? '' : 'none';
+                if (matches) hasResults = true;
+            });
+
+            document.getElementById('noMembersFound').style.display = hasResults ? 'none' : 'block';
+        });
+    </script>
+</body>
+
+</html>

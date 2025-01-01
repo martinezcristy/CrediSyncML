@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ evaluated_member.firstname }}'s Evaluation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <img src="{{ url_for('static', filename='images/credisync-logo.png') }}" alt="Logo">
+        </div>
+
+        <div class="profile-section">
+            <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Coop Profile" class="profile-pic">
+            <p class="admin-role">{{ cooperative_name }}</p>
+        </div>
+        
+        <!-- Sidebar Navigation -->
+        <nav class="menu">
+            <ul>
+                <li><a href="{{ url_for('dashboard') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/3dcube-svgrepo-com.svg') }}" alt="Dashboard Icon">Dashboard</a></li>
+                <li><a href="{{ url_for('members') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/users-group-rounded-svgrepo-com.svg') }}" alt="Members Icon">Members</a></li>
+                <li><a href="{{ url_for('evaluatedmembers') }}" class="menu-item active"><img src="{{ url_for('static', filename='icons/receipt-1-svgrepo-com.svg') }}" alt="Report Icon">Evaluation Report</a></li>
+                <li><a href="{{ url_for('settings') }}" class="menu-item"><img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Settings Icon">Profile</a></li>
+            </ul>
+        </nav>
+
+        <div class="logout-section"> 
+            <a href="{{ url_for('logout') }}" class="menu-item logout-item"> <img src="{{ url_for('static', filename='icons/logout-svgrepo-com.svg') }}" alt="Logout Icon">Logout</a> 
+        </div>
+    </div>
+
+    <div class="coop-main-content">
+        
+        <!-- Tabs Navigation -->
+        <div class="tabs-nav">
+            <!-- <a href="javascript:void(0)" class="tab-link active" data-tab="applicant-info">{{ evaluated_member.firstname }}'s Evaluation</a> -->
+            <a href="javascript:void(0)" class="tab-link active" data-tab="applicant-info">Evaluation Result</a>
+            <a href="javascript:void(0)" class="tab-link" data-tab="payments">Evaluation Criteria</a>
+        </div>
+
+        <div id="applicant-info" class="tab-content active">
+            <div class="content-box">
+                <form action="{{ url_for('update_member') }}" method="post">
+
+                    <div class="member-profile-image">
+                        <img src="{{ url_for('static', filename='icons/user-circle-svgrepo-com.svg') }}" alt="Member Profile" class="profile-pic">
+                    </div>
+        
+                    {% if success %} 
+                        <div id="success-message" style="color: green; text-align: center;">{{ success }}</div><br><br>
+                    {% endif %}
+        
+                    <div id="error-message" style="display: none; color: red; text-align: center;"></div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="evaluation_number">Evaluation ID</label>
+                            <input type="text" id="evaluation_number" name="evaluation_number" class="form-control" value="{{ evaluated_member.evaluation_number }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="loan_application_number">Loan Application ID</label>
+                            <input type="text" id="loan_application_number" name="loan_application_number" class="form-control" value="{{ evaluated_member.loan_application_number }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="account_number">Account Number</label>
+                            <input type="text" id="account_number" name="account_number" class="form-control" value="{{ evaluated_member.account_number }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstname">First Name</label>
+                            <input type="text" id="firstname" name="firstname" class="form-control" value="{{ evaluated_member.firstname }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="contact_number">Contact Number</label>
+                            <input type="text" id="contact_number" name="contact_number" class="form-control" value="{{ evaluated_member.contact_number }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email Address</label>
+                            <input type="text" id="email" name="email" class="form-control" value="{{ evaluated_member.email }}" disabled>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <!-- <div class="form-group">
+                            <label for="present_address">Present Address</label>
+                            <input type="text" id="present_address" name="present_address" class="form-control" value="{{ evaluated_member.present_address }}" disabled>
+                        </div> -->
+                        <div class="form-group">
+                            <label for="application_date">Application Date</label>
+                            <input type="text" id="application_date" name="application_date" class="form-control" value="{{ evaluated_member.application_date }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="date_evaluated">Date Evaluated</label>
+                            <input type="text" id="date_evaluated" name="date_evaluated" class="form-control" value="{{ evaluated_member.date_evaluated }}" disabled>
+                        </div>
+                        <!-- <div class="form-group">
+                            <label for="status">Status</label>
+                            <input type="text" id="status" name="status" class="form-control" value="{{ evaluated_member.status }}" disabled>
+                        </div> -->
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="credit_score">Credit Score</label>
+                            <input type="text" id="credit_score" name="credit_score" class="form-control" value="{{ evaluated_member.credit_score }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="prediction">Prediction</label>
+                            <input type="text" id="prediction" name="prediction" class="form-control" value="{{ evaluated_member.prediction }}" disabled>
+                        </div>
+                        
+                    </div>    
+
+                </form>
+            </div>
+
+        </div>
+
+        <div id="payments" class="tab-content">
+
+            <div class="content-box">
+
+                <form action="{{ url_for('update_member') }}" method="post"> 
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="monthly_earnings">Monthly Earnings</label>
+                            <input type="text" id="monthly_earnings" name="monthly_earnings" class="form-control" value="{{ evaluated_member.monthly_earnings }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="loan_type">Loan Type</label>
+                            <input type="text" id="loan_type" name="loan_type" class="form-control" value="{{ evaluated_member.loan_type }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="loan_term">Loan Term</label>
+                            <input type="text" id="loan_term" name="loan_term" class="form-control" value="{{ evaluated_member.loan_term }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="co_maker">Co-Maker</label>
+                            <input type="text" id="co_maker" name="co_maker" class="form-control" value="{{ evaluated_member.co_maker }}" disabled>
+                        </div>
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="savings_account">Savings Account</label>
+                            <input type="text" id="savings_account" name="savings_account" class="form-control" value="{{ evaluated_member.savings_account }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="asset_owner">Asset Owner</label>
+                            <input type="text" id="asset_owner" name="asset_owner" class="form-control" value="{{ evaluated_member.asset_owner }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_method">Payment Method</label>
+                            <input type="text" id="payment_method" name="payment_method" class="form-control" value="{{ evaluated_member.payment_method }}" disabled>
+                        </div>
+                       
+                    </div>
+    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="repayment_schedule">Repayment Schedule</label>
+                            <input type="text" id="repayment_schedule" name="repayment_schedule" class="form-control" value="{{ evaluated_member.repayment_schedule }}" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label for="payment_history">Payment History</label>
+                            <input type="text" id="payment_history" name="payment_history" class="form-control" value="{{ evaluated_member.payment_history }}" disabled>
+                        </div>
+                    </div>
+    
+                    <!-- <div class="form-row">
+                        <div class="form-group">
+                            <label for="cooperative_name">Cooperative Name</label>
+                            <input type="text" id="cooperative_name" name="cooperative_name" class="form-control" value="{{ evaluated_member.cooperative_name }}" disabled>
+                        </div>
+                    </div> -->
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const tabs = document.querySelectorAll(".tab-link");
+            const contents = document.querySelectorAll(".tab-content");
+        
+            tabs.forEach(tab => {
+                tab.addEventListener("click", function () {
+                    // Remove active class from all tabs
+                    tabs.forEach(t => t.classList.remove("active"));
+        
+                    // Hide all tab contents
+                    contents.forEach(content => {
+                        content.classList.remove("active");
+                        content.style.display = 'none';
+                    });
+        
+                    // Add active class to the clicked tab and corresponding content
+                    tab.classList.add("active");
+        
+                    const activeContent = document.getElementById(tab.dataset.tab);
+                    if (activeContent) {
+                        activeContent.classList.add("active");
+                        activeContent.style.display = 'block';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

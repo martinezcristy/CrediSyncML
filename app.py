@@ -1034,6 +1034,7 @@ def profile():
 #Evaluation Route
 @app.route('/evaluation', methods=['GET', 'POST'])
 def evaluation():
+    evaluation_number = str(uuid.uuid4())
     cooperative_name = session.get('cooperative_name')
     cooperative_id = session.get('cooperative_id')
     try:
@@ -1072,7 +1073,6 @@ def evaluation():
                     WHERE account_number = %s
                 """, (account_number,))
                 payment_history = cur.fetchone()['payment_history']
-
 
                 # Monthly Earnings
                 cur.execute("""
@@ -1296,6 +1296,7 @@ def evaluation():
             datetime.now().strftime('%Y-%m-%d')
 
              # Save evaluation details to the evaluated_members table
+            loan_application_number = form_data.get('loan_application_number')
             firstname = form_data.get('firstname')
             contact_number = form_data.get('contact_number')
             email = form_data.get('email')
@@ -1317,16 +1318,16 @@ def evaluation():
             cur = mysql.connection.cursor()
 
             try:
-                # save to evaluated_members table
+                 # Save to evaluated_members table
                 cur.execute("""
                     INSERT INTO evaluated_members (
-                        account_number, firstname, contact_number, email, present_address, application_date, status, credit_score, 
-                        prediction, date_evaluated, monthly_earnings, loan_type, loan_term, co_maker, 
+                        evaluation_number, loan_application_number, account_number, firstname, contact_number, email, present_address, application_date, 
+                        status, credit_score, prediction, date_evaluated, monthly_earnings, loan_type, loan_term, co_maker, 
                         savings_account, asset_owner, payment_method, repayment_schedule, payment_history, cooperative_id, cooperative_name
                     )
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                 """, (
-                    account_number, form_data.get('firstname'), form_data.get('contact_number'), form_data.get('email'),
+                    evaluation_number, loan_application_number, account_number, form_data.get('firstname'), form_data.get('contact_number'), form_data.get('email'),
                     form_data.get('present_address'), form_data.get('application_date'), 'Evaluated', 
                     credit_score, eligibility_text, datetime.now().strftime('%Y-%m-%d'), 
                     monthly_earnings, loan_type, loan_term, 
@@ -1356,8 +1357,41 @@ def evaluation():
     except Exception as e:
         app.logger.error(f"Unexpected error: {str(e)}")
         return jsonify({"error": "Internal server error"}), 500
-    
 
+
+@app.route('/evaluatedmembers', methods=['GET', 'POST'])
+def evaluatedmembers():
+    # Get cooperative_id and cooperative_name from session
+    coop_id = session.get('cooperative_id')  # Example: 'MVI001'
+    cooperative_name = session.get('cooperative_name')  # Example: 'My Cooperative'
+    
+    # Ensure cooperative_id is available before proceeding
+    if not coop_id:
+        return "Cooperative ID not found in session", 400
+
+    # Fetch evaluated members for the logged-in cooperative
+    cur = mysql.connection.cursor()
+    query = """
+        SELECT 
+            evaluation_number, 
+            loan_application_number, 
+            account_number, 
+            firstname, 
+            email
+        FROM evaluated_members 
+        WHERE cooperative_id = %s
+    """
+    cur.execute(query, (coop_id,))
+    evaluated_applicants_list = cur.fetchall()
+    cur.close()
+
+    # Render the evaluation report page
+    return render_template(
+        'evaluation-report.html',
+        evaluated_applicants_list=evaluated_applicants_list,
+        cooperative_name=cooperative_name
+    )
+    
 # Member profile page 
 @app.route('/member-profile/<account_number>')
 def member_profile(account_number):
@@ -1402,6 +1436,33 @@ def member_profile(account_number):
         cur.close()
         return jsonify({"error": str(e)}), 500
 
+# Evaluated Member profile page 
+@app.route('/evaluatedmember-profile/<account_number>')
+def evaluatedmember_profile(account_number):
+    cooperative_name = session.get('cooperative_name')
+    cur = mysql.connection.cursor()
+    try:
+        # Fetch member details from the evaluated_members table
+        cur.execute("""
+            SELECT * FROM evaluated_members WHERE account_number = %s
+        """, (account_number,))
+        evaluated_member = cur.fetchone()  # Get the member data
+
+        # Close cursor
+        cur.close()
+
+        if evaluated_member:
+            return render_template(
+                'evaluatedmember-profile.html', 
+                evaluated_member=evaluated_member,  
+                cooperative_name=cooperative_name,
+            )
+        else:
+            return "Evaluated member not found", 404
+
+    except Exception as e:
+        cur.close()
+        return jsonify({"error": str(e)}), 500
 
 # Edit member route  
 @app.route('/update-member', methods=['POST'])

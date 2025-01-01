@@ -54,7 +54,8 @@
         </div>
 
         <form id="evaluation-form" class="evaluation-form" method="POST" action="/evaluation">
-
+            
+            <input type="hidden" name="loan_application_number" value="{{ loan_applicant.loan_application_number }}" required>
             <input type="hidden" name="account_number" value="{{ loan_applicant.account_number }}" required>
             <input type="hidden" name="firstname" value="{{ loan_applicant.firstname ~ ' ' ~ loan_applicant.lastname}}" required>
             <input type="hidden" name="contact_number" value="{{ loan_applicant.contact_number }}" required>
